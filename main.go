@@ -13,6 +13,8 @@ func main() {
 
 	router := gin.Default()
 
+	router.Use(db.DatabaseMiddleware())
+
 	// AUTH API
 	router.POST("/auth/register", api.PostRegister) // crea un nuovo utente
 	router.POST("/auth/login")                      // ritorna access token
@@ -35,5 +37,8 @@ func main() {
 	// ACTIVITY API
 	router.GET("/activity/find") // manda la posizione e riceve l'id della traccia GPX più vicina
 
-	router.Run(":8080")
+	err := router.Run(":8080")
+	if err != nil {
+		panic(err)
+	}
 }

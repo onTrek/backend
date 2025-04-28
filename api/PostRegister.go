@@ -1,7 +1,53 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"OnTrek/db"
+	"OnTrek/utils"
+	"database/sql"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+	"net/http"
+	"time"
+)
 
 func PostRegister(c *gin.Context) {
+	// Get the request body
+	var user utils.User
+	var input struct {
+		Email    string `json:"email" binding:"required,email"`
+		Password string `json:"password" binding:"required,min=8"`
+		Name     string `json:"name" binding:"required"`
+	}
 
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	// Validate the request body
+	if input.Email == "" || input.Password == "" || input.Name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
+		return
+	}
+
+	user.Email = input.Email
+	user.Name = input.Name
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	user.Password = string(hashedPassword)
+	user.ID = uuid.New().String()
+	user.CreatedAt = time.Now().Format(time.RFC3339)
+
+	database := c.MustGet("db").(*sql.DB)
+	err := db.RegisterUser(database, user)
+	if err != nil {
+		if err.Error() == "UNIQUE constraint failed: users.email" {
+			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"token": user.ID})
 }
