@@ -17,7 +17,7 @@ func main() {
 
 	// AUTH API
 	router.POST("/auth/register", api.PostRegister) // crea un nuovo utente
-	router.POST("/auth/login")                      // ritorna access token
+	router.POST("/auth/login", api.Login)           // ritorna access token
 
 	// GPX API
 	router.POST("/gpx/upload") // carica un file GPX
