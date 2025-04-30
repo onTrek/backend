@@ -17,13 +17,13 @@ func main() {
 
 	// AUTH API
 	router.POST("/auth/register", api.PostRegister) // crea un nuovo utente
-	router.POST("/auth/login", api.Login)           // ritorna access token
+	router.POST("/auth/login", api.PostLogin)       // ritorna access token
 
 	// GPX API
-	router.POST("/gpx/upload") // carica un file GPX
-	router.GET("/gpx/:id")     // scarica un GPX specifico
-	router.GET("/gpx/list")    // lista dei GPX caricati dall'utente
-	router.DELETE("/gpx/:id")  // elimina un GPX
+	router.POST("/gpx/upload", api.PostUpload) // carica un file GPX
+	router.GET("/gpx/:id")                     // scarica un GPX specifico
+	router.GET("/gpx/list")                    // lista dei GPX caricati dall'utente
+	router.DELETE("/gpx/:id")                  // elimina un GPX
 
 	// STATS API
 	router.GET("/stats/global")  // statistiche globali (tot km, tot salite, etc)

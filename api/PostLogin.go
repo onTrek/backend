@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func Login(c *gin.Context) {
+func PostLogin(c *gin.Context) {
 	// Get the request body
 	var user utils.User
 	var input struct {

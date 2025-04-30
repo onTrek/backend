@@ -64,12 +64,14 @@ func SetupDatabase() {
 	createGpxFilesTable := `
 	CREATE TABLE IF NOT EXISTS gpx_files (
 		id INTEGER PRIMARY KEY AUTOINCREMENT, -- INTEGER ID autoincrement
-		activity_id TEXT NOT NULL,
+		activity_id INTEGER,
+		user_id TEXT NOT NULL,
 		filename TEXT NOT NULL,
 		storage_path TEXT NOT NULL,
 		upload_date TEXT NOT NULL,
 		stats TEXT, -- JSON string
-		FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE
+		FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
+	    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 	`
 	_, err = db.Exec(createGpxFilesTable)
