@@ -21,12 +21,13 @@ func main() {
 
 	// GPX API
 	router.POST("/gpx/upload", api.PostUpload) // carica un file GPX
-	router.GET("/gpx/:id")                     // scarica un GPX specifico
-	router.GET("/gpx/list")                    // lista dei GPX caricati dall'utente
-	router.DELETE("/gpx/:id")                  // elimina un GPX
+	router.GET("/gpx/", api.GetFiles)          // lista dei GPX caricati dall'utente
+	router.GET("/gpx/:id", api.GetFile)        // scarica un GPX specifico
+	router.DELETE("/gpx/:id", api.DeleteFile)  // elimina un GPX
 
 	// STATS API
 	router.GET("/stats/global")  // statistiche globali (tot km, tot salite, etc)
+	router.GET("/stats/gpx/")    // statistiche di tutte le tracce
 	router.GET("/stats/gpx/:id") // statistiche di una singola traccia
 
 	// USER API

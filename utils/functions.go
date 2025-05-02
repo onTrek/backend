@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"os"
 )
 
 func IsLogged(c *gin.Context, token string) (User, error) {
@@ -17,4 +18,12 @@ func IsLogged(c *gin.Context, token string) (User, error) {
 		return User{}, fmt.Errorf("failed to query user: %w", err)
 	}
 	return user, nil
+}
+
+func DeleteFile(path any) error {
+	err := os.Remove(path.(string))
+	if err != nil {
+		return fmt.Errorf("failed to delete file: %w", err)
+	}
+	return nil
 }

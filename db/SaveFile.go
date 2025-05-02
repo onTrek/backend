@@ -29,7 +29,7 @@ func SaveFile(db *sql.DB, gpx utils.Gpx, file *multipart.FileHeader) error {
 	defer stmt.Close()
 
 	// Execute the SQL statement
-	_, err = stmt.Exec(gpx.ActivityId, gpx.UserID, gpx.Filename, gpx.StoragePath, gpx.UploadDate, gpx.Stats)
+	_, err = stmt.Exec(gpx.ActivityID, gpx.UserID, gpx.Filename, gpx.StoragePath, gpx.UploadDate, gpx.Stats)
 	if err != nil {
 		return err
 	}

@@ -9,11 +9,19 @@ type User struct {
 }
 
 type Gpx struct {
-	Id          int    `json:"id"`
-	ActivityId  int    `json:"activity_id"`
+	ID          int    `json:"id"`
+	ActivityID  int    `json:"activity_id"`
 	UserID      string `json:"user_id"`
 	Filename    string `json:"filename"`
 	StoragePath string `json:"storage_path"`
 	UploadDate  string `json:"upload_date"`
 	Stats       string `json:"stats"`
+}
+
+type GpxInfo struct {
+	ID         int    `json:"id"`
+	ActivityID int    `json:"activity_id"`
+	Filename   string `json:"filename"`
+	UploadDate string `json:"upload_date"`
+	Stats      string `json:"stats"`
 }
