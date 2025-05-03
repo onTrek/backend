@@ -25,10 +25,17 @@ func main() {
 	router.GET("/gpx/:id", api.GetFile)        // scarica un GPX specifico
 	router.DELETE("/gpx/:id", api.DeleteFile)  // elimina un GPX
 
+	// Activity API
+	router.POST("/activity/", api.PostActivity)  // crea una nuova attività
+	router.PUT("/activity/:id", api.PutActivity) // aggiorna un'attività
+	router.GET("/activity/")                     // lista delle attività
+	router.GET("/activity/:id")                  // scarica un'attività specifica
+	router.DELETE("/activity/:id")               // elimina un'attività
+
 	// STATS API
-	router.GET("/stats/global")  // statistiche globali (tot km, tot salite, etc)
-	router.GET("/stats/gpx/")    // statistiche di tutte le tracce
-	router.GET("/stats/gpx/:id") // statistiche di una singola traccia
+	router.GET("/stats", api.GetStats) // statistiche globali (tot km, tot salite, etc)
+	router.GET("/stats/gpx/")          // statistiche di tutte le tracce
+	router.GET("/stats/gpx/:id")       // statistiche di una singola traccia
 
 	// USER API
 	router.GET("/user/profile")    // dati personali
@@ -36,7 +43,7 @@ func main() {
 	router.DELETE("/user/account") // cancella l'account
 
 	// ACTIVITY API
-	router.GET("/activity/find") // manda la posizione e riceve l'id della traccia GPX più vicina
+	router.GET("/find") // manda la posizione e riceve l'id della traccia GPX più vicina
 
 	err := router.Run(":8080")
 	if err != nil {

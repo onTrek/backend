@@ -19,7 +19,6 @@ func SaveFile(db *sql.DB, gpx utils.Gpx, file *multipart.FileHeader) error {
 	if err != nil {
 		return err
 	}
-	gpx.UploadDate = time.Now().Format(time.RFC3339)
 
 	// Prepare the SQL statement
 	stmt, err := db.Prepare("INSERT INTO gpx_files (activity_id, user_id, filename, storage_path, upload_date, stats) VALUES (?, ?, ?, ?, ?, ?)")
@@ -29,7 +28,7 @@ func SaveFile(db *sql.DB, gpx utils.Gpx, file *multipart.FileHeader) error {
 	defer stmt.Close()
 
 	// Execute the SQL statement
-	_, err = stmt.Exec(gpx.ActivityID, gpx.UserID, gpx.Filename, gpx.StoragePath, gpx.UploadDate, gpx.Stats)
+	_, err = stmt.Exec(gpx.ActivityID, gpx.UserID, gpx.Filename, gpx.StoragePath, time.Now().Format(time.RFC3339), gpx.Stats)
 	if err != nil {
 		return err
 	}

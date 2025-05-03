@@ -38,8 +38,7 @@ func PostRegister(c *gin.Context) {
 	user.ID = uuid.New().String()
 	user.CreatedAt = time.Now().Format(time.RFC3339)
 
-	database := c.MustGet("db").(*sql.DB)
-	err := db.RegisterUser(database, user)
+	err := db.RegisterUser(c.MustGet("db").(*sql.DB), user)
 	if err != nil {
 		if err.Error() == "UNIQUE constraint failed: users.email" {
 			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})
