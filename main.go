@@ -28,8 +28,8 @@ func main() {
 	// Activity API
 	router.POST("/activity/", api.PostActivity)  // crea una nuova attività
 	router.PUT("/activity/:id", api.PutActivity) // aggiorna un'attività
-	router.GET("/activity/")                     // lista delle attività
-	router.GET("/activity/:id")                  // scarica un'attività specifica
+	router.GET("/activity/", api.GetActivities)  // lista delle attività
+	router.GET("/activity/:id", api.GetActivity) // scarica un'attività specifica
 	router.DELETE("/activity/:id")               // elimina un'attività
 
 	// STATS API
