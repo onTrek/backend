@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func GetStats(c *gin.Context) {
+func DeleteProfile(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")
 	user, err := utils.IsLogged(c, token)
@@ -17,13 +17,12 @@ func GetStats(c *gin.Context) {
 		return
 	}
 
-	// Calculate global stats
-	var globalStats utils.GlobalStats
-	globalStats, err = db.CalculateGlobalStats(c.MustGet("db").(*sql.DB), user.ID)
+	// Delete user from the database
+	err = db.DeleteUser(c.MustGet("db").(*sql.DB), user.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve global stats: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"stats": globalStats})
+	c.JSON(200, gin.H{"message": "User deleted successfully"})
 }

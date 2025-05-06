@@ -27,9 +27,14 @@ func GetActivity(c *gin.Context) {
 	}
 
 	// Retrieve the activity from the database
-	activity, err := db.GetActivityById(c.MustGet("db").(*sql.DB), user.ID, activityId)
+	activity, err := db.GetActivityByID(c.MustGet("db").(*sql.DB), activityId)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Activity not found"})
+		return
+	}
+
+	if activity.UserID != user.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to access this activity"})
 		return
 	}
 

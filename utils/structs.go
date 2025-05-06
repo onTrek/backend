@@ -8,6 +8,12 @@ type User struct {
 	CreatedAt string `json:"created_at"`
 }
 
+type UserInfo struct {
+	ID    string `json:"id"`
+	Email string `json:"email"`
+	Name  string `json:"name"`
+}
+
 type Gpx struct {
 	ID          int    `json:"id"`
 	ActivityID  int    `json:"activity_id"`

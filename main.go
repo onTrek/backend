@@ -26,24 +26,28 @@ func main() {
 	router.DELETE("/gpx/:id", api.DeleteFile)  // elimina un GPX
 
 	// Activity API
-	router.POST("/activity/", api.PostActivity)  // crea una nuova attività
-	router.PUT("/activity/:id", api.PutActivity) // aggiorna un'attività
-	router.GET("/activity/", api.GetActivities)  // lista delle attività
-	router.GET("/activity/:id", api.GetActivity) // scarica un'attività specifica
-	router.DELETE("/activity/:id")               // elimina un'attività
+	router.POST("/activity/", api.PostActivity)        // crea una nuova attività
+	router.PUT("/activity/:id", api.PutActivity)       // aggiorna un'attività
+	router.GET("/activity/", api.GetActivities)        // lista delle attività
+	router.GET("/activity/:id", api.GetActivity)       // scarica un'attività specifica
+	router.DELETE("/activity/:id", api.DeleteActivity) // elimina un'attività
 
 	// STATS API
 	router.GET("/stats", api.GetStats) // statistiche globali (tot km, tot salite, etc)
-	router.GET("/stats/gpx/")          // statistiche di tutte le tracce
-	router.GET("/stats/gpx/:id")       // statistiche di una singola traccia
+
+	// SESSION API
+	router.POST("/session")     // crea una nuova sessione
+	router.POST("/session/:id") // aggiorna la posizione della sessione
+	router.GET("/session/:id")  // ritorna la sessione attiva
+
+	// FRIENDS API
+	router.PUT("/friends/")       // aggiungi un amico
+	router.GET("/friends/")       // lista degli amici
+	router.DELETE("/friends/:id") // elimina un amico
 
 	// USER API
-	router.GET("/user/profile")    // dati personali
-	router.PUT("/user/profile")    // aggiorna i dati personali
-	router.DELETE("/user/account") // cancella l'account
-
-	// ACTIVITY API
-	router.GET("/find") // manda la posizione e riceve l'id della traccia GPX più vicina
+	router.GET("/user", api.GetProfile)       // dati personali
+	router.DELETE("/user", api.DeleteProfile) // cancella l'account
 
 	err := router.Run(":8080")
 	if err != nil {
