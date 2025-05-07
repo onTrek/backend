@@ -36,9 +36,12 @@ func main() {
 	router.GET("/stats", api.GetStats) // statistiche globali (tot km, tot salite, etc)
 
 	// SESSION API
-	router.POST("/session")     // crea una nuova sessione
-	router.POST("/session/:id") // aggiorna la posizione della sessione
-	router.GET("/session/:id")  // ritorna la sessione attiva
+	router.POST("/sessions/", api.PostSession)      // crea una nuova sessione
+	router.PUT("/sessions/:id", api.PutSession)     // aggiorna la posizione della sessione
+	router.PATCH("/sessions/:id", api.PatchSession) // termina la sessione
+	router.POST("/sessions/:id", api.PostSessionId) // partecipa a una sessione
+	router.GET("/sessions/:id")                     // ritorna la sessione
+	router.GET("/sessions/")                        // lista delle sessioni
 
 	// FRIENDS API
 	router.PUT("/friends/:id", api.PutFriend)       // aggiungi un amico

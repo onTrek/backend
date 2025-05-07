@@ -55,3 +55,19 @@ type Activity struct {
 	MaximumElevation  float64 `json:"maximum_elevation"`
 	AverageSpeed      float64 `json:"average_speed"`
 }
+
+type Session struct {
+	ID        int    `json:"id"`
+	CreatedBy string `json:"created_by"`
+	CreatedAt string `json:"created_at"`
+	ClosedAt  string `json:"closed_at"`
+}
+
+type SessionInfo struct {
+	SessionID int     `json:"session_id"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Altitude  float64 `json:"altitude"`
+	Accuracy  float64 `json:"accuracy"`
+	Time      string  `json:"time"`
+}

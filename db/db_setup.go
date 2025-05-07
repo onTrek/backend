@@ -46,12 +46,12 @@ func SetupDatabase() {
 		start_time TEXT,
 		end_time TEXT,
 		created_at TEXT NOT NULL,
-		km_percorsi FLOAT,
-		dislivello_positivo FLOAT,
-		dislivello_negativo FLOAT,
-		altezza_partenza FLOAT,
-		altezza_massima FLOAT,
-		traccia TEXT, -- JSON array di punti GPS
+		distance FLOAT,
+		total_ascent FLOAT,
+		total_descent FLOAT,
+		starting_elevation FLOAT,
+		maximum_altitude FLOAT,
+		average_speed FLOAT,
 		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 	`
@@ -83,7 +83,10 @@ func SetupDatabase() {
 	createSessionsTable := `
 	CREATE TABLE IF NOT EXISTS sessions (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		created_at TEXT NOT NULL
+		created_by TEXT NOT NULL,
+		created_at TEXT NOT NULL,
+	    closed_at TEXT,
+	    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE                               
 	);
 	`
 	_, err = db.Exec(createSessionsTable)
