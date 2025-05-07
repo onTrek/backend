@@ -4,6 +4,7 @@ import (
 	"OnTrek/db"
 	"OnTrek/utils"
 	"database/sql"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -12,8 +13,9 @@ import (
 func PutActivity(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")
-	user, err := utils.IsLogged(c, token)
+	user, err := db.GetUserById(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
+		fmt.Println("Error getting user by token:", err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -22,6 +24,7 @@ func PutActivity(c *gin.Context) {
 	activityID := c.Param("id")
 	activityIDInt, err := strconv.Atoi(activityID)
 	if err != nil {
+		fmt.Println("Error converting activity ID to int:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid activity ID: " + activityID})
 		return
 	}
@@ -29,6 +32,7 @@ func PutActivity(c *gin.Context) {
 	// Bind the JSON body to an Activity struct
 	var activity utils.Activity
 	if err := c.ShouldBindJSON(&activity); err != nil {
+		fmt.Println("Error binding JSON to activity struct:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input: " + err.Error()})
 		return
 	}
@@ -36,12 +40,14 @@ func PutActivity(c *gin.Context) {
 	// Get userId from activity
 	userID, err := db.GetUserIdByActivity(c.MustGet("db").(*sql.DB), activityIDInt)
 	if err != nil {
+		fmt.Println("Error getting user ID by activity ID:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user ID"})
 		return
 	}
 
 	// Check if the user ID from the token matches the user ID from the activity
 	if user.ID != userID || activity.ID != activityIDInt {
+		fmt.Println("User ID does not match the activity owner")
 		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to update this activity"})
 		return
 	}
@@ -52,6 +58,7 @@ func PutActivity(c *gin.Context) {
 	// Update the activity in the database
 	err = db.UpdateActivity(c.MustGet("db").(*sql.DB), activity)
 	if err != nil {
+		fmt.Println("Error updating activity:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update activity: " + err.Error()})
 		return
 	}

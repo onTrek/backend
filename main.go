@@ -41,9 +41,9 @@ func main() {
 	router.GET("/session/:id")  // ritorna la sessione attiva
 
 	// FRIENDS API
-	router.PUT("/friends/")       // aggiungi un amico
-	router.GET("/friends/")       // lista degli amici
-	router.DELETE("/friends/:id") // elimina un amico
+	router.PUT("/friends/:id", api.PutFriend)       // aggiungi un amico
+	router.GET("/friends/", api.GetFriends)         // lista degli amici
+	router.DELETE("/friends/:id", api.DeleteFriend) // elimina un amico
 
 	// USER API
 	router.GET("/user", api.GetProfile)       // dati personali

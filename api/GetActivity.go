@@ -2,8 +2,8 @@ package api
 
 import (
 	"OnTrek/db"
-	"OnTrek/utils"
 	"database/sql"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -12,8 +12,9 @@ import (
 func GetActivity(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")
-	user, err := utils.IsLogged(c, token)
+	user, err := db.GetUserById(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
+		fmt.Println("Error getting user by token:", err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -22,6 +23,7 @@ func GetActivity(c *gin.Context) {
 	id := c.Param("id")
 	activityId, err := strconv.Atoi(id)
 	if err != nil {
+		fmt.Println("Error converting activity ID:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid activity ID"})
 		return
 	}
@@ -29,11 +31,13 @@ func GetActivity(c *gin.Context) {
 	// Retrieve the activity from the database
 	activity, err := db.GetActivityByID(c.MustGet("db").(*sql.DB), activityId)
 	if err != nil {
+		fmt.Println("Error getting activity by ID:", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Activity not found"})
 		return
 	}
 
 	if activity.UserID != user.ID {
+		fmt.Println("User is not authorized to access this activity")
 		c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to access this activity"})
 		return
 	}

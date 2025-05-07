@@ -1,0 +1,37 @@
+package api
+
+import (
+	"OnTrek/db"
+	"database/sql"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+func GetFriends(c *gin.Context) {
+	// Get token from the header
+	token := c.GetHeader("Authorization")
+	user, err := db.GetUserById(c.MustGet("db").(*sql.DB), token)
+	if err != nil {
+		fmt.Println("Error getting user by token:", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Fetch friends from the database
+	friends, err := db.GetFriends(c.MustGet("db").(*sql.DB), user.ID)
+	if err != nil {
+		fmt.Println("Error fetching friends:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch friends"})
+		return
+	}
+
+	// Check if the user has any friends
+	if len(friends) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "No friends found"})
+		return
+	}
+
+	// Return the list of friends
+	c.JSON(http.StatusOK, friends)
+}

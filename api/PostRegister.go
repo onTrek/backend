@@ -4,6 +4,7 @@ import (
 	"OnTrek/db"
 	"OnTrek/utils"
 	"database/sql"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -21,12 +22,14 @@ func PostRegister(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
+		fmt.Println("Error binding JSON:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
 	// Validate the request body
 	if input.Email == "" || input.Password == "" || input.Name == "" {
+		fmt.Println("Missing required fields")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
 		return
 	}
@@ -41,9 +44,11 @@ func PostRegister(c *gin.Context) {
 	err := db.RegisterUser(c.MustGet("db").(*sql.DB), user)
 	if err != nil {
 		if err.Error() == "UNIQUE constraint failed: users.email" {
+			fmt.Println("Email already exists")
 			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})
 			return
 		}
+		fmt.Println("Error registering user:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
 		return
 	}

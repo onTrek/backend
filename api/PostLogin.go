@@ -18,12 +18,14 @@ func PostLogin(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
+		fmt.Println("Error binding JSON:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
 	// Validate the request body
 	if input.Email == "" || input.Password == "" {
+		fmt.Println("Missing required fields")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
 		return
 	}
@@ -35,10 +37,11 @@ func PostLogin(c *gin.Context) {
 	user, err := db.Login(database, user)
 	if err != nil {
 		if err.Error() == "user not found" {
+			fmt.Println("User not found")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 			return
 		}
-		fmt.Print(err)
+		fmt.Println("Error logging in:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to login"})
 		return
 	}

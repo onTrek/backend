@@ -79,6 +79,53 @@ func SetupDatabase() {
 		log.Fatalf("Errore creazione tabella gpx_files: %v", err)
 	}
 
+	// Crea tabella sessions
+	createSessionsTable := `
+	CREATE TABLE IF NOT EXISTS sessions (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		created_at TEXT NOT NULL
+	);
+	`
+	_, err = db.Exec(createSessionsTable)
+	if err != nil {
+		log.Fatalf("Errore creazione tabella sessions: %v", err)
+	}
+
+	// Crea tabella membri
+	createMembriTable := `
+	CREATE TABLE IF NOT EXISTS session_members (
+		session_id INTEGER NOT NULL,
+		user_id TEXT NOT NULL,
+		latitude FLOAT,
+		longitude FLOAT,
+		altitude FLOAT,
+		accuracy FLOAT,
+		timestamp TEXT NOT NULL,
+		PRIMARY KEY (session_id, user_id),
+		FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE,
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	);
+	`
+	_, err = db.Exec(createMembriTable)
+	if err != nil {
+		log.Fatalf("Errore creazione tabella membri: %v", err)
+	}
+
+	// Crea tabella amici
+	createAmiciTable := `
+	CREATE TABLE IF NOT EXISTS friends (
+		user_id1 TEXT NOT NULL,
+		user_id2 TEXT NOT NULL,
+		PRIMARY KEY (user_id1, user_id2),
+		FOREIGN KEY (user_id1) REFERENCES users(id) ON DELETE CASCADE,
+		FOREIGN KEY (user_id2) REFERENCES users(id) ON DELETE CASCADE
+	);
+	`
+	_, err = db.Exec(createAmiciTable)
+	if err != nil {
+		log.Fatalf("Errore creazione tabella amici: %v", err)
+	}
+
 	fmt.Println("Database e tabelle create correttamente!")
 }
 
