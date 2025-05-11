@@ -8,6 +8,21 @@ import (
 	"net/http"
 )
 
+// DeleteFriend godoc
+// @Summary Delete a friend from the user's friend list
+// @Description Deletes a friend based on the provided friend ID from the URL and the user's token from the header
+// @Tags friends
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param id path string true "Friend ID to be deleted" example:"12345"
+// @Success 200 {object} utils.SuccessResponse "Friend deleted successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid friend ID"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 404 {object} utils.ErrorResponse "User not found"
+// @Failure 404 {object} utils.ErrorResponse "Friend not found"
+// @Failure 500 {object} utils.ErrorResponse "Failed to delete friend"
+// @Router /friends/{id} [delete]
 func DeleteFriend(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")

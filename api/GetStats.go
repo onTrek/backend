@@ -9,6 +9,17 @@ import (
 	"net/http"
 )
 
+// GetStats godoc
+// @Summary Get user stats
+// @Description Retrieves global statistics for the user based on their token
+// @Tags stats
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Success 200 {object} utils.GlobalStats "Global statistics for the user"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /stats [get]
 func GetStats(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")

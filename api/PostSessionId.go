@@ -10,6 +10,22 @@ import (
 	"strconv"
 )
 
+// PostSessionId godoc
+// @Summary Join a session using session ID and location data
+// @Description Allows a user to join a session by providing their session ID and location data (latitude, longitude, altitude, accuracy)
+// @Tags sessions
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param id path string true "Session ID"
+// @Param session body utils.SessionInfoUpdate true "Session information"
+// @Success 200 {object} utils.SuccessResponse "Successfully joined session"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request"
+// @Failure 400 {object} utils.ErrorResponse "Session ID is required"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 404 {object} utils.ErrorResponse "Session not found"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /sessions/{id} [post]
 func PostSessionId(c *gin.Context) {
 	var sessionInfo utils.SessionInfo
 	// Get token from the header

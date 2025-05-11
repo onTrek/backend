@@ -10,6 +10,21 @@ import (
 	"strconv"
 )
 
+// PutSession godoc
+// @Summary Update session information
+// @Description Updates the session with new location data (latitude, longitude, altitude, accuracy)
+// @Tags sessions
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param id path int true "Session ID"
+// @Param session body utils.SessionInfoUpdate true "Session information"
+// @Success 200 {object} utils.SuccessResponse "Session updated successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 404 {object} utils.ErrorResponse "Session not found"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /sessions/{id} [put]
 func PutSession(c *gin.Context) {
 
 	var sessionInfo utils.SessionInfo
@@ -65,7 +80,7 @@ func PutSession(c *gin.Context) {
 	sessionInfo.Altitude = input.Altitude
 	sessionInfo.Accuracy = input.Accuracy
 
-	// Chekc if the session exists
+	// Check if the session exists
 	_, err = db.CheckSessionExistsByIdAndUserId(c.MustGet("db").(*sql.DB), sessionId, user.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {

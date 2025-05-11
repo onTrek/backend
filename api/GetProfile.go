@@ -9,6 +9,16 @@ import (
 	"net/http"
 )
 
+// GetProfile godoc
+// @Summary Get user profile by token
+// @Description Fetches the profile information of the user based on the provided token in the Authorization header
+// @Tags profile
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Success 200 {object} utils.UserInfo "User profile information"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Router /profile [get]
 func GetProfile(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")

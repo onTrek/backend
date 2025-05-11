@@ -9,6 +9,19 @@ import (
 	"net/http"
 )
 
+// PostActivity godoc
+// @Summary Create a new activity for the user
+// @Description Allows a user to create a new activity by providing the details of the activity, including start time, end time, distance, and elevation data
+// @Tags activity
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param activity body utils.ActivityInput true "Activity input"
+// @Success 200 {object} utils.SuccessResponse "Activity created successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Failed to save activity"
+// @Router /activity/ [post]
 func PostActivity(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")

@@ -9,6 +9,19 @@ import (
 	"net/http"
 )
 
+// PostSession godoc
+// @Summary Create a new session for the user
+// @Description Creates a new session for the authenticated user with location data (latitude, longitude, altitude, accuracy)
+// @Tags sessions
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param session body utils.SessionInfoUpdate true "Session information"
+// @Success 200 {object} integer "session_id"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Internal Server Error"
+// @Router /sessions/ [post]
 func PostSession(c *gin.Context) {
 
 	var sessionInfo utils.SessionInfo

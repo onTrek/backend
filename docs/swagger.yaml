@@ -1,0 +1,948 @@
+definitions:
+  utils.Activity:
+    properties:
+      average_speed:
+        example: 5.2
+        type: number
+      created_at:
+        example: "2025-05-11T08:00:00Z"
+        type: string
+      description:
+        example: A refreshing morning run in the park
+        type: string
+      distance:
+        example: 5.5
+        type: number
+      end_time:
+        example: "2025-05-11T09:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      maximum_elevation:
+        example: 350
+        type: number
+      start_time:
+        example: "2025-05-11T08:00:00Z"
+        type: string
+      starting_elevation:
+        example: 100
+        type: number
+      title:
+        example: Morning Run
+        type: string
+      total_ascent:
+        example: 250
+        type: number
+      total_descent:
+        example: 200
+        type: number
+      user_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+  utils.ActivityInput:
+    properties:
+      averageSpeed:
+        example: 5.2
+        type: number
+      distance:
+        example: 5.5
+        type: number
+      endTime:
+        example: "2025-05-11T09:00:00Z"
+        type: string
+      maximumElevation:
+        example: 350
+        type: number
+      startTime:
+        example: "2025-05-11T08:00:00Z"
+        type: string
+      startingElevation:
+        example: 100
+        type: number
+      totalAscent:
+        example: 250
+        type: number
+      totalDescent:
+        example: 200
+        type: number
+    type: object
+  utils.ErrorResponse:
+    properties:
+      error:
+        example: An error occurred
+        type: string
+    type: object
+  utils.GlobalStats:
+    properties:
+      total_activities:
+        example: 100
+        type: integer
+      total_ascent:
+        example: 2500
+        type: number
+      total_descent:
+        example: 2000
+        type: number
+      total_distance:
+        example: 500.5
+        type: number
+      total_time:
+        example: 120.5
+        type: number
+    type: object
+  utils.GpxInfo:
+    properties:
+      activity_id:
+        example: 101
+        type: integer
+      filename:
+        example: MonteBianco.gpx
+        type: string
+      id:
+        example: 1
+        type: integer
+      stats:
+        example: '{"distance": 5.5, "ascent": 250, "descent": 200}'
+        type: string
+      upload_date:
+        example: "2025-05-11T08:00:00Z"
+        type: string
+    type: object
+  utils.Login:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      password:
+        example: strongPassword123
+        type: string
+    type: object
+  utils.RegisterInput:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      name:
+        example: John Doe
+        type: string
+      password:
+        example: strongPassword123
+        type: string
+    type: object
+  utils.SessionInfoUpdate:
+    properties:
+      accuracy:
+        example: 5
+        type: number
+      altitude:
+        example: 10.5
+        type: number
+      latitude:
+        example: 40.7128
+        type: number
+      longitude:
+        example: -74.006
+        type: number
+    type: object
+  utils.SuccessResponse:
+    properties:
+      message:
+        example: Success
+        type: string
+    type: object
+  utils.UserID:
+    properties:
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+  utils.UserInfo:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      name:
+        example: John Doe
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /activity/:
+    get:
+      consumes:
+      - application/json
+      description: Fetches a list of activities for a user based on their authorization
+        token
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of activities
+          schema:
+            items:
+              $ref: '#/definitions/utils.Activity'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to get activities
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get a user's activities
+      tags:
+      - activity
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to create a new activity by providing the details
+        of the activity, including start time, end time, distance, and elevation data
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Activity input
+        in: body
+        name: activity
+        required: true
+        schema:
+          $ref: '#/definitions/utils.ActivityInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Activity created successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to save activity
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Create a new activity for the user
+      tags:
+      - activity
+  /activity/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an activity after verifying the user's token and authorization
+        to perform the action
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Activity deleted successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid activity ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Activity not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to delete activity
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Delete an activity by ID
+      tags:
+      - activity
+    get:
+      consumes:
+      - application/json
+      description: Fetches an activity by its ID if the user is authorized to view
+        it
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Activity details
+          schema:
+            $ref: '#/definitions/utils.Activity'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Activity not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Retrieve an activity by its ID
+      tags:
+      - activity
+    patch:
+      consumes:
+      - application/json
+      description: Ends an existing activity by its ID
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Activity ended successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Activity not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to update activity
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: End an existing activity
+      tags:
+      - activity
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user using email and password, returns a token
+        (user ID)
+      parameters:
+      - description: User login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/utils.Login'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User ID token
+          schema:
+            $ref: '#/definitions/utils.UserID'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Invalid email or password
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to login
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Login a user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user with an email, password, and name
+      parameters:
+      - description: User registration credentials
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/utils.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User registered successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "409":
+          description: Email already exists
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to register user
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - auth
+  /friends/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the list of friends for the authenticated user based
+        on the token
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of friends
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/utils.UserInfo'
+              type: array
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: No friends found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get list of friends for a user
+      tags:
+      - friends
+  /friends/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a friend based on the provided friend ID from the URL and
+        the user's token from the header
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Friend ID to be deleted
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Friend deleted successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid friend ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Friend not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to delete friend
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Delete a friend from the user's friend list
+      tags:
+      - friends
+    put:
+      consumes:
+      - application/json
+      description: Allows a user to add another user as a friend by their user ID
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User ID of the friend to be added
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Friend added successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Missing or invalid user ID"ss
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "409":
+          description: User cannot add themselves as a friend
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to add friend
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Add a friend to the user
+      tags:
+      - friends
+  /gpx/:
+    get:
+      description: Returns a list of GPX files associated with the authenticated user
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: gpx_files
+          schema:
+            items:
+              $ref: '#/definitions/utils.GpxInfo'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Error fetching files
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Retrieve user's GPX files
+      tags:
+      - files
+    post:
+      consumes:
+      - application/gpx+xml
+      description: Uploads a GPX file for the authenticated user. The file must be
+        sent as form-data with the key 'file'.
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: GPX file to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: File uploaded successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid file
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to save file
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Upload a GPX file
+      tags:
+      - files
+  /gpx/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a file based on the provided file ID and authorization
+        token
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: Returns the requested file
+          schema:
+            type: file
+        "400":
+          description: Invalid file ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Retrieve a file by ID
+      tags:
+      - files
+  /profile:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the user profile based on the provided authorization token.
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to delete user
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Delete user profile
+      tags:
+      - profile
+    get:
+      consumes:
+      - application/json
+      description: Fetches the profile information of the user based on the provided
+        token in the Authorization header
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile information
+          schema:
+            $ref: '#/definitions/utils.UserInfo'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get user profile by token
+      tags:
+      - profile
+  /sessions/:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new session for the authenticated user with location
+        data (latitude, longitude, altitude, accuracy)
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Session information
+        in: body
+        name: session
+        required: true
+        schema:
+          $ref: '#/definitions/utils.SessionInfoUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: session_id
+          schema:
+            type: integer
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Create a new session for the user
+      tags:
+      - sessions
+  /sessions/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Closes an active session for the user who is the leader of the
+        session
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Session ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Session closed successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid session ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Close a session
+      tags:
+      - sessions
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to join a session by providing their session ID and
+        location data (latitude, longitude, altitude, accuracy)
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Session ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Session information
+        in: body
+        name: session
+        required: true
+        schema:
+          $ref: '#/definitions/utils.SessionInfoUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully joined session
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Session ID is required
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Session not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Join a session using session ID and location data
+      tags:
+      - sessions
+    put:
+      consumes:
+      - application/json
+      description: Updates the session with new location data (latitude, longitude,
+        altitude, accuracy)
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Session ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Session information
+        in: body
+        name: session
+        required: true
+        schema:
+          $ref: '#/definitions/utils.SessionInfoUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Session updated successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Session not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Update session information
+      tags:
+      - sessions
+  /stats:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves global statistics for the user based on their token
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Global statistics for the user
+          schema:
+            $ref: '#/definitions/utils.GlobalStats'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get user stats
+      tags:
+      - stats
+swagger: "2.0"

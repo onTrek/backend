@@ -10,6 +10,20 @@ import (
 	"strconv"
 )
 
+// GetFile godoc
+// @Summary Retrieve a file by ID
+// @Description Retrieves a file based on the provided file ID and authorization token
+// @Tags files
+// @Accept json
+// @Produce octet-stream
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param id path int true "File ID"
+// @Success 200 {file} file "Returns the requested file"
+// @Failure 400 {object} utils.ErrorResponse "Invalid file ID"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 404 {object} utils.ErrorResponse "File not found"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /gpx/{id} [get]
 func GetFile(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")

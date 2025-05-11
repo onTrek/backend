@@ -9,6 +9,21 @@ import (
 	"strconv"
 )
 
+// DeleteActivity godoc
+// @Summary Delete an activity by ID
+// @Description Deletes an activity after verifying the user's token and authorization to perform the action
+// @Tags activity
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param id path int true "Activity ID"
+// @Success 200 {object} utils.SuccessResponse "Activity deleted successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid activity ID"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 403 {object} utils.ErrorResponse "Forbidden"
+// @Failure 404 {object} utils.ErrorResponse "Activity not found"
+// @Failure 500 {object} utils.ErrorResponse "Failed to delete activity"
+// @Router /activity/{id} [delete]
 func DeleteActivity(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")

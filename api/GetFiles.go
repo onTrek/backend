@@ -8,6 +8,16 @@ import (
 	"net/http"
 )
 
+// GetFiles godoc
+// @Summary Retrieve user's GPX files
+// @Description Returns a list of GPX files associated with the authenticated user
+// @Tags files
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Success 200 {object} []utils.GpxInfo "gpx_files"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Error fetching files"
+// @Router /gpx/ [get]
 func GetFiles(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")

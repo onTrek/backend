@@ -9,6 +9,20 @@ import (
 	"strconv"
 )
 
+// GetActivity godoc
+// @Summary Retrieve an activity by its ID
+// @Description Fetches an activity by its ID if the user is authorized to view it
+// @Tags activity
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param id path int true "Activity ID"
+// @Success 200 {object} utils.Activity "Activity details"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 403 {object} utils.ErrorResponse "Forbidden"
+// @Failure 404 {object} utils.ErrorResponse "Activity not found"
+// @Router /activity/{id} [get]
 func GetActivity(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")
@@ -43,5 +57,5 @@ func GetActivity(c *gin.Context) {
 	}
 
 	// Return the activity as JSON
-	c.JSON(200, activity)
+	c.JSON(http.StatusOK, activity)
 }

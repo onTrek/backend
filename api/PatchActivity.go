@@ -10,7 +10,22 @@ import (
 	"strconv"
 )
 
-func PutActivity(c *gin.Context) {
+// PatchActivity godoc
+// @Summary End an existing activity
+// @Description Ends an existing activity by its ID
+// @Tags activity
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param id path int true "Activity ID"
+// @Success 200 {object} utils.SuccessResponse "Activity ended successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 403 {object} utils.ErrorResponse "Forbidden"
+// @Failure 404 {object} utils.ErrorResponse "Activity not found"
+// @Failure 500 {object} utils.ErrorResponse "Failed to update activity"
+// @Router /activity/{id} [patch]
+func PatchActivity(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")
 	user, err := db.GetUserById(c.MustGet("db").(*sql.DB), token)
@@ -63,5 +78,5 @@ func PutActivity(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Activity updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Activity ended successfully"})
 }

@@ -8,6 +8,17 @@ import (
 	"net/http"
 )
 
+// GetActivities godoc
+// @Summary Get a user's activities
+// @Description Fetches a list of activities for a user based on their authorization token
+// @Tags activity
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Success 200 {object} []utils.Activity "List of activities"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Failed to get activities"
+// @Router /activity/ [get]
 func GetActivities(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")

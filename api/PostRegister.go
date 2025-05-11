@@ -12,6 +12,18 @@ import (
 	"time"
 )
 
+// PostRegister godoc
+// @Summary Register a new user
+// @Description Registers a new user with an email, password, and name
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param register body utils.RegisterInput true "User registration credentials"
+// @Success 201 {object} utils.SuccessResponse "User registered successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request"
+// @Failure 409 {object} utils.ErrorResponse "Email already exists"
+// @Failure 500 {object} utils.ErrorResponse "Failed to register user"
+// @Router /auth/register [post]
 func PostRegister(c *gin.Context) {
 	// Get the request body
 	var user utils.User

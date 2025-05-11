@@ -8,6 +8,22 @@ import (
 	"net/http"
 )
 
+// PutFriend godoc
+// @Summary Add a friend to the user
+// @Description Allows a user to add another user as a friend by their user ID
+// @Tags friends
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param id path string true "User ID of the friend to be added"
+// @Success 200 {object} utils.SuccessResponse "Friend added successfully"
+// @Failure 400 {object} utils.ErrorResponse "Missing or invalid user ID"ss
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 404 {object} utils.ErrorResponse "User not found"
+// @Failure 409 {object} utils.ErrorResponse "Users are already friends"
+// @Failure 409 {object} utils.ErrorResponse "User cannot add themselves as a friend"
+// @Failure 500 {object} utils.ErrorResponse "Failed to add friend"
+// @Router /friends/{id} [put]
 func PutFriend(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")

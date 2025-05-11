@@ -9,6 +9,19 @@ import (
 	"net/http"
 )
 
+// PostUpload godoc
+// @Summary Upload a GPX file
+// @Description Uploads a GPX file for the authenticated user. The file must be sent as form-data with the key 'file'.
+// @Tags files
+// @Accept application/gpx+xml
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param file formData file true "GPX file to upload"
+// @Success 200 {object} utils.SuccessResponse "File uploaded successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid file"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Failed to save file"
+// @Router /gpx/ [post]
 func PostUpload(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")
@@ -44,5 +57,5 @@ func PostUpload(c *gin.Context) {
 		return
 	}
 
-	return
+	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
 }

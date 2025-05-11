@@ -9,6 +9,20 @@ import (
 	"strconv"
 )
 
+// PatchSession godoc
+// @Summary Close a session
+// @Description Closes an active session for the user who is the leader of the session
+// @Tags sessions
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param id path int true "Session ID"
+// @Success 200 {object} utils.SuccessResponse "Session closed successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid session ID"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 403 {object} utils.ErrorResponse "Forbidden"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /sessions/{id} [patch]
 func PatchSession(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")

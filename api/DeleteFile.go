@@ -10,6 +10,21 @@ import (
 	"strconv"
 )
 
+// DeleteFile godoc
+// @Summary Delete a file
+// @Description Deletes a file by its ID from both the database and the disk
+// @Tags files
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token for user authentication"
+// @Param id path int true "File ID"
+// @Success 200 {object} utils.SuccessResponse "File deleted successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid file ID"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 404 {object} utils.ErrorResponse "File not found"
+// @Failure 500 {object} utils.ErrorResponse "Failed to delete file from disk"
+// @Failure 500 {object} utils.ErrorResponse "Failed to delete file from database"
+// @Router/gpx/{id} [delete]
 func DeleteFile(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")
@@ -54,6 +69,5 @@ func DeleteFile(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "File deleted successfully"})
-	// Return success response
 
 }

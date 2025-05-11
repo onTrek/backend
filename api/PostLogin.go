@@ -9,6 +9,18 @@ import (
 	"net/http"
 )
 
+// PostLogin godoc
+// @Summary Login a user
+// @Description Authenticates a user using email and password, returns a token (user ID)
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body utils.Login true "User login credentials"
+// @Success 201 {object} utils.UserID "User ID token"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request"
+// @Failure 401 {object} utils.ErrorResponse "Invalid email or password"
+// @Failure 500 {object} utils.ErrorResponse "Failed to login"
+// @Router /auth/login [post]
 func PostLogin(c *gin.Context) {
 	// Get the request body
 	var user utils.User
