@@ -17,7 +17,7 @@ import (
 // @Produce json
 // @Param Authorization header string true "Bearer token for user authentication"
 // @Param session body utils.SessionInfoUpdate true "Session information"
-// @Success 200 {object} integer "session_id"
+// @Success 201 {object} integer "session_id"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Internal Server Error"
@@ -69,6 +69,6 @@ func PostSession(c *gin.Context) {
 	}
 
 	// Return the session ID
-	c.JSON(http.StatusOK, gin.H{"session_id": session.ID})
+	c.JSON(http.StatusCreated, gin.H{"session_id": session.ID})
 
 }

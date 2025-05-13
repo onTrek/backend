@@ -23,59 +23,59 @@ func main() {
 	// AUTH API
 	auth := router.Group("/auth")
 	{
-		auth.POST("/auth/register", api.PostRegister) // crea un nuovo utente
-		auth.POST("/auth/login", api.PostLogin)       // ritorna access token
+		auth.POST("/register", api.PostRegister) // crea un nuovo utente
+		auth.POST("/login", api.PostLogin)       // ritorna access token
 	}
 
 	// GPX API
 	gpx := router.Group("/gpx")
 	{
-		gpx.POST("/gpx/", api.PostUpload)      // carica un file GPX
-		gpx.GET("/gpx/", api.GetFiles)         // lista dei GPX caricati dall'utente
-		gpx.GET("/gpx/:id", api.GetFile)       // scarica un GPX specifico
-		gpx.DELETE("/gpx/:id", api.DeleteFile) // elimina un GPX
+		gpx.DELETE("/:id", api.DeleteFile) // elimina un GPX
+		gpx.POST("/", api.PostUpload)      // carica un file GPX
+		gpx.GET("/", api.GetFiles)         // lista dei GPX caricati dall'utente
+		gpx.GET("/:id", api.GetFile)       // scarica un GPX specifico
 	}
 
 	// Activity API
 	activity := router.Group("/activity")
 	{
-		activity.POST("/activity/", api.PostActivity)        // crea una nuova attività
-		activity.PATCH("/activity/:id", api.PatchActivity)   // termina un'attività
-		activity.GET("/activity/", api.GetActivities)        // lista delle attività
-		activity.GET("/activity/:id", api.GetActivity)       // scarica un'attività specifica
-		activity.DELETE("/activity/:id", api.DeleteActivity) // elimina un'attività
+		activity.POST("/", api.PostActivity)        // crea una nuova attività
+		activity.PATCH("/:id", api.PatchActivity)   // termina un'attività
+		activity.GET("/", api.GetActivities)        // lista delle attività
+		activity.GET("/:id", api.GetActivity)       // scarica un'attività specifica
+		activity.DELETE("/:id", api.DeleteActivity) // elimina un'attività
 	}
 
 	// STATS API
 	stats := router.Group("/stats")
 	{
-		stats.GET("/stats", api.GetStats) // statistiche globali (tot km, tot salite, etc)
+		stats.GET("", api.GetStats) // statistiche globali (tot km, tot salite, etc)
 	}
 
 	// SESSION API
 	sessions := router.Group("/sessions")
 	{
-		sessions.POST("/sessions/", api.PostSession)      // crea una nuova sessione
-		sessions.PUT("/sessions/:id", api.PutSession)     // aggiorna la posizione della sessione
-		sessions.PATCH("/sessions/:id", api.PatchSession) // termina la sessione
-		sessions.POST("/sessions/:id", api.PostSessionId) // partecipa a una sessione
-		sessions.GET("/sessions/:id")                     // ritorna la sessione
-		sessions.GET("/sessions/")                        // lista delle sessioni
+		sessions.POST("/", api.PostSession)      // crea una nuova sessione
+		sessions.PUT("/:id", api.PutSession)     // aggiorna la posizione della sessione
+		sessions.PATCH("/:id", api.PatchSession) // termina la sessione
+		sessions.POST("/:id", api.PostSessionId) // partecipa a una sessione
+		sessions.GET("/:id", api.GetSession)     // ritorna la sessione
+		sessions.GET("/", api.GetSessions)       // lista delle sessioni
 	}
 
 	// FRIENDS API
 	friends := router.Group("/friends")
 	{
-		friends.PUT("/friends/:id", api.PutFriend)       // aggiungi un amico
-		friends.GET("/friends/", api.GetFriends)         // lista degli amici
-		friends.DELETE("/friends/:id", api.DeleteFriend) // elimina un amico
+		friends.PUT("/:id", api.PutFriend)       // aggiungi un amico
+		friends.GET("/", api.GetFriends)         // lista degli amici
+		friends.DELETE("/:id", api.DeleteFriend) // elimina un amico
 	}
 
 	// USER API
 	user := router.Group("/profile")
 	{
-		user.GET("/profile", api.GetProfile)       // dati personali
-		user.DELETE("/profile", api.DeleteProfile) // cancella l'account
+		user.GET("", api.GetProfile)       // dati personali
+		user.DELETE("", api.DeleteProfile) // cancella l'account
 	}
 
 	err := router.Run(":8080")

@@ -12,10 +12,10 @@ func CalculateGlobalStats(db *sql.DB, userID string) (utils.GlobalStats, error) 
 	query := `
 		SELECT 
 			COUNT(DISTINCT a.id) AS total_activities,
-			SUM(a.distance) AS total_distance,
-			SUM(a.total_ascent) AS total_ascent,
-			SUM(a.total_descent) AS total_descent,
-			SUM(a.end_time - a.start_time) AS total_time
+			COALESCE(SUM(a.distance), 0) AS total_distance,
+			COALESCE(SUM(a.total_ascent), 0) AS total_ascent,
+			COALESCE(SUM(a.total_descent), 0) AS total_descent,
+			COALESCE(SUM(a.end_time - a.start_time), 0) AS total_time
 		FROM activities a
 		WHERE a.user_id = ?
 	`

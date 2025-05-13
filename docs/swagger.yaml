@@ -119,6 +119,16 @@ definitions:
         example: strongPassword123
         type: string
     type: object
+  utils.MemberInfo:
+    properties:
+      session_info:
+        $ref: '#/definitions/utils.SessionInfoUpdate'
+      time_stamp:
+        example: "2025-05-11T08:00:00Z"
+        type: string
+      user:
+        $ref: '#/definitions/utils.UserInfo'
+    type: object
   utils.RegisterInput:
     properties:
       email:
@@ -130,6 +140,48 @@ definitions:
       password:
         example: strongPassword123
         type: string
+    type: object
+  utils.SessionDoc:
+    properties:
+      closedAt:
+        properties:
+          String:
+            example: "2025-05-11T09:00:00Z"
+            type: string
+          Valid:
+            example: true
+            type: boolean
+        type: object
+      created_at:
+        example: "2025-05-11T08:00:00Z"
+        type: string
+      created_by:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      id:
+        example: 1
+        type: integer
+    type: object
+  utils.SessionInfoResponseDoc:
+    properties:
+      closedAt:
+        properties:
+          String:
+            example: "2025-05-11T09:00:00Z"
+            type: string
+          Valid:
+            example: true
+            type: boolean
+        type: object
+      created_at:
+        example: "2025-05-11T08:00:00Z"
+        type: string
+      created_by:
+        $ref: '#/definitions/utils.UserInfo'
+      members:
+        items:
+          $ref: '#/definitions/utils.MemberInfo'
+        type: array
     type: object
   utils.SessionInfoUpdate:
     properties:
@@ -225,7 +277,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: Activity created successfully
           schema:
             $ref: '#/definitions/utils.SuccessResponse'
@@ -394,7 +446,7 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
+        "200":
           description: User ID token
           schema:
             $ref: '#/definitions/utils.UserID'
@@ -546,7 +598,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: Friend added successfully
           schema:
             $ref: '#/definitions/utils.SuccessResponse'
@@ -621,7 +673,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: File uploaded successfully
           schema:
             $ref: '#/definitions/utils.SuccessResponse'
@@ -641,6 +693,45 @@ paths:
       tags:
       - files
   /gpx/{id}:
+    delete:
+      description: Deletes a file by its ID from both the database and the disk
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: File deleted successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid file ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to delete file
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Delete a file by ID
+      tags:
+      - files
     get:
       consumes:
       - application/json
@@ -738,6 +829,38 @@ paths:
       tags:
       - profile
   /sessions/:
+    get:
+      description: Get all sessions for a user by their ID
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of sessions
+          schema:
+            items:
+              $ref: '#/definitions/utils.SessionDoc'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Session not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Error fetching files
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get sessions by user ID
+      tags:
+      - sessions
     post:
       consumes:
       - application/json
@@ -758,7 +881,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: session_id
           schema:
             type: integer
@@ -778,6 +901,45 @@ paths:
       tags:
       - sessions
   /sessions/{id}:
+    get:
+      description: Get session information by session ID
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Session ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Session information
+          schema:
+            $ref: '#/definitions/utils.SessionInfoResponseDoc'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Session not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Error fetching files
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get session information
+      tags:
+      - sessions
     patch:
       consumes:
       - application/json
@@ -845,7 +1007,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: Successfully joined session
           schema:
             $ref: '#/definitions/utils.SuccessResponse'
@@ -859,6 +1021,10 @@ paths:
             $ref: '#/definitions/utils.ErrorResponse'
         "404":
           description: Session not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "409":
+          description: User already joined the session
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
         "500":

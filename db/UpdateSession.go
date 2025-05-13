@@ -8,7 +8,7 @@ import (
 
 func UpdateSession(db *sql.DB, userId string, session utils.SessionInfo) error {
 	// Prepare the SQL statement
-	stmt, err := db.Prepare("UPDATE sessions_members SET latitude = ?, longitude = ?, altitude = ?, accuracy = ?, timestamp = ? WHERE session_id = ? AND user_id = ?")
+	stmt, err := db.Prepare("UPDATE session_members SET latitude = ?, longitude = ?, altitude = ?, accuracy = ?, timestamp = ? WHERE session_id = ? AND user_id = ?")
 	if err != nil {
 		return err
 	}

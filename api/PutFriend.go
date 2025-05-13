@@ -16,7 +16,7 @@ import (
 // @Produce json
 // @Param Authorization header string true "Bearer token for user authentication"
 // @Param id path string true "User ID of the friend to be added"
-// @Success 200 {object} utils.SuccessResponse "Friend added successfully"
+// @Success 201 {object} utils.SuccessResponse "Friend added successfully"
 // @Failure 400 {object} utils.ErrorResponse "Missing or invalid user ID"ss
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "User not found"
@@ -77,5 +77,5 @@ func PutFriend(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Friend added successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Friend added successfully"})
 }

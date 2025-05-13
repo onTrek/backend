@@ -92,7 +92,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Activity created successfully",
                         "schema": {
                             "$ref": "#/definitions/utils.SuccessResponse"
@@ -341,7 +341,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "User ID token",
                         "schema": {
                             "$ref": "#/definitions/utils.UserID"
@@ -506,7 +506,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Friend added successfully",
                         "schema": {
                             "$ref": "#/definitions/utils.SuccessResponse"
@@ -678,7 +678,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "File uploaded successfully",
                         "schema": {
                             "$ref": "#/definitions/utils.SuccessResponse"
@@ -761,6 +761,64 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a file by its ID from both the database and the disk",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "files"
+                ],
+                "summary": "Delete a file by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "File ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "File deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid file ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "File not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete file",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorResponse"
                         }
@@ -849,6 +907,54 @@ const docTemplate = `{
             }
         },
         "/sessions/": {
+            "get": {
+                "description": "Get all sessions for a user by their ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Get sessions by user ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of sessions",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.SessionDoc"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Session not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error fetching files",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Creates a new session for the authenticated user with location data (latitude, longitude, altitude, accuracy)",
                 "consumes": [
@@ -880,7 +986,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "session_id",
                         "schema": {
                             "type": "integer"
@@ -908,6 +1014,64 @@ const docTemplate = `{
             }
         },
         "/sessions/{id}": {
+            "get": {
+                "description": "Get session information by session ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Get session information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Session ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Session information",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SessionInfoResponseDoc"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Session not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error fetching files",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "Updates the session with new location data (latitude, longitude, altitude, accuracy)",
                 "consumes": [
@@ -1016,7 +1180,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Successfully joined session",
                         "schema": {
                             "$ref": "#/definitions/utils.SuccessResponse"
@@ -1036,6 +1200,12 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Session not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "User already joined the session",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorResponse"
                         }
@@ -1322,6 +1492,21 @@ const docTemplate = `{
                 }
             }
         },
+        "utils.MemberInfo": {
+            "type": "object",
+            "properties": {
+                "session_info": {
+                    "$ref": "#/definitions/utils.SessionInfoUpdate"
+                },
+                "time_stamp": {
+                    "type": "string",
+                    "example": "2025-05-11T08:00:00Z"
+                },
+                "user": {
+                    "$ref": "#/definitions/utils.UserInfo"
+                }
+            }
+        },
         "utils.RegisterInput": {
             "type": "object",
             "properties": {
@@ -1336,6 +1521,67 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "example": "strongPassword123"
+                }
+            }
+        },
+        "utils.SessionDoc": {
+            "type": "object",
+            "properties": {
+                "closedAt": {
+                    "type": "object",
+                    "properties": {
+                        "String": {
+                            "type": "string",
+                            "example": "2025-05-11T09:00:00Z"
+                        },
+                        "Valid": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    }
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-05-11T08:00:00Z"
+                },
+                "created_by": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "utils.SessionInfoResponseDoc": {
+            "type": "object",
+            "properties": {
+                "closedAt": {
+                    "type": "object",
+                    "properties": {
+                        "String": {
+                            "type": "string",
+                            "example": "2025-05-11T09:00:00Z"
+                        },
+                        "Valid": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    }
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-05-11T08:00:00Z"
+                },
+                "created_by": {
+                    "$ref": "#/definitions/utils.UserInfo"
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/utils.MemberInfo"
+                    }
                 }
             }
         },

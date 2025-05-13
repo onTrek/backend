@@ -17,7 +17,7 @@ import (
 // @Produce json
 // @Param Authorization header string true "Bearer token for user authentication"
 // @Param activity body utils.ActivityInput true "Activity input"
-// @Success 200 {object} utils.SuccessResponse "Activity created successfully"
+// @Success 201 {object} utils.SuccessResponse "Activity created successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Failed to save activity"
@@ -93,5 +93,5 @@ func PostActivity(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Activity created successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Activity created successfully"})
 }

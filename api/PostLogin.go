@@ -16,7 +16,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param user body utils.Login true "User login credentials"
-// @Success 201 {object} utils.UserID "User ID token"
+// @Success 200 {object} utils.UserID "User ID token"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Invalid email or password"
 // @Failure 500 {object} utils.ErrorResponse "Failed to login"
@@ -58,5 +58,5 @@ func PostLogin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"token": user.ID})
+	c.JSON(http.StatusOK, gin.H{"token": user.ID})
 }
