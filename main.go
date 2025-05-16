@@ -40,7 +40,7 @@ func main() {
 	activity := router.Group("/activity")
 	{
 		activity.POST("/", api.PostActivity)        // crea una nuova attività
-		activity.PATCH("/:id", api.PatchActivity)   // termina un'attività
+		activity.PUT("/:id", api.PutActivity)       // aggiorna un'attività
 		activity.GET("/", api.GetActivities)        // lista delle attività
 		activity.GET("/:id", api.GetActivity)       // scarica un'attività specifica
 		activity.DELETE("/:id", api.DeleteActivity) // elimina un'attività

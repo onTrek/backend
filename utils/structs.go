@@ -7,7 +7,7 @@ import (
 type User struct {
 	ID        string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Email     string `json:"email" example:"user@example.com"`
-	Name      string `json:"name" example:"John Doe"`
+	Username  string `json:"username" example:"John Doe"`
 	Password  string `json:"password" example:"strongPassword123"`
 	CreatedAt string `json:"created_at" example:"2025-05-11T08:00:00Z"`
 }
@@ -17,15 +17,15 @@ type UserID struct {
 }
 
 type UserInfo struct {
-	ID    string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Email string `json:"email" example:"user@example.com"`
-	Name  string `json:"name" example:"John Doe"`
+	ID       string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Email    string `json:"email" example:"user@example.com"`
+	Username string `json:"username" example:"John Doe"`
 }
 
 type RegisterInput struct {
 	Email    string `json:"email" example:"user@example.com"`
 	Password string `json:"password" example:"strongPassword123"`
-	Name     string `json:"name" example:"John Doe"`
+	Username string `json:"username" example:"John Doe"`
 }
 
 type Gpx struct {
@@ -44,6 +44,10 @@ type GpxInfo struct {
 	Filename   string `json:"filename" example:"MonteBianco.gpx"`
 	UploadDate string `json:"upload_date" example:"2025-05-11T08:00:00Z"`
 	Stats      string `json:"stats" example:"{\"distance\": 5.5, \"ascent\": 250, \"descent\": 200}"`
+}
+
+type GpxInfoDoc struct {
+	Files []GpxInfo `json:"gpx_files"`
 }
 
 type GlobalStats struct {
@@ -68,39 +72,64 @@ type Activity struct {
 	StartingElevation float64 `json:"starting_elevation" example:"100"`
 	MaximumElevation  float64 `json:"maximum_elevation" example:"350"`
 	AverageSpeed      float64 `json:"average_speed" example:"5.2"`
+	AverageHeartRate  float64 `json:"average_heart_rate" example:"140"`
 }
 
 type Session struct {
-	ID        int            `json:"id" example:"1"`
-	CreatedBy string         `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
-	CreatedAt string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	ClosedAt  sql.NullString `json:"closed_at" example:"2025-05-11T09:00:00Z"`
+	ID          int            `json:"id" example:"1"`
+	CreatedBy   string         `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Description string         `json:"description" example:"Morning hike with friends"`
+	CreatedAt   string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	ClosedAt    sql.NullString `json:"closed_at" example:"2025-05-11T09:00:00Z"`
 }
 
 type SessionDoc struct {
-	ID        int    `json:"id" example:"1"`
-	CreatedBy string `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
-	CreatedAt string `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	ClosedAt  struct {
+	ID          int    `json:"id" example:"1"`
+	CreatedBy   string `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Description string `json:"description" example:"Morning hike with friends"`
+	CreatedAt   string `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	ClosedAt    struct {
 		String string `json:"String" example:"2025-05-11T09:00:00Z"`
 		Valid  bool   `json:"Valid" example:"true"`
 	}
 }
 
 type SessionInfo struct {
-	SessionID int     `json:"session_id" example:"1"`
+	SessionID   int     `json:"session_id" example:"1"`
+	Description string  `json:"description" example:"Morning hike with friends"`
+	Latitude    float64 `json:"latitude" example:"40.7128"`
+	Longitude   float64 `json:"longitude" example:"-74.0060"`
+	Altitude    float64 `json:"altitude" example:"10.5"`
+	Accuracy    float64 `json:"accuracy" example:"5.0"`
+	HelpRequest bool    `json:"help_request" example:"false"`
+	Time        string  `json:"time" example:"2025-05-11T08:00:00Z"`
+}
+
+type SessionInfoCreation struct {
+	Description string  `json:"description" example:"Morning hike with friends"`
+	Latitude    float64 `json:"latitude" example:"40.7128"`
+	Longitude   float64 `json:"longitude" example:"-74.0060"`
+	Altitude    float64 `json:"altitude" example:"10.5"`
+	Accuracy    float64 `json:"accuracy" example:"5.0"`
+}
+
+type SessionId struct {
+	ID string `json:"session_id" example:"1"`
+}
+
+type SessionInfoJoin struct {
 	Latitude  float64 `json:"latitude" example:"40.7128"`
 	Longitude float64 `json:"longitude" example:"-74.0060"`
 	Altitude  float64 `json:"altitude" example:"10.5"`
 	Accuracy  float64 `json:"accuracy" example:"5.0"`
-	Time      string  `json:"time" example:"2025-05-11T08:00:00Z"`
 }
 
 type SessionInfoUpdate struct {
-	Latitude  float64 `json:"latitude" example:"40.7128"`
-	Longitude float64 `json:"longitude" example:"-74.0060"`
-	Altitude  float64 `json:"altitude" example:"10.5"`
-	Accuracy  float64 `json:"accuracy" example:"5.0"`
+	Latitude      float64 `json:"latitude" example:"40.7128"`
+	Longitude     float64 `json:"longitude" example:"-74.0060"`
+	Altitude      float64 `json:"altitude" example:"10.5"`
+	Accuracy      float64 `json:"accuracy" example:"5.0"`
+	HelpRequested bool    `json:"help_request" example:"false"`
 }
 
 type MemberInfo struct {
@@ -109,16 +138,18 @@ type MemberInfo struct {
 	TimeStamp   string            `json:"time_stamp" example:"2025-05-11T08:00:00Z"`
 }
 type SessionInfoResponse struct {
-	CreatedBy UserInfo       `json:"created_by"`
-	CreatedAt string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	ClosedAt  sql.NullString `json:"closed_at" example:"2025-05-11T09:00:00Z"`
-	Members   []MemberInfo   `json:"members"`
+	CreatedBy   UserInfo       `json:"created_by"`
+	Description string         `json:"description" example:"Morning hike with friends"`
+	CreatedAt   string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	ClosedAt    sql.NullString `json:"closed_at" example:"2025-05-11T09:00:00Z"`
+	Members     []MemberInfo   `json:"members"`
 }
 
 type SessionInfoResponseDoc struct {
-	CreatedBy UserInfo `json:"created_by"`
-	CreatedAt string   `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	ClosedAt  struct {
+	CreatedBy   UserInfo `json:"created_by"`
+	Description string   `json:"description" example:"Morning hike with friends"`
+	CreatedAt   string   `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	ClosedAt    struct {
 		String string `json:"String" example:"2025-05-11T09:00:00Z"`
 		Valid  bool   `json:"Valid" example:"true"`
 	}
@@ -142,6 +173,7 @@ type ActivityInput struct {
 	StartingElevation float64 `json:"startingElevation" example:"100"`
 	MaximumElevation  float64 `json:"maximumElevation" example:"350"`
 	AverageSpeed      float64 `json:"averageSpeed" example:"5.2"`
+	AverageHeartRate  float64 `json:"averageHeartRate" example:"140"`
 }
 
 type Login struct {

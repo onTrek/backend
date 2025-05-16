@@ -19,7 +19,7 @@ import (
 // @Produce json
 // @Param Authorization header string true "Bearer token for user authentication"
 // @Param id path string true "Session ID"
-// @Param session body utils.SessionInfoUpdate true "Session information"
+// @Param session body utils.SessionInfoJoin true "Session information"
 // @Success 201 {object} utils.SuccessResponse "Successfully joined session"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 400 {object} utils.ErrorResponse "Session ID is required"
@@ -65,13 +65,6 @@ func PostSessionId(c *gin.Context) {
 	if err := c.ShouldBindJSON(&input); err != nil {
 		fmt.Println("Error binding JSON:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-		return
-	}
-
-	// Validate the request body
-	if input.Latitude == 0 || input.Longitude == 0 || input.Altitude == 0 || input.Accuracy == 0 {
-		fmt.Println("Missing required fields")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
 		return
 	}
 

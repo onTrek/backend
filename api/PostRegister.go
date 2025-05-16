@@ -30,7 +30,7 @@ func PostRegister(c *gin.Context) {
 	var input struct {
 		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required,min=8"`
-		Name     string `json:"name" binding:"required"`
+		Username string `json:"username" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -40,14 +40,14 @@ func PostRegister(c *gin.Context) {
 	}
 
 	// Validate the request body
-	if input.Email == "" || input.Password == "" || input.Name == "" {
+	if input.Email == "" || input.Password == "" || input.Username == "" {
 		fmt.Println("Missing required fields")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
 		return
 	}
 
 	user.Email = input.Email
-	user.Name = input.Name
+	user.Username = input.Username
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	user.Password = string(hashedPassword)
 	user.ID = uuid.New().String()

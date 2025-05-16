@@ -21,7 +21,8 @@ func GetActivityByID(db *sql.DB, activityID int) (utils.Activity, error) {
 		&activity.TotalDescent,
 		&activity.StartingElevation,
 		&activity.MaximumElevation,
-		&activity.AverageSpeed)
+		&activity.AverageSpeed,
+		&activity.AverageHeartRate)
 	if err != nil {
 		return activity, err
 	}

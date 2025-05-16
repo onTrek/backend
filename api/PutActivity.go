@@ -10,9 +10,9 @@ import (
 	"strconv"
 )
 
-// PatchActivity godoc
-// @Summary End an existing activity
-// @Description Ends an existing activity by its ID
+// PutActivity godoc
+// @Summary Update an existing activity
+// @Description Update an existing activity by ID
 // @Tags activity
 // @Accept json
 // @Produce json
@@ -24,8 +24,8 @@ import (
 // @Failure 403 {object} utils.ErrorResponse "Forbidden"
 // @Failure 404 {object} utils.ErrorResponse "Activity not found"
 // @Failure 500 {object} utils.ErrorResponse "Failed to update activity"
-// @Router /activity/{id} [patch]
-func PatchActivity(c *gin.Context) {
+// @Router /activity/{id} [put]
+func PutActivity(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")
 	user, err := db.GetUserById(c.MustGet("db").(*sql.DB), token)
@@ -78,5 +78,5 @@ func PatchActivity(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Activity ended successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Activity updated successfully"})
 }

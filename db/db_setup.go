@@ -27,7 +27,7 @@ func SetupDatabase() {
 		id TEXT PRIMARY KEY, -- UUID
 		email TEXT NOT NULL UNIQUE,
 		password_hash TEXT NOT NULL,
-		name TEXT NOT NULL,
+		username TEXT NOT NULL,
 		created_at TEXT NOT NULL -- ISO8601 format
 	);
 	`
@@ -52,6 +52,7 @@ func SetupDatabase() {
 		starting_elevation FLOAT,
 		maximum_altitude FLOAT,
 		average_speed FLOAT,
+		average_heart_rate FLOAT,
 		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 	`
@@ -83,6 +84,7 @@ func SetupDatabase() {
 	createSessionsTable := `
 	CREATE TABLE IF NOT EXISTS sessions (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		description TEXT NOT NULL,
 		created_by TEXT NOT NULL,
 		created_at TEXT NOT NULL,
 	    closed_at TEXT,
@@ -104,6 +106,7 @@ func SetupDatabase() {
 		altitude FLOAT,
 		accuracy FLOAT,
 		timestamp TEXT NOT NULL,
+		help_request BOOLEAN DEFAULT FALSE,
 		PRIMARY KEY (session_id, user_id),
 		FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE,
 		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

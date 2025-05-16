@@ -54,10 +54,11 @@ func PutSession(c *gin.Context) {
 
 	// Get data from the request body
 	var input struct {
-		Latitude  float64 `json:"latitude" binding:"required"`
-		Longitude float64 `json:"longitude" binding:"required"`
-		Altitude  float64 `json:"altitude" binding:"required"`
-		Accuracy  float64 `json:"accuracy" binding:"required"`
+		Latitude    float64 `json:"latitude" binding:"required"`
+		Longitude   float64 `json:"longitude" binding:"required"`
+		Altitude    float64 `json:"altitude" binding:"required"`
+		HelpRequest *bool   `json:"help_request" binding:"required"`
+		Accuracy    float64 `json:"accuracy" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -66,18 +67,12 @@ func PutSession(c *gin.Context) {
 		return
 	}
 
-	// Validate the request body
-	if input.Latitude == 0 || input.Longitude == 0 || input.Altitude == 0 || input.Accuracy == 0 {
-		fmt.Println("Missing required fields")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
-		return
-	}
-
 	// Create a new session object
 	sessionInfo.SessionID = sessionId
 	sessionInfo.Latitude = input.Latitude
 	sessionInfo.Longitude = input.Longitude
 	sessionInfo.Altitude = input.Altitude
+	sessionInfo.HelpRequest = *input.HelpRequest
 	sessionInfo.Accuracy = input.Accuracy
 
 	// Check if the session exists

@@ -31,7 +31,8 @@ func GetActivities(db *sql.DB, userID string) ([]utils.Activity, error) {
 			&activity.TotalDescent,
 			&activity.StartingElevation,
 			&activity.MaximumElevation,
-			&activity.AverageSpeed)
+			&activity.AverageSpeed,
+			&activity.AverageHeartRate)
 		if err != nil {
 			fmt.Println("Error scanning row:", err)
 			return nil, err

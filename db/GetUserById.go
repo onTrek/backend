@@ -8,7 +8,7 @@ import (
 
 func GetUserById(db *sql.DB, userId string) (utils.User, error) {
 	var user utils.User
-	err := db.QueryRow("SELECT id, email, name FROM users WHERE id = ?", userId).Scan(&user.ID, &user.Email, &user.Name)
+	err := db.QueryRow("SELECT id, email, username FROM users WHERE id = ?", userId).Scan(&user.ID, &user.Email, &user.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return utils.User{}, fmt.Errorf("user not found")

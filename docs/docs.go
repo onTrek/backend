@@ -181,6 +181,73 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "description": "Update an existing activity by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Update an existing activity",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Activity ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Activity ended successfully",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Activity not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update activity",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Deletes an activity after verifying the user's token and authorization to perform the action",
                 "consumes": [
@@ -242,73 +309,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to delete activity",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Ends an existing activity by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "activity"
-                ],
-                "summary": "End an existing activity",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Activity ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Activity ended successfully",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Activity not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to update activity",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorResponse"
                         }
@@ -629,10 +629,7 @@ const docTemplate = `{
                     "200": {
                         "description": "gpx_files",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/utils.GpxInfo"
-                            }
+                            "$ref": "#/definitions/utils.GpxInfoDoc"
                         }
                     },
                     "401": {
@@ -981,7 +978,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/utils.SessionInfoUpdate"
+                            "$ref": "#/definitions/utils.SessionInfoCreation"
                         }
                     }
                 ],
@@ -989,7 +986,7 @@ const docTemplate = `{
                     "201": {
                         "description": "session_id",
                         "schema": {
-                            "type": "integer"
+                            "$ref": "#/definitions/utils.SessionId"
                         }
                     },
                     "400": {
@@ -1175,7 +1172,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/utils.SessionInfoUpdate"
+                            "$ref": "#/definitions/utils.SessionInfoJoin"
                         }
                     }
                 ],
@@ -1329,6 +1326,10 @@ const docTemplate = `{
         "utils.Activity": {
             "type": "object",
             "properties": {
+                "average_heart_rate": {
+                    "type": "number",
+                    "example": 140
+                },
                 "average_speed": {
                     "type": "number",
                     "example": 5.2
@@ -1386,6 +1387,10 @@ const docTemplate = `{
         "utils.ActivityInput": {
             "type": "object",
             "properties": {
+                "averageHeartRate": {
+                    "type": "number",
+                    "example": 140
+                },
                 "averageSpeed": {
                     "type": "number",
                     "example": 5.2
@@ -1479,6 +1484,17 @@ const docTemplate = `{
                 }
             }
         },
+        "utils.GpxInfoDoc": {
+            "type": "object",
+            "properties": {
+                "gpx_files": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/utils.GpxInfo"
+                    }
+                }
+            }
+        },
         "utils.Login": {
             "type": "object",
             "properties": {
@@ -1514,13 +1530,13 @@ const docTemplate = `{
                     "type": "string",
                     "example": "user@example.com"
                 },
-                "name": {
-                    "type": "string",
-                    "example": "John Doe"
-                },
                 "password": {
                     "type": "string",
                     "example": "strongPassword123"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "John Doe"
                 }
             }
         },
@@ -1548,9 +1564,68 @@ const docTemplate = `{
                     "type": "string",
                     "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
+                "description": {
+                    "type": "string",
+                    "example": "Morning hike with friends"
+                },
                 "id": {
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "utils.SessionId": {
+            "type": "object",
+            "properties": {
+                "session_id": {
+                    "type": "string",
+                    "example": "1"
+                }
+            }
+        },
+        "utils.SessionInfoCreation": {
+            "type": "object",
+            "properties": {
+                "accuracy": {
+                    "type": "number",
+                    "example": 5
+                },
+                "altitude": {
+                    "type": "number",
+                    "example": 10.5
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Morning hike with friends"
+                },
+                "latitude": {
+                    "type": "number",
+                    "example": 40.7128
+                },
+                "longitude": {
+                    "type": "number",
+                    "example": -74.006
+                }
+            }
+        },
+        "utils.SessionInfoJoin": {
+            "type": "object",
+            "properties": {
+                "accuracy": {
+                    "type": "number",
+                    "example": 5
+                },
+                "altitude": {
+                    "type": "number",
+                    "example": 10.5
+                },
+                "latitude": {
+                    "type": "number",
+                    "example": 40.7128
+                },
+                "longitude": {
+                    "type": "number",
+                    "example": -74.006
                 }
             }
         },
@@ -1577,6 +1652,10 @@ const docTemplate = `{
                 "created_by": {
                     "$ref": "#/definitions/utils.UserInfo"
                 },
+                "description": {
+                    "type": "string",
+                    "example": "Morning hike with friends"
+                },
                 "members": {
                     "type": "array",
                     "items": {
@@ -1595,6 +1674,10 @@ const docTemplate = `{
                 "altitude": {
                     "type": "number",
                     "example": 10.5
+                },
+                "help_request": {
+                    "type": "boolean",
+                    "example": false
                 },
                 "latitude": {
                     "type": "number",
@@ -1635,7 +1718,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
-                "name": {
+                "username": {
                     "type": "string",
                     "example": "John Doe"
                 }

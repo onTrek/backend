@@ -22,13 +22,13 @@ func CreateSession(db *sql.DB, userID string, info utils.SessionInfo) (utils.Ses
 
 	// Insert into sessions
 	now := time.Now().Format(time.RFC3339)
-	stmt1, err := tx.Prepare("INSERT INTO sessions (created_by, created_at) VALUES (?, ?)")
+	stmt1, err := tx.Prepare("INSERT INTO sessions (created_by, description, created_at) VALUES (?, ?, ?)")
 	if err != nil {
 		return utils.Session{}, err
 	}
 	defer stmt1.Close()
 
-	res, err := stmt1.Exec(userID, now)
+	res, err := stmt1.Exec(userID, info.Description, now)
 	if err != nil {
 		return utils.Session{}, err
 	}

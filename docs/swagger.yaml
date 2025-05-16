@@ -1,6 +1,9 @@
 definitions:
   utils.Activity:
     properties:
+      average_heart_rate:
+        example: 140
+        type: number
       average_speed:
         example: 5.2
         type: number
@@ -43,6 +46,9 @@ definitions:
     type: object
   utils.ActivityInput:
     properties:
+      averageHeartRate:
+        example: 140
+        type: number
       averageSpeed:
         example: 5.2
         type: number
@@ -110,6 +116,13 @@ definitions:
         example: "2025-05-11T08:00:00Z"
         type: string
     type: object
+  utils.GpxInfoDoc:
+    properties:
+      gpx_files:
+        items:
+          $ref: '#/definitions/utils.GpxInfo'
+        type: array
+    type: object
   utils.Login:
     properties:
       email:
@@ -134,11 +147,11 @@ definitions:
       email:
         example: user@example.com
         type: string
-      name:
-        example: John Doe
-        type: string
       password:
         example: strongPassword123
+        type: string
+      username:
+        example: John Doe
         type: string
     type: object
   utils.SessionDoc:
@@ -158,9 +171,51 @@ definitions:
       created_by:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
+      description:
+        example: Morning hike with friends
+        type: string
       id:
         example: 1
         type: integer
+    type: object
+  utils.SessionId:
+    properties:
+      session_id:
+        example: "1"
+        type: string
+    type: object
+  utils.SessionInfoCreation:
+    properties:
+      accuracy:
+        example: 5
+        type: number
+      altitude:
+        example: 10.5
+        type: number
+      description:
+        example: Morning hike with friends
+        type: string
+      latitude:
+        example: 40.7128
+        type: number
+      longitude:
+        example: -74.006
+        type: number
+    type: object
+  utils.SessionInfoJoin:
+    properties:
+      accuracy:
+        example: 5
+        type: number
+      altitude:
+        example: 10.5
+        type: number
+      latitude:
+        example: 40.7128
+        type: number
+      longitude:
+        example: -74.006
+        type: number
     type: object
   utils.SessionInfoResponseDoc:
     properties:
@@ -178,6 +233,9 @@ definitions:
         type: string
       created_by:
         $ref: '#/definitions/utils.UserInfo'
+      description:
+        example: Morning hike with friends
+        type: string
       members:
         items:
           $ref: '#/definitions/utils.MemberInfo'
@@ -191,6 +249,9 @@ definitions:
       altitude:
         example: 10.5
         type: number
+      help_request:
+        example: false
+        type: boolean
       latitude:
         example: 40.7128
         type: number
@@ -218,7 +279,7 @@ definitions:
       id:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
-      name:
+      username:
         example: John Doe
         type: string
     type: object
@@ -385,10 +446,10 @@ paths:
       summary: Retrieve an activity by its ID
       tags:
       - activity
-    patch:
+    put:
       consumes:
       - application/json
-      description: Ends an existing activity by its ID
+      description: Update an existing activity by ID
       parameters:
       - description: Bearer token for user authentication
         in: header
@@ -427,7 +488,7 @@ paths:
           description: Failed to update activity
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
-      summary: End an existing activity
+      summary: Update an existing activity
       tags:
       - activity
   /auth/login:
@@ -640,9 +701,7 @@ paths:
         "200":
           description: gpx_files
           schema:
-            items:
-              $ref: '#/definitions/utils.GpxInfo'
-            type: array
+            $ref: '#/definitions/utils.GpxInfoDoc'
         "401":
           description: Unauthorized
           schema:
@@ -877,14 +936,14 @@ paths:
         name: session
         required: true
         schema:
-          $ref: '#/definitions/utils.SessionInfoUpdate'
+          $ref: '#/definitions/utils.SessionInfoCreation'
       produces:
       - application/json
       responses:
         "201":
           description: session_id
           schema:
-            type: integer
+            $ref: '#/definitions/utils.SessionId'
         "400":
           description: Invalid request
           schema:
@@ -1003,7 +1062,7 @@ paths:
         name: session
         required: true
         schema:
-          $ref: '#/definitions/utils.SessionInfoUpdate'
+          $ref: '#/definitions/utils.SessionInfoJoin'
       produces:
       - application/json
       responses:

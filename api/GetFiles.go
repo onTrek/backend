@@ -14,7 +14,7 @@ import (
 // @Tags files
 // @Produce json
 // @Param Authorization header string true "Bearer token for user authentication"
-// @Success 200 {object} []utils.GpxInfo "gpx_files"
+// @Success 200 {object} utils.GpxInfoDoc "gpx_files"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Error fetching files"
 // @Router /gpx/ [get]

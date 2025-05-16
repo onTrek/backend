@@ -33,7 +33,7 @@ func GetProfile(c *gin.Context) {
 	var userInfo utils.UserInfo
 
 	userInfo.ID = user.ID
-	userInfo.Name = user.Name
+	userInfo.Username = user.Username
 	userInfo.Email = user.Email
 
 	c.JSON(200, userInfo)

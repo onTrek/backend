@@ -82,6 +82,12 @@ func PostActivity(c *gin.Context) {
 		return
 	}
 
+	if activity.AverageHeartRate == 0 {
+		fmt.Println("Missing required field: AverageHeartRate")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required field: AverageHeartRate"})
+		return
+	}
+
 	// Set the user ID
 	activity.UserID = user.ID
 
