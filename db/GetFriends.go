@@ -5,9 +5,9 @@ import (
 	"database/sql"
 )
 
-func GetFriends(db *sql.DB, userID string) ([]utils.UserInfo, error) {
+func GetFriends(db *sql.DB, userID string) ([]utils.UserEssentials, error) {
 	// Prepare the SQL statement
-	stmt, err := db.Prepare("SELECT id, username, email FROM users WHERE id IN (SELECT user_id1 FROM friends WHERE user_id2 = ? UNION SELECT user_id2 FROM friends WHERE user_id1 = ?)")
+	stmt, err := db.Prepare("SELECT id, username FROM users WHERE id IN (SELECT user_id1 FROM friends WHERE user_id2 = ? UNION SELECT user_id2 FROM friends WHERE user_id1 = ?)")
 	if err != nil {
 		return nil, err
 	}
@@ -21,12 +21,12 @@ func GetFriends(db *sql.DB, userID string) ([]utils.UserInfo, error) {
 	defer rows.Close()
 
 	// Create a slice to hold the friends
-	var friends []utils.UserInfo
+	var friends []utils.UserEssentials
 
 	// Iterate through the results
 	for rows.Next() {
-		var friend utils.UserInfo
-		if err := rows.Scan(&friend.ID, &friend.Username, &friend.Email); err != nil {
+		var friend utils.UserEssentials
+		if err := rows.Scan(&friend.ID, &friend.Username); err != nil {
 			return nil, err
 		}
 		friends = append(friends, friend)

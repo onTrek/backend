@@ -7,9 +7,9 @@ import (
 
 func GetSessionInfoMember(db *sql.DB, sessionId int, userID string) (utils.SessionInfoResponse, error) {
 	var sessionInfo utils.SessionInfoResponse
-	query := ` SELECT u.id, u.username, u.email, s.description, s.created_at, s.closed_at FROM users u	JOIN sessions s ON u.id = s.created_by WHERE s.id = ?`
+	query := ` SELECT u.id, u.username, s.description, s.created_at, s.closed_at FROM users u	JOIN sessions s ON u.id = s.created_by WHERE s.id = ?`
 	row := db.QueryRow(query, sessionId)
-	err := row.Scan(&sessionInfo.CreatedBy.ID, &sessionInfo.CreatedBy.Username, &sessionInfo.CreatedBy.Email, &sessionInfo.Description, &sessionInfo.CreatedAt, &sessionInfo.ClosedAt)
+	err := row.Scan(&sessionInfo.CreatedBy.ID, &sessionInfo.CreatedBy.Username, &sessionInfo.Description, &sessionInfo.CreatedAt, &sessionInfo.ClosedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return sessionInfo, nil
@@ -18,7 +18,7 @@ func GetSessionInfoMember(db *sql.DB, sessionId int, userID string) (utils.Sessi
 	}
 
 	var members []utils.MemberInfo
-	query = `SELECT u.id, u.username, u.email, sm.latitude, sm.longitude, sm.altitude, sm.accuracy, sm.help_request, sm.timestamp FROM users u JOIN session_members sm ON u.id = sm.user_id WHERE sm.session_id = ?`
+	query = `SELECT u.id, u.username, sm.latitude, sm.longitude, sm.altitude, sm.accuracy, sm.help_request, sm.timestamp FROM users u JOIN session_members sm ON u.id = sm.user_id WHERE sm.session_id = ?`
 	rows, err := db.Query(query, sessionId)
 	if err != nil {
 		return sessionInfo, err
@@ -27,7 +27,7 @@ func GetSessionInfoMember(db *sql.DB, sessionId int, userID string) (utils.Sessi
 
 	for rows.Next() {
 		var member utils.MemberInfo
-		err := rows.Scan(&member.User.ID, &member.User.Username, &member.User.Email, &member.SessionInfo.Latitude, &member.SessionInfo.Longitude, &member.SessionInfo.Altitude, &member.SessionInfo.Accuracy, &member.SessionInfo.HelpRequested, &member.TimeStamp)
+		err := rows.Scan(&member.User.ID, &member.User.Username, &member.SessionInfo.Latitude, &member.SessionInfo.Longitude, &member.SessionInfo.Altitude, &member.SessionInfo.Accuracy, &member.SessionInfo.HelpRequested, &member.TimeStamp)
 		if err != nil {
 			return sessionInfo, err
 		}

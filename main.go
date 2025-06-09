@@ -36,12 +36,6 @@ func main() {
 		gpx.GET("/:id", api.GetFile)       // scarica un GPX specifico
 	}
 
-	// STATS API
-	stats := router.Group("/stats")
-	{
-		stats.GET("", api.GetStats) // statistiche globali (tot km, tot salite, etc)
-	}
-
 	// SESSION API
 	sessions := router.Group("/sessions")
 	{

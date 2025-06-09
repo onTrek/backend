@@ -147,10 +147,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/utils.UserInfo"
-                                }
+                                "$ref": "#/definitions/utils.UserEssentials"
                             }
                         }
                     },
@@ -1041,50 +1038,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/stats": {
-            "get": {
-                "description": "Retrieves global statistics for the user based on their token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stats"
-                ],
-                "summary": "Get user stats",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Global statistics for the user",
-                        "schema": {
-                            "$ref": "#/definitions/utils.GlobalStats"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -1094,31 +1047,6 @@ const docTemplate = `{
                 "error": {
                     "type": "string",
                     "example": "An error occurred"
-                }
-            }
-        },
-        "utils.GlobalStats": {
-            "type": "object",
-            "properties": {
-                "total_activities": {
-                    "type": "integer",
-                    "example": 100
-                },
-                "total_ascent": {
-                    "type": "number",
-                    "example": 2500
-                },
-                "total_descent": {
-                    "type": "number",
-                    "example": 2000
-                },
-                "total_distance": {
-                    "type": "number",
-                    "example": 500.5
-                },
-                "total_time": {
-                    "type": "number",
-                    "example": 120.5
                 }
             }
         },
@@ -1182,7 +1110,7 @@ const docTemplate = `{
                     "example": "2025-05-11T08:00:00Z"
                 },
                 "user": {
-                    "$ref": "#/definitions/utils.UserInfo"
+                    "$ref": "#/definitions/utils.UserEssentials"
                 }
             }
         },
@@ -1313,7 +1241,7 @@ const docTemplate = `{
                     "example": "2025-05-11T08:00:00Z"
                 },
                 "created_by": {
-                    "$ref": "#/definitions/utils.UserInfo"
+                    "$ref": "#/definitions/utils.UserEssentials"
                 },
                 "description": {
                     "type": "string",

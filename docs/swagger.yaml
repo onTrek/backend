@@ -5,24 +5,6 @@ definitions:
         example: An error occurred
         type: string
     type: object
-  utils.GlobalStats:
-    properties:
-      total_activities:
-        example: 100
-        type: integer
-      total_ascent:
-        example: 2500
-        type: number
-      total_descent:
-        example: 2000
-        type: number
-      total_distance:
-        example: 500.5
-        type: number
-      total_time:
-        example: 120.5
-        type: number
-    type: object
   utils.GpxInfo:
     properties:
       activity_id:
@@ -65,7 +47,7 @@ definitions:
         example: "2025-05-11T08:00:00Z"
         type: string
       user:
-        $ref: '#/definitions/utils.UserInfo'
+        $ref: '#/definitions/utils.UserEssentials'
     type: object
   utils.RegisterInput:
     properties:
@@ -157,7 +139,7 @@ definitions:
         example: "2025-05-11T08:00:00Z"
         type: string
       created_by:
-        $ref: '#/definitions/utils.UserInfo'
+        $ref: '#/definitions/utils.UserEssentials'
       description:
         example: Morning hike with friends
         type: string
@@ -308,9 +290,7 @@ paths:
           description: List of friends
           schema:
             items:
-              items:
-                $ref: '#/definitions/utils.UserInfo'
-              type: array
+              $ref: '#/definitions/utils.UserEssentials'
             type: array
         "401":
           description: Unauthorized
@@ -914,33 +894,4 @@ paths:
       summary: Update session information
       tags:
       - sessions
-  /stats:
-    get:
-      consumes:
-      - application/json
-      description: Retrieves global statistics for the user based on their token
-      parameters:
-      - description: Bearer token for user authentication
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Global statistics for the user
-          schema:
-            $ref: '#/definitions/utils.GlobalStats'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-      summary: Get user stats
-      tags:
-      - stats
 swagger: "2.0"
