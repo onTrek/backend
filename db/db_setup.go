@@ -36,42 +36,15 @@ func SetupDatabase() {
 		log.Fatalf("Errore creazione tabella users: %v", err)
 	}
 
-	// Crea tabella activities
-	createActivitiesTable := `
-	CREATE TABLE IF NOT EXISTS activities (
-		id INTEGER PRIMARY KEY AUTOINCREMENT, -- INTEGER ID autoincrement
-		user_id TEXT NOT NULL,
-		title TEXT NOT NULL,
-		description TEXT,
-		start_time TEXT,
-		end_time TEXT,
-		created_at TEXT NOT NULL,
-		distance FLOAT,
-		total_ascent FLOAT,
-		total_descent FLOAT,
-		starting_elevation FLOAT,
-		maximum_altitude FLOAT,
-		average_speed FLOAT,
-		average_heart_rate FLOAT,
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-	);
-	`
-	_, err = db.Exec(createActivitiesTable)
-	if err != nil {
-		log.Fatalf("Errore creazione tabella activities: %v", err)
-	}
-
 	// Crea tabella gpx_files
 	createGpxFilesTable := `
 	CREATE TABLE IF NOT EXISTS gpx_files (
 		id INTEGER PRIMARY KEY AUTOINCREMENT, -- INTEGER ID autoincrement
-		activity_id INTEGER,
 		user_id TEXT NOT NULL,
 		filename TEXT NOT NULL,
 		storage_path TEXT NOT NULL,
 		upload_date TEXT NOT NULL,
 		stats TEXT, -- JSON string
-		FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
 	    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 	`

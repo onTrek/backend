@@ -15,307 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/activity/": {
-            "get": {
-                "description": "Fetches a list of activities for a user based on their authorization token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "activity"
-                ],
-                "summary": "Get a user's activities",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of activities",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/utils.Activity"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to get activities",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Allows a user to create a new activity by providing the details of the activity, including start time, end time, distance, and elevation data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "activity"
-                ],
-                "summary": "Create a new activity for the user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "Activity input",
-                        "name": "activity",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/utils.ActivityInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Activity created successfully",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to save activity",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/activity/{id}": {
-            "get": {
-                "description": "Fetches an activity by its ID if the user is authorized to view it",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "activity"
-                ],
-                "summary": "Retrieve an activity by its ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Activity ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Activity details",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Activity"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Activity not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update an existing activity by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "activity"
-                ],
-                "summary": "Update an existing activity",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Activity ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Activity ended successfully",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Activity not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to update activity",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes an activity after verifying the user's token and authorization to perform the action",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "activity"
-                ],
-                "summary": "Delete an activity by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Activity ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Activity deleted successfully",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid activity ID",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Activity not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to delete activity",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/auth/login": {
             "post": {
                 "description": "Authenticates a user using email and password, returns a token (user ID)",
@@ -903,6 +602,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/search": {
+            "get": {
+                "description": "Searches for users by username",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "summary": "Search for users by username",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of users matching the search query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.UserEssentials"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "No users found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/sessions/": {
             "get": {
                 "description": "Get all sessions for a user by their ID",
@@ -1323,108 +1088,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "utils.Activity": {
-            "type": "object",
-            "properties": {
-                "average_heart_rate": {
-                    "type": "number",
-                    "example": 140
-                },
-                "average_speed": {
-                    "type": "number",
-                    "example": 5.2
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2025-05-11T08:00:00Z"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "A refreshing morning run in the park"
-                },
-                "distance": {
-                    "type": "number",
-                    "example": 5.5
-                },
-                "end_time": {
-                    "type": "string",
-                    "example": "2025-05-11T09:00:00Z"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "maximum_elevation": {
-                    "type": "number",
-                    "example": 350
-                },
-                "start_time": {
-                    "type": "string",
-                    "example": "2025-05-11T08:00:00Z"
-                },
-                "starting_elevation": {
-                    "type": "number",
-                    "example": 100
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Morning Run"
-                },
-                "total_ascent": {
-                    "type": "number",
-                    "example": 250
-                },
-                "total_descent": {
-                    "type": "number",
-                    "example": 200
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "550e8400-e29b-41d4-a716-446655440000"
-                }
-            }
-        },
-        "utils.ActivityInput": {
-            "type": "object",
-            "properties": {
-                "averageHeartRate": {
-                    "type": "number",
-                    "example": 140
-                },
-                "averageSpeed": {
-                    "type": "number",
-                    "example": 5.2
-                },
-                "distance": {
-                    "type": "number",
-                    "example": 5.5
-                },
-                "endTime": {
-                    "type": "string",
-                    "example": "2025-05-11T09:00:00Z"
-                },
-                "maximumElevation": {
-                    "type": "number",
-                    "example": 350
-                },
-                "startTime": {
-                    "type": "string",
-                    "example": "2025-05-11T08:00:00Z"
-                },
-                "startingElevation": {
-                    "type": "number",
-                    "example": 100
-                },
-                "totalAscent": {
-                    "type": "number",
-                    "example": 250
-                },
-                "totalDescent": {
-                    "type": "number",
-                    "example": 200
-                }
-            }
-        },
         "utils.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -1695,6 +1358,19 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Success"
+                }
+            }
+        },
+        "utils.UserEssentials": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "John Doe"
                 }
             }
         },

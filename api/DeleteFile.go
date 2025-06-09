@@ -43,7 +43,7 @@ func DeleteFile(c *gin.Context) {
 	}
 
 	// Fetch the file from the database
-	gpx, err := db.GetFileByID(c.MustGet("db").(*sql.DB), fileID, user.ID)
+	gpx, err := db.GetFileByIDAndUserId(c.MustGet("db").(*sql.DB), fileID, user.ID)
 	if err != nil {
 		fmt.Println("Error fetching file from database:", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})

@@ -22,6 +22,15 @@ type UserInfo struct {
 	Username string `json:"username" example:"John Doe"`
 }
 
+type UserEssentials struct {
+	ID       string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Username string `json:"username" example:"John Doe"`
+}
+
+type Users struct {
+	Users []UserEssentials `json:"users" example:"[{\"id\":\"550e8400-e29b-41d4-a716-446655440000\", \"username\":\"John Doe\"}]"`
+}
+
 type RegisterInput struct {
 	Email    string `json:"email" example:"user@example.com"`
 	Password string `json:"password" example:"strongPassword123"`
@@ -56,23 +65,6 @@ type GlobalStats struct {
 	TotalAscent     float64 `json:"total_ascent" example:"2500"`
 	TotalDescent    float64 `json:"total_descent" example:"2000"`
 	TotalTime       float64 `json:"total_time" example:"120.5"`
-}
-
-type Activity struct {
-	ID                int     `json:"id" example:"1"`
-	UserID            string  `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Title             string  `json:"title" example:"Morning Run"`
-	Description       string  `json:"description" example:"A refreshing morning run in the park"`
-	StartTime         string  `json:"start_time" example:"2025-05-11T08:00:00Z"`
-	EndTime           string  `json:"end_time" example:"2025-05-11T09:00:00Z"`
-	CreatedAt         string  `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	Distance          float64 `json:"distance" example:"5.5"`
-	TotalAscent       float64 `json:"total_ascent" example:"250"`
-	TotalDescent      float64 `json:"total_descent" example:"200"`
-	StartingElevation float64 `json:"starting_elevation" example:"100"`
-	MaximumElevation  float64 `json:"maximum_elevation" example:"350"`
-	AverageSpeed      float64 `json:"average_speed" example:"5.2"`
-	AverageHeartRate  float64 `json:"average_heart_rate" example:"140"`
 }
 
 type Session struct {
@@ -162,18 +154,6 @@ type SuccessResponse struct {
 
 type ErrorResponse struct {
 	Error string `json:"error" example:"An error occurred"`
-}
-
-type ActivityInput struct {
-	StartTime         string  `json:"startTime" example:"2025-05-11T08:00:00Z"`
-	EndTime           string  `json:"endTime" example:"2025-05-11T09:00:00Z"`
-	Distance          float64 `json:"distance" example:"5.5"`
-	TotalAscent       float64 `json:"totalAscent" example:"250"`
-	TotalDescent      float64 `json:"totalDescent" example:"200"`
-	StartingElevation float64 `json:"startingElevation" example:"100"`
-	MaximumElevation  float64 `json:"maximumElevation" example:"350"`
-	AverageSpeed      float64 `json:"averageSpeed" example:"5.2"`
-	AverageHeartRate  float64 `json:"averageHeartRate" example:"140"`
 }
 
 type Login struct {

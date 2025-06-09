@@ -36,16 +36,6 @@ func main() {
 		gpx.GET("/:id", api.GetFile)       // scarica un GPX specifico
 	}
 
-	// Activity API
-	activity := router.Group("/activity")
-	{
-		activity.POST("/", api.PostActivity)        // crea una nuova attività
-		activity.PUT("/:id", api.PutActivity)       // aggiorna un'attività
-		activity.GET("/", api.GetActivities)        // lista delle attività
-		activity.GET("/:id", api.GetActivity)       // scarica un'attività specifica
-		activity.DELETE("/:id", api.DeleteActivity) // elimina un'attività
-	}
-
 	// STATS API
 	stats := router.Group("/stats")
 	{
@@ -61,6 +51,11 @@ func main() {
 		sessions.POST("/:id", api.PostSessionId) // partecipa a una sessione
 		sessions.GET("/:id", api.GetSession)     // ritorna la sessione
 		sessions.GET("/", api.GetSessions)       // lista delle sessioni
+	}
+
+	search := router.Group("/search")
+	{
+		search.GET("/", api.GetSearchPeople) // ricerca persone da aggiungere agli amici
 	}
 
 	// FRIENDS API

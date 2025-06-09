@@ -27,7 +27,7 @@ import (
 func GetFile(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")
-	user, err := db.GetUserById(c.MustGet("db").(*sql.DB), token)
+	_, err := db.GetUserById(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		fmt.Println("Error getting user by token:", err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -45,7 +45,7 @@ func GetFile(c *gin.Context) {
 	}
 
 	// Fetch the file from the database
-	gpx, err := db.GetFileByID(c.MustGet("db").(*sql.DB), fileID, user.ID)
+	gpx, err := db.GetFileByID(c.MustGet("db").(*sql.DB), fileID)
 	if err != nil {
 		fmt.Println("Error fetching file from database:", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
