@@ -17,5 +17,5 @@ sudo docker build -t ontrek-backend .
 2. **Run the container**
 
 ```bash
-sudo docker run -p 3000:8080 ontrek-backend
+sudo docker run --name ontrek -p 3000:8080 ontrek-backend
 ```
