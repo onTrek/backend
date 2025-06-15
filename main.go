@@ -1,3 +1,8 @@
+// @title Ontrek API
+// @version 1.0
+// @description API documentation for Ontrek backend
+// @host localhost:3000
+// @BasePath /
 package main
 
 import (
