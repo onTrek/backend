@@ -15,7 +15,7 @@ RUN go build -o server main.go
 
 FROM alpine:latest
 
-RUN apk add --no-cache libsqlite3
+RUN apk add --no-cache sqlite
 
 WORKDIR /root/
 
