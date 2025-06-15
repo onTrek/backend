@@ -67,6 +67,8 @@ func main() {
 		user.DELETE("", api.DeleteProfile) // cancella l'account
 	}
 
+	router.Static("/docs", "./docs")
+
 	err := router.Run(":8080")
 	if err != nil {
 		panic(err)
