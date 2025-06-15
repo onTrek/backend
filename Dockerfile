@@ -22,6 +22,8 @@ WORKDIR /root/
 
 COPY --from=builder /app/server .
 
+COPY --from=builder /app/docs ./docs
+
 EXPOSE 3000
 
 CMD ["./server"]
