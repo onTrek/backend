@@ -8,6 +8,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
+COPY ./docs ./docs
 
 ENV GIN_MODE=release
 ENV CGO_ENABLED=1
