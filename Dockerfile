@@ -9,6 +9,7 @@ RUN go mod download
 
 COPY . .
 
+ENV GIN_MODE=release
 ENV CGO_ENABLED=1
 
 RUN go build -o server main.go
