@@ -8,6 +8,7 @@ package main
 import (
 	"OnTrek/api"
 	"OnTrek/db"
+	_ "OnTrek/docs" // Import the generated docs package
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
