@@ -16,14 +16,14 @@ import (
 // @Accept json
 // @Produce json
 // @Param user body utils.Login true "User login credentials"
-// @Success 200 {object} utils.UserID "User ID token"
+// @Success 200 {object} utils.UserToken "User ID token"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Invalid email or password"
 // @Failure 500 {object} utils.ErrorResponse "Failed to login"
 // @Router /auth/login [post]
 func PostLogin(c *gin.Context) {
 	// Get the request body
-	var user utils.User
+	var user utils.UserToken
 	var input struct {
 		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required,min=8"`
@@ -42,11 +42,8 @@ func PostLogin(c *gin.Context) {
 		return
 	}
 
-	user.Email = input.Email
-	user.Password = input.Password
-
 	database := c.MustGet("db").(*sql.DB)
-	user, err := db.Login(database, user)
+	user, err := db.Login(database, input.Email, input.Password)
 	if err != nil {
 		if err.Error() == "user not found" {
 			fmt.Println("User not found")
@@ -58,5 +55,5 @@ func PostLogin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": user.ID})
+	c.JSON(http.StatusOK, gin.H{"token": user.Token})
 }

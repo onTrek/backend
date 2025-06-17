@@ -36,6 +36,21 @@ func SetupDatabase() {
 		log.Fatalf("Errore creazione tabella users: %v", err)
 	}
 
+	// Crea tabella tokens
+	createTokensTable := `
+	CREATE TABLE IF NOT EXISTS tokens (
+		user_id TEXT NOT NULL, -- UUID user ID
+		token TEXT NOT NULL UNIQUE, --UUID token
+		created_at TEXT NOT NULL, -- ISO8601 format
+		PRIMARY KEY (user_id, token),
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	);
+	`
+	_, err = db.Exec(createTokensTable)
+	if err != nil {
+		log.Fatal("Errore creazione tabella tokens:", err)
+	}
+
 	// Crea tabella gpx_files
 	createGpxFilesTable := `
 	CREATE TABLE IF NOT EXISTS gpx_files (

@@ -32,8 +32,12 @@ func PostSessionId(c *gin.Context) {
 	var sessionInfo utils.SessionInfo
 	// Get token from the header
 	token := c.GetHeader("Authorization")
-	user, err := db.GetUserById(c.MustGet("db").(*sql.DB), token)
+	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
+		if err.Error() == "token expired" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})
+			return
+		}
 		fmt.Println("Error getting user by token:", err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
