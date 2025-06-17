@@ -8,17 +8,14 @@ definitions:
     type: object
   utils.GpxInfo:
     properties:
-      activity_id:
-        example: 101
-        type: integer
       filename:
         example: MonteBianco.gpx
         type: string
       id:
         example: 1
         type: integer
-      stats:
-        example: '{"distance": 5.5, "ascent": 250, "descent": 200}'
+      title:
+        example: Monte Faggeto
         type: string
       upload_date:
         example: "2025-05-11T08:00:00Z"
@@ -103,6 +100,9 @@ definitions:
       description:
         example: Morning hike with friends
         type: string
+      file_id:
+        example: 1
+        type: integer
       latitude:
         example: 40.7128
         type: number
@@ -429,7 +429,7 @@ paths:
       - files
     post:
       consumes:
-      - application/gpx+xml
+      - multipart/form-data
       description: Uploads a GPX file for the authenticated user. The file must be
         sent as form-data with the key 'file'.
       parameters:
@@ -443,6 +443,11 @@ paths:
         name: file
         required: true
         type: file
+      - description: Title for the GPX file
+        in: formData
+        name: title
+        required: true
+        type: string
       produces:
       - application/json
       responses:

@@ -345,7 +345,7 @@ const docTemplate = `{
             "post": {
                 "description": "Uploads a GPX file for the authenticated user. The file must be sent as form-data with the key 'file'.",
                 "consumes": [
-                    "application/gpx+xml"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -366,6 +366,13 @@ const docTemplate = `{
                         "type": "file",
                         "description": "GPX file to upload",
                         "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Title for the GPX file",
+                        "name": "title",
                         "in": "formData",
                         "required": true
                     }
@@ -1053,10 +1060,6 @@ const docTemplate = `{
         "utils.GpxInfo": {
             "type": "object",
             "properties": {
-                "activity_id": {
-                    "type": "integer",
-                    "example": 101
-                },
                 "filename": {
                     "type": "string",
                     "example": "MonteBianco.gpx"
@@ -1065,9 +1068,9 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
-                "stats": {
+                "title": {
                     "type": "string",
-                    "example": "{\"distance\": 5.5, \"ascent\": 250, \"descent\": 200}"
+                    "example": "Monte Faggeto"
                 },
                 "upload_date": {
                     "type": "string",
@@ -1188,6 +1191,10 @@ const docTemplate = `{
                 "description": {
                     "type": "string",
                     "example": "Morning hike with friends"
+                },
+                "file_id": {
+                    "type": "integer",
+                    "example": 1
                 },
                 "latitude": {
                     "type": "number",

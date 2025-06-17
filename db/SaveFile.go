@@ -21,14 +21,14 @@ func SaveFile(db *sql.DB, gpx utils.Gpx, file *multipart.FileHeader) error {
 	}
 
 	// Prepare the SQL statement
-	stmt, err := db.Prepare("INSERT INTO gpx_files (activity_id, user_id, filename, storage_path, upload_date, stats) VALUES (?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO gpx_files (user_id, filename, storage_path, upload_date, title) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
 	// Execute the SQL statement
-	_, err = stmt.Exec(gpx.ActivityID, gpx.UserID, gpx.Filename, gpx.StoragePath, time.Now().Format(time.RFC3339), gpx.Stats)
+	_, err = stmt.Exec(gpx.UserID, gpx.Filename, gpx.StoragePath, time.Now().Format(time.RFC3339), gpx.Title)
 	if err != nil {
 		return err
 	}

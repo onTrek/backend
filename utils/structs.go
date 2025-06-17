@@ -35,32 +35,22 @@ type RegisterInput struct {
 
 type Gpx struct {
 	ID          int    `json:"id" example:"1"`
-	ActivityID  int    `json:"activity_id" example:"101"`
 	UserID      string `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Filename    string `json:"filename" example:"MonteBianco.gpx"`
 	StoragePath string `json:"storage_path" example:"/uploads/gpx/MonteBianco.gpx"`
 	UploadDate  string `json:"upload_date" example:"2025-05-11T08:00:00Z"`
-	Stats       string `json:"stats" example:"{\"distance\": 5.5, \"ascent\": 250, \"descent\": 200}"`
+	Title       string `json:"title" example:"Monte Faggeto"`
 }
 
 type GpxInfo struct {
 	ID         int    `json:"id" example:"1"`
-	ActivityID int    `json:"activity_id" example:"101"`
 	Filename   string `json:"filename" example:"MonteBianco.gpx"`
 	UploadDate string `json:"upload_date" example:"2025-05-11T08:00:00Z"`
-	Stats      string `json:"stats" example:"{\"distance\": 5.5, \"ascent\": 250, \"descent\": 200}"`
+	Title      string `json:"title" example:"Monte Faggeto"`
 }
 
 type GpxInfoDoc struct {
 	Files []GpxInfo `json:"gpx_files"`
-}
-
-type GlobalStats struct {
-	TotalActivities int     `json:"total_activities" example:"100"`
-	TotalDistance   float64 `json:"total_distance" example:"500.5"`
-	TotalAscent     float64 `json:"total_ascent" example:"2500"`
-	TotalDescent    float64 `json:"total_descent" example:"2000"`
-	TotalTime       float64 `json:"total_time" example:"120.5"`
 }
 
 type Session struct {
@@ -91,6 +81,7 @@ type SessionInfo struct {
 	Accuracy    float64 `json:"accuracy" example:"5.0"`
 	HelpRequest bool    `json:"help_request" example:"false"`
 	Time        string  `json:"time" example:"2025-05-11T08:00:00Z"`
+	FileId      int     `json:"file_id" example:"1"`
 }
 
 type SessionInfoCreation struct {
@@ -99,6 +90,7 @@ type SessionInfoCreation struct {
 	Longitude   float64 `json:"longitude" example:"-74.0060"`
 	Altitude    float64 `json:"altitude" example:"10.5"`
 	Accuracy    float64 `json:"accuracy" example:"5.0"`
+	FileId      int     `json:"file_id" example:"1"`
 }
 
 type SessionId struct {

@@ -59,7 +59,7 @@ func SetupDatabase() {
 		filename TEXT NOT NULL,
 		storage_path TEXT NOT NULL,
 		upload_date TEXT NOT NULL,
-		stats TEXT, -- JSON string
+		title TEXT,
 	    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 	`
@@ -74,9 +74,11 @@ func SetupDatabase() {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		description TEXT NOT NULL,
 		created_by TEXT NOT NULL,
+		file_id INTEGER NOT NULL,
 		created_at TEXT NOT NULL,
 	    closed_at TEXT,
-	    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE                               
+	    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE    
+	    FOREIGN KEY (file_id) REFERENCES gpx_files(id) ON DELETE SET NULL
 	);
 	`
 	_, err = db.Exec(createSessionsTable)

@@ -3,10 +3,11 @@ package db
 import (
 	"OnTrek/utils"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
-func CreateSession(db *sql.DB, userID string, info utils.SessionInfo) (utils.Session, error) {
+func CreateSession(db *sql.DB, user utils.User, info utils.SessionInfo) (utils.Session, error) {
 	// Start a transaction
 	tx, err := db.Begin()
 	if err != nil {
@@ -20,15 +21,26 @@ func CreateSession(db *sql.DB, userID string, info utils.SessionInfo) (utils.Ses
 		}
 	}()
 
+	// Check if the file exists
+	var fileExists bool
+	err = tx.QueryRow("SELECT EXISTS(SELECT 1 FROM gpx_files WHERE id = ? AND user_id = ?)", info.FileId, user.ID).Scan(&fileExists)
+	if err != nil {
+		return utils.Session{}, err
+	}
+
+	if !fileExists {
+		return utils.Session{}, fmt.Errorf("file with ID %d does not exist for user %s", info.FileId, user.Username)
+	}
+
 	// Insert into sessions
 	now := time.Now().Format(time.RFC3339)
-	stmt1, err := tx.Prepare("INSERT INTO sessions (created_by, description, created_at) VALUES (?, ?, ?)")
+	stmt1, err := tx.Prepare("INSERT INTO sessions (created_by, description, created_at, file_id) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return utils.Session{}, err
 	}
 	defer stmt1.Close()
 
-	res, err := stmt1.Exec(userID, info.Description, now)
+	res, err := stmt1.Exec(user.ID, info.Description, now, info.FileId)
 	if err != nil {
 		return utils.Session{}, err
 	}
@@ -45,7 +57,7 @@ func CreateSession(db *sql.DB, userID string, info utils.SessionInfo) (utils.Ses
 	}
 	defer stmt2.Close()
 
-	_, err = stmt2.Exec(sessionID, userID, info.Latitude, info.Longitude, info.Altitude, info.Accuracy, now)
+	_, err = stmt2.Exec(sessionID, user.ID, info.Latitude, info.Longitude, info.Altitude, info.Accuracy, now)
 	if err != nil {
 		return utils.Session{}, err
 	}
@@ -56,5 +68,5 @@ func CreateSession(db *sql.DB, userID string, info utils.SessionInfo) (utils.Ses
 		return utils.Session{}, err
 	}
 
-	return utils.Session{ID: int(sessionID), CreatedBy: userID}, nil
+	return utils.Session{ID: int(sessionID), CreatedBy: user.ID}, nil
 }

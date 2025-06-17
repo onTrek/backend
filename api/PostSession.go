@@ -45,6 +45,7 @@ func PostSession(c *gin.Context) {
 		Longitude   float64 `json:"longitude" binding:"required"`
 		Altitude    float64 `json:"altitude" binding:"required"`
 		Accuracy    float64 `json:"accuracy" binding:"required"`
+		FileId      int     `json:"file_id" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -59,17 +60,24 @@ func PostSession(c *gin.Context) {
 		return
 	}
 
+	if input.FileId < 0 {
+		fmt.Println("Invalid file ID")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file ID"})
+		return
+	}
+
 	sessionInfo.Description = input.Description
 	sessionInfo.Latitude = input.Latitude
 	sessionInfo.Longitude = input.Longitude
 	sessionInfo.Altitude = input.Altitude
 	sessionInfo.Accuracy = input.Accuracy
+	sessionInfo.FileId = input.FileId
 
 	// Create a new session
-	session, err := db.CreateSession(c.MustGet("db").(*sql.DB), user.ID, sessionInfo)
+	session, err := db.CreateSession(c.MustGet("db").(*sql.DB), user, sessionInfo)
 	if err != nil {
 		fmt.Println("Error creating session:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error: " + err.Error()})
 		return
 	}
 
