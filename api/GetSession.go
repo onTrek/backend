@@ -54,18 +54,18 @@ func GetSession(c *gin.Context) {
 		return
 	}
 
-	// Check if the session exists
-	_, err = db.CheckSessionExistsByIdAndUserId(c.MustGet("db").(*sql.DB), sessionId, user.ID)
+	// Chekc if the session exists
+	s, err := db.CheckSessionExistsById(c.MustGet("db").(*sql.DB), sessionId)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			fmt.Println("Session not found")
-			c.JSON(http.StatusNotFound, gin.H{"error": "Session not found"})
-			return
-		} else {
-			fmt.Println("Error checking session:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			return
-		}
+		fmt.Println("Error checking session:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+	// Check if the session is valid
+	if s.ID == -1 {
+		fmt.Println("Session not found")
+		c.JSON(http.StatusNotFound, gin.H{"error": "Session not found"})
+		return
 	}
 
 	// Get session info

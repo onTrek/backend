@@ -95,11 +95,13 @@ func SetupDatabase() {
 		longitude FLOAT,
 		altitude FLOAT,
 		accuracy FLOAT,
-		timestamp TEXT NOT NULL,
 		help_request BOOLEAN DEFAULT FALSE,
+		going_to TEXT,
+		timestamp TEXT NOT NULL,
 		PRIMARY KEY (session_id, user_id),
 		FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE,
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+	    FOREIGN KEY (going_to) REFERENCES users(id) ON DELETE SET NULL
 	);
 	`
 	_, err = db.Exec(createMembriTable)
@@ -123,6 +125,12 @@ func SetupDatabase() {
 	}
 
 	fmt.Println("Database e tabelle create correttamente!")
+
+	// Attiva i vincoli di chiave esterna
+	_, err = db.Exec("PRAGMA foreign_keys = ON")
+	if err != nil {
+		log.Fatal("Impossibile attivare PRAGMA foreign_keys:", err)
+	}
 }
 
 func DatabaseMiddleware() gin.HandlerFunc {

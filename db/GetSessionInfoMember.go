@@ -18,7 +18,7 @@ func GetSessionInfoMember(db *sql.DB, sessionId int, userID string) (utils.Sessi
 	}
 
 	var members []utils.MemberInfo
-	query = `SELECT u.id, u.username, sm.latitude, sm.longitude, sm.altitude, sm.accuracy, sm.help_request, sm.timestamp FROM users u JOIN session_members sm ON u.id = sm.user_id WHERE sm.session_id = ?`
+	query = `SELECT u.id, u.username, sm.latitude, sm.longitude, sm.altitude, sm.accuracy, sm.help_request, sm.going_to, sm.timestamp FROM users u JOIN session_members sm ON u.id = sm.user_id WHERE sm.session_id = ?`
 	rows, err := db.Query(query, sessionId)
 	if err != nil {
 		return sessionInfo, err
@@ -27,7 +27,7 @@ func GetSessionInfoMember(db *sql.DB, sessionId int, userID string) (utils.Sessi
 
 	for rows.Next() {
 		var member utils.MemberInfo
-		err := rows.Scan(&member.User.ID, &member.User.Username, &member.SessionInfo.Latitude, &member.SessionInfo.Longitude, &member.SessionInfo.Altitude, &member.SessionInfo.Accuracy, &member.SessionInfo.HelpRequested, &member.TimeStamp)
+		err := rows.Scan(&member.User.ID, &member.User.Username, &member.SessionInfo.Latitude, &member.SessionInfo.Longitude, &member.SessionInfo.Altitude, &member.SessionInfo.Accuracy, &member.SessionInfo.HelpRequested, &member.SessionInfo.GoingTo, &member.TimeStamp)
 		if err != nil {
 			return sessionInfo, err
 		}

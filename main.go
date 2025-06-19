@@ -45,12 +45,13 @@ func main() {
 	// SESSION API
 	sessions := router.Group("/sessions")
 	{
-		sessions.POST("/", api.PostSession)      // crea una nuova sessione
-		sessions.PUT("/:id", api.PutSession)     // aggiorna la posizione della sessione
-		sessions.PATCH("/:id", api.PatchSession) // termina la sessione
-		sessions.POST("/:id", api.PostSessionId) // partecipa a una sessione
-		sessions.GET("/:id", api.GetSession)     // ritorna la sessione
-		sessions.GET("/", api.GetSessions)       // lista delle sessioni
+		sessions.POST("/", api.PostSession)        // crea una nuova sessione
+		sessions.PUT("/:id", api.PutSession)       // aggiorna la posizione della sessione
+		sessions.PATCH("/:id", api.PatchSession)   // termina la sessione
+		sessions.POST("/:id", api.PostSessionId)   // partecipa a una sessione
+		sessions.GET("/:id", api.GetSession)       // ritorna la sessione
+		sessions.GET("/", api.GetSessions)         // lista delle sessioni
+		sessions.DELETE("/:id", api.DeleteSession) // elimina una sessione
 	}
 
 	search := router.Group("/search")

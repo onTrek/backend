@@ -61,8 +61,9 @@ func PutSession(c *gin.Context) {
 		Latitude    float64 `json:"latitude" binding:"required"`
 		Longitude   float64 `json:"longitude" binding:"required"`
 		Altitude    float64 `json:"altitude" binding:"required"`
-		HelpRequest *bool   `json:"help_request" binding:"required"`
 		Accuracy    float64 `json:"accuracy" binding:"required"`
+		HelpRequest *bool   `json:"help_request" binding:"required"`
+		GoingTo     string  `json:"going_to" binding:"omitempty"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -78,19 +79,20 @@ func PutSession(c *gin.Context) {
 	sessionInfo.Altitude = input.Altitude
 	sessionInfo.HelpRequest = *input.HelpRequest
 	sessionInfo.Accuracy = input.Accuracy
+	sessionInfo.GoingTo = input.GoingTo
 
-	// Check if the session exists
-	_, err = db.CheckSessionExistsByIdAndUserId(c.MustGet("db").(*sql.DB), sessionId, user.ID)
+	// Chekc if the session exists
+	s, err := db.CheckSessionExistsById(c.MustGet("db").(*sql.DB), sessionId)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			fmt.Println("Session not found")
-			c.JSON(http.StatusNotFound, gin.H{"error": "Session not found"})
-			return
-		} else {
-			fmt.Println("Error checking session:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			return
-		}
+		fmt.Println("Error checking session:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+	// Check if the session is valid
+	if s.ID == -1 {
+		fmt.Println("Session not found")
+		c.JSON(http.StatusNotFound, gin.H{"error": "Session not found"})
+		return
 	}
 
 	err = db.UpdateSession(c.MustGet("db").(*sql.DB), user.ID, sessionInfo)

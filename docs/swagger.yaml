@@ -157,6 +157,9 @@ definitions:
       altitude:
         example: 10.5
         type: number
+      going_to:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
       help_request:
         example: false
         type: boolean
@@ -723,6 +726,52 @@ paths:
       tags:
       - sessions
   /sessions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a session based on the provided session ID from the URL
+        and the user's token from the header
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Session ID to be deleted
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Session deleted successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid session ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "403":
+          description: Forbidden - User is not the leader of the session
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Session not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to delete session
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Delete a session
+      tags:
+      - sessions
     get:
       description: Get session information by session ID
       parameters:

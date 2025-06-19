@@ -87,8 +87,8 @@ func PostSessionId(c *gin.Context) {
 	}
 	// Check if the session is valid
 	if s.ID == -1 {
-		fmt.Println("Session not found or expired")
-		c.JSON(http.StatusNotFound, gin.H{"error": "Session not found or expired"})
+		fmt.Println("Session not found")
+		c.JSON(http.StatusNotFound, gin.H{"error": "Session not found"})
 		return
 	}
 

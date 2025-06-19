@@ -70,7 +70,7 @@ func PostUpload(c *gin.Context) {
 	err = db.SaveFile(c.MustGet("db").(*sql.DB), gpx, file)
 	if err != nil {
 		fmt.Println("Error saving file:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file" + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file: " + err.Error()})
 		return
 	}
 
