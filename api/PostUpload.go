@@ -12,7 +12,7 @@ import (
 // PostUpload godoc
 // @Summary Upload a GPX file
 // @Description Uploads a GPX file for the authenticated user. The file must be sent as form-data with the key 'file'.
-// @Tags files
+// @Tags gpx
 // @Accept multipart/form-data
 // @Produce json
 // @Param Authorization header string true "Bearer token for user authentication"
@@ -70,7 +70,7 @@ func PostUpload(c *gin.Context) {
 	err = db.SaveFile(c.MustGet("db").(*sql.DB), gpx, file)
 	if err != nil {
 		fmt.Println("Error saving file:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
 		return
 	}
 

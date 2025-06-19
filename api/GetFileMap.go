@@ -10,21 +10,21 @@ import (
 	"strconv"
 )
 
-// GetFile godoc
-// @Summary Download a GPX file by ID
-// @Description Retrieves a file based on the provided file ID and authorization token
-// @Tags gpx
-// @Accept json
-// @Produce octet-stream
-// @Param Authorization header string true "Bearer token for user authentication"
-// @Param id path int true "File ID"
-// @Success 200 {file} file "Returns the requested file as .gpx"
-// @Failure 400 {object} utils.ErrorResponse "Invalid file ID"
-// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
-// @Failure 404 {object} utils.ErrorResponse "File not found"
-// @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /gpx/download/{id} [get]
-func GetFile(c *gin.Context) {
+// GetFileMap godoc
+// @Summary      Get a map file by ID
+// @Description  Get a map file by its ID
+// @Tags         gpx
+// @Accept       json
+// @Produce      image/png
+// @Param 		 Authorization header string true "Bearer token for user authentication"
+// @Param        id   path      int  true  "File ID"
+// @Success      200 {file} string "Returns the map file as a PNG image"
+// @Failure      400 {object} utils.ErrorResponse "Invalid file ID"
+// @Failure      401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure      404 {object} utils.ErrorResponse "File not found"
+// @Failure      500 {object} utils.ErrorResponse "Internal server error"
+// @Router       /gpx/map/{id} [get]
+func GetFileMap(c *gin.Context) {
 	// Get token from the header
 	token := c.GetHeader("Authorization")
 	_, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
@@ -56,7 +56,7 @@ func GetFile(c *gin.Context) {
 		return
 	}
 
-	path := "gpxs/" + gpx.StoragePath
+	path := "maps/" + gpx.StoragePath + ".png"
 	gpxFile, err := os.OpenFile(path, os.O_RDONLY, 0644)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
@@ -66,8 +66,8 @@ func GetFile(c *gin.Context) {
 	defer gpxFile.Close()
 
 	// Set the content type and attachment header
-	c.Header("Content-Type", "application/gpx+xml")
-	c.Header("Content-Disposition", "attachment; filename="+gpx.Filename)
+	c.Header("Content-Type", "image/png")
+	c.Header("Content-Disposition", "attachment; filename="+gpx.Title+".png")
 
 	// Send the file content as a response
 	c.File(path)

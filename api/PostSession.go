@@ -73,11 +73,24 @@ func PostSession(c *gin.Context) {
 	sessionInfo.Accuracy = input.Accuracy
 	sessionInfo.FileId = input.FileId
 
+	// Check if the file exists for the user
+	_, err = db.GetFileByID(c.MustGet("db").(*sql.DB), sessionInfo.FileId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			fmt.Println("File not found for user: " + user.Username)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "File not found for user: " + user.Username})
+			return
+		}
+		fmt.Println("Error getting file by ID:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+
 	// Create a new session
 	session, err := db.CreateSession(c.MustGet("db").(*sql.DB), user, sessionInfo)
 	if err != nil {
 		fmt.Println("Error creating session:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

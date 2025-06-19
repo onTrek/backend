@@ -3,10 +3,17 @@ package db
 import (
 	"OnTrek/utils"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
 func JoinSession(db *sql.DB, userId string, info utils.SessionInfo) error {
+
+	// Enable foreign key enforcement
+	_, err := db.Exec("PRAGMA foreign_keys = ON") // Enable foreign key enforcement
+	if err != nil {
+		return fmt.Errorf("error enabling foreign key enforcement: %v", err)
+	}
 
 	// Prepare the SQL statement
 	stmt, err := db.Prepare("INSERT INTO session_members (session_id, user_id, latitude, longitude, altitude, accuracy, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)")

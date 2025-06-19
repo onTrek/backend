@@ -21,6 +21,12 @@ func CreateSession(db *sql.DB, user utils.User, info utils.SessionInfo) (utils.S
 		}
 	}()
 
+	// Enable foreign key enforcement
+	_, err = tx.Exec("PRAGMA foreign_keys = ON") // Enable foreign key enforcement
+	if err != nil {
+		return utils.Session{}, fmt.Errorf("error enabling foreign key enforcement: %v", err)
+	}
+
 	// Check if the file exists
 	var fileExists bool
 	err = tx.QueryRow("SELECT EXISTS(SELECT 1 FROM gpx_files WHERE id = ? AND user_id = ?)", info.FileId, user.ID).Scan(&fileExists)

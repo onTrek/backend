@@ -59,7 +59,13 @@ func SetupDatabase() {
 		filename TEXT NOT NULL,
 		storage_path TEXT NOT NULL,
 		upload_date TEXT NOT NULL,
-		title TEXT,
+		title TEXT NOT NULL,
+		km FLOAT NOT NULL DEFAULT 0,
+		ascent FLOAT NOT NULL DEFAULT 0,
+		descent FLOAT NOT NULL DEFAULT 0,
+		duration INTEGER NOT NULL DEFAULT 0,
+		max_altitude FLOAT NOT NULL DEFAULT 0,
+		min_altitude FLOAT NOT NULL DEFAULT 0,
 	    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 	`

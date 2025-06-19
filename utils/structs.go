@@ -43,10 +43,25 @@ type Gpx struct {
 }
 
 type GpxInfo struct {
-	ID         int    `json:"id" example:"1"`
-	Filename   string `json:"filename" example:"MonteBianco.gpx"`
-	UploadDate string `json:"upload_date" example:"2025-05-11T08:00:00Z"`
-	Title      string `json:"title" example:"Monte Faggeto"`
+	ID         int      `json:"id" example:"1"`
+	Filename   string   `json:"filename" example:"MonteBianco.gpx"`
+	UploadDate string   `json:"upload_date" example:"2025-05-11T08:00:00Z"`
+	Title      string   `json:"title" example:"Monte Faggeto"`
+	Stats      GPXStats `json:"stats"`
+}
+
+type GpxInfoEssential struct {
+	ID       int    `json:"id" example:"1"`
+	Filename string `json:"filename" example:"MonteBianco.gpx"`
+}
+
+type GPXStats struct {
+	Km          float64 `json:"km" example:"14.5"`
+	Duration    string  `json:"duration" example:"06:30:00"`
+	Ascent      int     `json:"ascent" example:"1000"`
+	Descent     int     `json:"descent" example:"1000"`
+	MaxAltitude int     `json:"max_altitude" example:"2500"`
+	MinAltitude int     `json:"min_altitude" example:"1500"`
 }
 
 type GpxInfoDoc struct {
@@ -54,15 +69,16 @@ type GpxInfoDoc struct {
 }
 
 type Session struct {
-	ID          int            `json:"id" example:"1"`
-	CreatedBy   string         `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Description string         `json:"description" example:"Morning hike with friends"`
-	CreatedAt   string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	ClosedAt    sql.NullString `json:"closed_at" example:"2025-05-11T09:00:00Z"`
+	ID          int              `json:"session_id" example:"1"`
+	CreatedBy   string           `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Description string           `json:"description" example:"Morning hike with friends"`
+	CreatedAt   string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	ClosedAt    sql.NullString   `json:"closed_at" example:"2025-05-11T09:00:00Z"`
+	File        GpxInfoEssential `json:"file"`
 }
 
 type SessionDoc struct {
-	ID          int    `json:"id" example:"1"`
+	ID          int    `json:"session_id" example:"1"`
 	CreatedBy   string `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Description string `json:"description" example:"Morning hike with friends"`
 	CreatedAt   string `json:"created_at" example:"2025-05-11T08:00:00Z"`
@@ -70,6 +86,7 @@ type SessionDoc struct {
 		String string `json:"String" example:"2025-05-11T09:00:00Z"`
 		Valid  bool   `json:"Valid" example:"true"`
 	}
+	File GpxInfoEssential `json:"file"`
 }
 
 type SessionInfo struct {

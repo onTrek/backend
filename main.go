@@ -10,8 +10,10 @@ import (
 	"OnTrek/db"
 	_ "OnTrek/docs" // Import the generated docs package
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"log"
 )
 
 func main() {
@@ -23,6 +25,11 @@ func main() {
 	router := gin.Default()
 
 	router.Use(db.DatabaseMiddleware())
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
@@ -36,10 +43,11 @@ func main() {
 	// GPX API
 	gpx := router.Group("/gpx")
 	{
-		gpx.DELETE("/:id", api.DeleteFile) // elimina un GPX
-		gpx.POST("/", api.PostUpload)      // carica un file GPX
-		gpx.GET("/", api.GetFiles)         // lista dei GPX caricati dall'utente
-		gpx.GET("/:id", api.GetFile)       // scarica un GPX specifico
+		gpx.DELETE("/:id", api.DeleteFile)    // elimina un GPX
+		gpx.POST("/", api.PostUpload)         // carica un file GPX
+		gpx.GET("/", api.GetFiles)            // lista dei GPX caricati dall'utente
+		gpx.GET("/download/:id", api.GetFile) // scarica un file GPX specifico
+		gpx.GET("/map/:id", api.GetFileMap)   // scarica la mappa di un file GPX specifico
 	}
 
 	// SESSION API
@@ -76,7 +84,7 @@ func main() {
 
 	router.Static("/docs", "./docs")
 
-	err := router.Run(":8080")
+	err = router.Run(":8080")
 	if err != nil {
 		panic(err)
 	}

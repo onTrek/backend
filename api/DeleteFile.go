@@ -2,7 +2,6 @@ package api
 
 import (
 	"OnTrek/db"
-	"OnTrek/utils"
 	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -13,7 +12,7 @@ import (
 // DeleteFile godoc
 // @Summary Delete a file by ID
 // @Description Deletes a file by its ID from both the database and the disk
-// @Tags files
+// @Tags gpx
 // @Produce json
 // @Param Authorization header string true "Bearer token for user authentication"
 // @Param id path int true "File ID"
@@ -54,16 +53,8 @@ func DeleteFile(c *gin.Context) {
 		return
 	}
 
-	// Delete file from the disk
-	err = utils.DeleteFile(gpx.StoragePath)
-	if err != nil {
-		fmt.Println("Error deleting file from disk:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete file"})
-		return
-	}
-
 	// Delete file from the database
-	err = db.DeleteFileById(c.MustGet("db").(*sql.DB), fileID, user.ID)
+	err = db.DeleteFileById(c.MustGet("db").(*sql.DB), fileID, user.ID, gpx)
 	if err != nil {
 		fmt.Println("Error deleting file from database:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete file from database"})

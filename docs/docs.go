@@ -309,7 +309,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "files"
+                    "gpx"
                 ],
                 "summary": "Retrieve user's GPX files",
                 "parameters": [
@@ -334,6 +334,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "No GPX files found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
                     "500": {
                         "description": "Error fetching files",
                         "schema": {
@@ -351,7 +357,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "files"
+                    "gpx"
                 ],
                 "summary": "Upload a GPX file",
                 "parameters": [
@@ -405,7 +411,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/gpx/{id}": {
+        "/gpx/download/{id}": {
             "get": {
                 "description": "Retrieves a file based on the provided file ID and authorization token",
                 "consumes": [
@@ -415,9 +421,9 @@ const docTemplate = `{
                     "application/octet-stream"
                 ],
                 "tags": [
-                    "files"
+                    "gpx"
                 ],
-                "summary": "Retrieve a file by ID",
+                "summary": "Download a GPX file by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -436,7 +442,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns the requested file",
+                        "description": "Returns the requested file as .gpx",
                         "schema": {
                             "type": "file"
                         }
@@ -466,14 +472,79 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/gpx/map/{id}": {
+            "get": {
+                "description": "Get a map file by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "image/png"
+                ],
+                "tags": [
+                    "gpx"
+                ],
+                "summary": "Get a map file by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "File ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the map file as a PNG image",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid file ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "File not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/gpx/{id}": {
             "delete": {
                 "description": "Deletes a file by its ID from both the database and the disk",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "files"
+                    "gpx"
                 ],
                 "summary": "Delete a file by ID",
                 "parameters": [
@@ -1124,6 +1195,35 @@ const docTemplate = `{
                 }
             }
         },
+        "utils.GPXStats": {
+            "type": "object",
+            "properties": {
+                "ascent": {
+                    "type": "integer",
+                    "example": 1000
+                },
+                "descent": {
+                    "type": "integer",
+                    "example": 1000
+                },
+                "duration": {
+                    "type": "string",
+                    "example": "06:30:00"
+                },
+                "km": {
+                    "type": "number",
+                    "example": 14.5
+                },
+                "max_altitude": {
+                    "type": "integer",
+                    "example": 2500
+                },
+                "min_altitude": {
+                    "type": "integer",
+                    "example": 1500
+                }
+            }
+        },
         "utils.GpxInfo": {
             "type": "object",
             "properties": {
@@ -1134,6 +1234,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer",
                     "example": 1
+                },
+                "stats": {
+                    "$ref": "#/definitions/utils.GPXStats"
                 },
                 "title": {
                     "type": "string",
@@ -1153,6 +1256,19 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/utils.GpxInfo"
                     }
+                }
+            }
+        },
+        "utils.GpxInfoEssential": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string",
+                    "example": "MonteBianco.gpx"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1229,7 +1345,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Morning hike with friends"
                 },
-                "id": {
+                "file": {
+                    "$ref": "#/definitions/utils.GpxInfoEssential"
+                },
+                "session_id": {
                     "type": "integer",
                     "example": 1
                 }

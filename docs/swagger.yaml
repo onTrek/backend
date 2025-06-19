@@ -6,6 +6,27 @@ definitions:
         example: An error occurred
         type: string
     type: object
+  utils.GPXStats:
+    properties:
+      ascent:
+        example: 1000
+        type: integer
+      descent:
+        example: 1000
+        type: integer
+      duration:
+        example: "06:30:00"
+        type: string
+      km:
+        example: 14.5
+        type: number
+      max_altitude:
+        example: 2500
+        type: integer
+      min_altitude:
+        example: 1500
+        type: integer
+    type: object
   utils.GpxInfo:
     properties:
       filename:
@@ -14,6 +35,8 @@ definitions:
       id:
         example: 1
         type: integer
+      stats:
+        $ref: '#/definitions/utils.GPXStats'
       title:
         example: Monte Faggeto
         type: string
@@ -27,6 +50,15 @@ definitions:
         items:
           $ref: '#/definitions/utils.GpxInfo'
         type: array
+    type: object
+  utils.GpxInfoEssential:
+    properties:
+      filename:
+        example: MonteBianco.gpx
+        type: string
+      id:
+        example: 1
+        type: integer
     type: object
   utils.Login:
     properties:
@@ -79,7 +111,9 @@ definitions:
       description:
         example: Morning hike with friends
         type: string
-      id:
+      file:
+        $ref: '#/definitions/utils.GpxInfoEssential'
+      session_id:
         example: 1
         type: integer
     type: object
@@ -423,13 +457,17 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: No GPX files found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
         "500":
           description: Error fetching files
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: Retrieve user's GPX files
       tags:
-      - files
+      - gpx
     post:
       consumes:
       - multipart/form-data
@@ -472,7 +510,7 @@ paths:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: Upload a GPX file
       tags:
-      - files
+      - gpx
   /gpx/{id}:
     delete:
       description: Deletes a file by its ID from both the database and the disk
@@ -512,7 +550,8 @@ paths:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: Delete a file by ID
       tags:
-      - files
+      - gpx
+  /gpx/download/{id}:
     get:
       consumes:
       - application/json
@@ -533,7 +572,7 @@ paths:
       - application/octet-stream
       responses:
         "200":
-          description: Returns the requested file
+          description: Returns the requested file as .gpx
           schema:
             type: file
         "400":
@@ -552,9 +591,51 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
-      summary: Retrieve a file by ID
+      summary: Download a GPX file by ID
       tags:
-      - files
+      - gpx
+  /gpx/map/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a map file by its ID
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: Returns the map file as a PNG image
+          schema:
+            type: file
+        "400":
+          description: Invalid file ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get a map file by ID
+      tags:
+      - gpx
   /profile:
     delete:
       consumes:
