@@ -36,6 +36,11 @@ func SaveFile(file *multipart.FileHeader, storagePath string) error {
 	}
 	defer src.Close()
 
+	// Create the directory if it doesn't exist
+	if err := os.MkdirAll("gpxs", os.ModePerm); err != nil {
+		return fmt.Errorf("errore creazione cartella gpxs: %w", err)
+	}
+
 	// Create the destination file
 	storagePath = "gpxs/" + storagePath
 	dst, err := os.Create(storagePath)
