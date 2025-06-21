@@ -10,7 +10,7 @@ import (
 
 func SetupDatabase() {
 	// Open a connection to the SQLite database
-	db, err := sql.Open("sqlite3", ".root/db/ontrek.db")
+	db, err := sql.Open("sqlite3", "./root/db/ontrek.db")
 	if err != nil {
 		log.Fatal(err)
 	}
