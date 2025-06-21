@@ -8,28 +8,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
-// PostSessionId godoc
-// @Summary Join a session using session ID
-// @Description Allows a user to join a session by providing their session ID
+// GetMembersInfo godoc
+// @Summary Get members information of a session
+// @Description Get members information by session ID
 // @Tags sessions
-// @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Param id path string true "Session ID"
-// @Success 201 {object} utils.SuccessResponse "Successfully joined session"
-// @Failure 400 {object} utils.ErrorResponse "Invalid request"
-// @Failure 400 {object} utils.ErrorResponse "Session ID is required"
+// @Param id path int true "Session ID"
+// @Success 200 {array} utils.MemberInfo "List of members in the session"
+// @Failure 400 {object} utils.ErrorResponse "Bad request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Session not found"
-// @Failure 409 {object} utils.ErrorResponse "User already joined the session"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /sessions/{id} [post]
-func PostSessionId(c *gin.Context) {
-	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+// @Router /sessions/{id}/members/ [get]
+func GetMembersInfo(c *gin.Context) {
 
 	// Get session ID from the URL
 	session := c.Param("id")
@@ -46,7 +40,7 @@ func PostSessionId(c *gin.Context) {
 		return
 	}
 
-	// Chekc if the session exists
+	// Check if the session exists
 	s, err := db.CheckSessionExistsById(c.MustGet("db").(*sql.DB), sessionId)
 	if err != nil {
 		fmt.Println("Error checking session:", err)
@@ -60,17 +54,17 @@ func PostSessionId(c *gin.Context) {
 		return
 	}
 
-	err = db.JoinSession(c.MustGet("db").(*sql.DB), user.ID, sessionId)
+	members, err := db.GetMembersInfoBySessionId(c.MustGet("db").(*sql.DB), sessionId)
 	if err != nil {
-		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
-			fmt.Println("User already joined the session")
-			c.JSON(http.StatusConflict, gin.H{"error": "User already joined the session"})
-			return
-		}
-		fmt.Println("Error joining session:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to join session"})
+		fmt.Println("Error getting sessions:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return
 	}
-	// Return success response
-	c.JSON(http.StatusCreated, gin.H{"message": "Successfully joined session"})
+
+	if len(members) == 0 {
+		c.JSON(http.StatusOK, []utils.MemberInfo{})
+		return
+	}
+
+	c.JSON(http.StatusOK, members)
 }

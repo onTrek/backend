@@ -7,7 +7,7 @@ import (
 
 func GetFriends(db *sql.DB, userID string) ([]utils.UserEssentials, error) {
 	// Prepare the SQL statement
-	stmt, err := db.Prepare("SELECT id, username FROM users WHERE id IN (SELECT user_id1 FROM friends WHERE user_id2 = ? UNION SELECT user_id2 FROM friends WHERE user_id1 = ?)")
+	stmt, err := db.Prepare("SELECT id, username FROM users WHERE id IN (SELECT user_id1 FROM friends WHERE user_id2 = ? AND pending = FALSE UNION SELECT user_id2 FROM friends WHERE user_id1 = ? AND pending = FALSE)")
 	if err != nil {
 		return nil, err
 	}

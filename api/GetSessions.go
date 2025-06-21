@@ -17,7 +17,6 @@ import (
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Success 200 {object} []utils.SessionDoc "List of sessions"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
-// @Failure 404 {object} utils.ErrorResponse "Session not found"
 // @Failure 500 {object} utils.ErrorResponse "Error fetching files"
 // @Router /sessions/ [get]
 func GetSessions(c *gin.Context) {

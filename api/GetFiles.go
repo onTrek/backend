@@ -17,7 +17,6 @@ import (
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Success 200 {object} []utils.GpxInfo "gpx_files"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
-// @Failure 404 {object} utils.ErrorResponse "No GPX files found"
 // @Failure 500 {object} utils.ErrorResponse "Error fetching files"
 // @Router /gpx/ [get]
 func GetFiles(c *gin.Context) {

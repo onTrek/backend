@@ -3,42 +3,20 @@ package db
 import (
 	"OnTrek/utils"
 	"database/sql"
+	"errors"
 )
 
-func GetSessionInfoMember(db *sql.DB, sessionId int, userID string) (utils.SessionInfoResponse, error) {
+func GetSessionInfo(db *sql.DB, sessionId int, userID string) (utils.SessionInfoResponse, error) {
 	var sessionInfo utils.SessionInfoResponse
-	query := ` SELECT u.id, u.username, s.description, s.created_at, s.closed_at FROM users u	JOIN sessions s ON u.id = s.created_by WHERE s.id = ?`
+	query := ` SELECT u.id, u.username, s.description, s.created_at, s.closed_at FROM users u JOIN sessions s ON u.id = s.created_by WHERE s.id = ?`
 	row := db.QueryRow(query, sessionId)
 	err := row.Scan(&sessionInfo.CreatedBy.ID, &sessionInfo.CreatedBy.Username, &sessionInfo.Description, &sessionInfo.CreatedAt, &sessionInfo.ClosedAt)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return sessionInfo, nil
 		}
 		return sessionInfo, err
 	}
-
-	var members []utils.MemberInfo
-	query = `SELECT u.id, u.username, sm.latitude, sm.longitude, sm.altitude, sm.accuracy, sm.help_request, sm.going_to, sm.timestamp FROM users u JOIN session_members sm ON u.id = sm.user_id WHERE sm.session_id = ?`
-	rows, err := db.Query(query, sessionId)
-	if err != nil {
-		return sessionInfo, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var member utils.MemberInfo
-		err := rows.Scan(&member.User.ID, &member.User.Username, &member.SessionInfo.Latitude, &member.SessionInfo.Longitude, &member.SessionInfo.Altitude, &member.SessionInfo.Accuracy, &member.SessionInfo.HelpRequested, &member.SessionInfo.GoingTo, &member.TimeStamp)
-		if err != nil {
-			return sessionInfo, err
-		}
-		members = append(members, member)
-	}
-
-	if err := rows.Err(); err != nil {
-		return sessionInfo, err
-	}
-
-	sessionInfo.Members = members
 
 	return sessionInfo, nil
 }

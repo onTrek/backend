@@ -120,6 +120,7 @@ func SetupDatabase() {
 	CREATE TABLE IF NOT EXISTS friends (
 		user_id1 TEXT NOT NULL,
 		user_id2 TEXT NOT NULL,
+		pending BOOLEAN DEFAULT TRUE,
 		PRIMARY KEY (user_id1, user_id2),
 		FOREIGN KEY (user_id1) REFERENCES users(id) ON DELETE CASCADE,
 		FOREIGN KEY (user_id2) REFERENCES users(id) ON DELETE CASCADE

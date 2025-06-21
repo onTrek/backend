@@ -24,7 +24,7 @@ import (
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Session not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /sessions/{id} [put]
+// @Router /sessions/{id}/members/ [put]
 func PutSession(c *gin.Context) {
 
 	var sessionInfo utils.SessionInfo

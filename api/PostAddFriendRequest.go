@@ -4,13 +4,14 @@ import (
 	"OnTrek/db"
 	"OnTrek/utils"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-// PutFriend godoc
-// @Summary Add a friend to the user
+// PostAddFriendRequest godoc
+// @Summary Send a friend request
 // @Description Allows a user to add another user as a friend by their user ID
 // @Tags friends
 // @Accept json
@@ -24,8 +25,8 @@ import (
 // @Failure 409 {object} utils.ErrorResponse "Users are already friends"
 // @Failure 409 {object} utils.ErrorResponse "User cannot add themselves as a friend"
 // @Failure 500 {object} utils.ErrorResponse "Failed to add friend"
-// @Router /friends/{id} [put]
-func PutFriend(c *gin.Context) {
+// @Router /friends/requests/{id} [post]
+func PostAddFriendRequest(c *gin.Context) {
 
 	// Get the user from the context
 	user := c.MustGet("user").(utils.User)
@@ -43,7 +44,7 @@ func PutFriend(c *gin.Context) {
 	// Check if the user ID is valid
 	user2, err := db.GetUserById(c.MustGet("db").(*sql.DB), userID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("User not found")
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 			return
@@ -73,5 +74,5 @@ func PutFriend(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Friend added successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Friend request sent successfully"})
 }

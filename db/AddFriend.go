@@ -15,7 +15,7 @@ func AddFriend(db *sql.DB, userID string, friendID string) error {
 
 	// Check if the friend already exists
 	var count int
-	err = db.QueryRow("SELECT COUNT(*) FROM friends WHERE user_id1 = ? AND user_id2 = ? OR user_id1 = ? AND user_id2 = ?", userID, friendID, friendID, userID).Scan(&count)
+	err = db.QueryRow("SELECT COUNT(*) FROM friends WHERE (user_id1 = ? AND user_id2 = ? OR user_id1 = ? AND user_id2 = ?) AND pending = FALSE", userID, friendID, friendID, userID).Scan(&count)
 	if err != nil {
 		return err
 	}
@@ -24,7 +24,7 @@ func AddFriend(db *sql.DB, userID string, friendID string) error {
 	}
 
 	// Add the friend to the database
-	_, err = db.Exec("INSERT INTO friends (user_id1, user_id2) VALUES (?, ?)", userID, friendID)
+	_, err = db.Exec("INSERT INTO friends (user_id1, user_id2, pending) VALUES (?, ?, TRUE)", userID, friendID)
 	if err != nil {
 		return err
 	}

@@ -16,9 +16,8 @@ import (
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Success 200 {array} []utils.UserEssentials "List of friends"
+// @Success 200 {array} utils.UserEssentials "List of friends"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
-// @Failure 404 {object} utils.ErrorResponse "No friends found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /friends/ [get]
 func GetFriends(c *gin.Context) {

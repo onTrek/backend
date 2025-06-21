@@ -137,7 +137,6 @@ type SessionInfoResponse struct {
 	Description string         `json:"description" example:"Morning hike with friends"`
 	CreatedAt   string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
 	ClosedAt    sql.NullString `json:"closed_at" example:"2025-05-11T09:00:00Z"`
-	Members     []MemberInfo   `json:"members"`
 }
 
 type SessionInfoResponseDoc struct {
@@ -148,7 +147,6 @@ type SessionInfoResponseDoc struct {
 		String string `json:"String" example:"2025-05-11T09:00:00Z"`
 		Valid  bool   `json:"Valid" example:"true"`
 	}
-	Members []MemberInfo `json:"members"`
 }
 
 type SuccessResponse struct {

@@ -47,13 +47,15 @@ func main() {
 	sessions := router.Group("/sessions")
 	sessions.Use(db.AuthMiddleware())
 	{
-		sessions.POST("/", api.PostSession)        // crea una nuova sessione
-		sessions.PUT("/:id", api.PutSession)       // aggiorna la posizione della sessione
-		sessions.PATCH("/:id", api.PatchSession)   // termina la sessione
-		sessions.POST("/:id", api.PostSessionId)   // partecipa a una sessione
-		sessions.GET("/:id", api.GetSession)       // ritorna la sessione
-		sessions.GET("/", api.GetSessions)         // lista delle sessioni
-		sessions.DELETE("/:id", api.DeleteSession) // elimina una sessione
+		sessions.POST("/", api.PostSession)                  // crea una nuova sessione
+		sessions.GET("/", api.GetSessions)                   // lista delle sessioni
+		sessions.DELETE("/:id", api.DeleteSession)           // elimina una sessione
+		sessions.PATCH("/:id", api.PatchSession)             // termina la sessione
+		sessions.GET("/:id", api.GetSession)                 // ritorna la sessione
+		sessions.PUT("/:id/members/", api.PutSession)        // aggiorna la posizione della sessione
+		sessions.POST("/:id/members/", api.PostSessionId)    // partecipa a una sessione
+		sessions.GET("/:id/members/", api.GetMembersInfo)    // ritorna i membri della sessione
+		sessions.DELETE(":id/members/", api.DeleteSessionId) // esce da una sessione
 	}
 
 	search := router.Group("/search")
@@ -66,9 +68,12 @@ func main() {
 	friends := router.Group("/friends")
 	friends.Use(db.AuthMiddleware())
 	{
-		friends.PUT("/:id", api.PutFriend)       // aggiungi un amico
-		friends.GET("/", api.GetFriends)         // lista degli amici
-		friends.DELETE("/:id", api.DeleteFriend) // elimina un amico
+		friends.GET("/", api.GetFriends)                                // lista degli amici
+		friends.DELETE("/:id", api.DeleteFriend)                        // elimina un amico
+		friends.POST("/requests/:id", api.PostAddFriendRequest)         // aggiungi un amico
+		friends.GET("/requests/", api.GetFriendRequests)                // lista delle richieste di amicizia
+		friends.PUT("/requests/:id", api.PutAcceptFriendRequest)        // accetta una richiesta di amicizia
+		friends.DELETE("/requests/:id", api.DeleteDeclineFriendRequest) // rifiuta una richiesta di amicizia
 	}
 
 	// USER API

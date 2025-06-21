@@ -4,31 +4,29 @@ import (
 	"OnTrek/db"
 	"OnTrek/utils"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
-// PostSessionId godoc
-// @Summary Join a session using session ID
-// @Description Allows a user to join a session by providing their session ID
+// DeleteSessionId godoc
+// @Summary Leave a session using session ID
+// @Description Allows a user to leave a session by providing their session ID
 // @Tags sessions
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "Session ID"
-// @Success 201 {object} utils.SuccessResponse "Successfully joined session"
+// @Success 201 {object} utils.SuccessResponse "Successfully left session"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
-// @Failure 400 {object} utils.ErrorResponse "Session ID is required"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Session not found"
-// @Failure 409 {object} utils.ErrorResponse "User already joined the session"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /sessions/{id} [post]
-func PostSessionId(c *gin.Context) {
-	// Get the user from the context
+// @Router /sessions/{id}/members [delete]
+func DeleteSessionId(c *gin.Context) {
+
 	user := c.MustGet("user").(utils.User)
 
 	// Get session ID from the URL
@@ -60,11 +58,11 @@ func PostSessionId(c *gin.Context) {
 		return
 	}
 
-	err = db.JoinSession(c.MustGet("db").(*sql.DB), user.ID, sessionId)
+	err = db.LeaveSessionById(c.MustGet("db").(*sql.DB), user.ID, sessionId)
 	if err != nil {
-		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
-			fmt.Println("User already joined the session")
-			c.JSON(http.StatusConflict, gin.H{"error": "User already joined the session"})
+		if errors.Is(err, sql.ErrNoRows) {
+			fmt.Println("User not found in session")
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found in session"})
 			return
 		}
 		fmt.Println("Error joining session:", err)
@@ -72,5 +70,5 @@ func PostSessionId(c *gin.Context) {
 		return
 	}
 	// Return success response
-	c.JSON(http.StatusCreated, gin.H{"message": "Successfully joined session"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Successfully left session"})
 }
