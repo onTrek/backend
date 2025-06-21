@@ -4,6 +4,7 @@ import (
 	"OnTrek/db"
 	"OnTrek/utils"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -25,18 +26,9 @@ import (
 func PostSession(c *gin.Context) {
 
 	var sessionInfo utils.SessionInfo
-	// Get token from the header
-	token := c.GetHeader("Bearer")
-	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
-	if err != nil {
-		if err.Error() == "token expired" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})
-			return
-		}
-		fmt.Println("Error getting user by token:", err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+
+	// Get the user from the context
+	user := c.MustGet("user").(utils.User)
 
 	// Get data from the request body
 	var input struct {
@@ -74,9 +66,9 @@ func PostSession(c *gin.Context) {
 	sessionInfo.FileId = input.FileId
 
 	// Check if the file exists for the user
-	_, err = db.GetFileByID(c.MustGet("db").(*sql.DB), sessionInfo.FileId)
+	_, err := db.GetFileByID(c.MustGet("db").(*sql.DB), sessionInfo.FileId)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("File not found for user: " + user.Username)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "File not found for user: " + user.Username})
 			return

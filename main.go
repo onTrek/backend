@@ -8,7 +8,7 @@ package main
 import (
 	"OnTrek/api"
 	"OnTrek/db"
-	_ "OnTrek/docs" // Import the generated docs package
+	_ "OnTrek/docs"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -16,7 +16,6 @@ import (
 
 func main() {
 
-	// Call the setup function from dbsetup package
 	db.SetupDatabase()
 	url := ginSwagger.URL("/swagger/doc.json") // The url pointing to API definition
 
@@ -35,6 +34,7 @@ func main() {
 
 	// GPX API
 	gpx := router.Group("/gpx")
+	gpx.Use(db.AuthMiddleware())
 	{
 		gpx.DELETE("/:id", api.DeleteFile)    // elimina un GPX
 		gpx.POST("/", api.PostUpload)         // carica un file GPX
@@ -45,6 +45,7 @@ func main() {
 
 	// SESSION API
 	sessions := router.Group("/sessions")
+	sessions.Use(db.AuthMiddleware())
 	{
 		sessions.POST("/", api.PostSession)        // crea una nuova sessione
 		sessions.PUT("/:id", api.PutSession)       // aggiorna la posizione della sessione
@@ -56,12 +57,14 @@ func main() {
 	}
 
 	search := router.Group("/search")
+	search.Use(db.AuthMiddleware())
 	{
 		search.GET("/", api.GetSearchPeople) // ricerca persone da aggiungere agli amici
 	}
 
 	// FRIENDS API
 	friends := router.Group("/friends")
+	friends.Use(db.AuthMiddleware())
 	{
 		friends.PUT("/:id", api.PutFriend)       // aggiungi un amico
 		friends.GET("/", api.GetFriends)         // lista degli amici
@@ -70,6 +73,7 @@ func main() {
 
 	// USER API
 	user := router.Group("/profile")
+	user.Use(db.AuthMiddleware())
 	{
 		user.GET("", api.GetProfile)       // dati personali
 		user.DELETE("", api.DeleteProfile) // cancella l'account

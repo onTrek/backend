@@ -25,18 +25,6 @@ import (
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /gpx/{id}/download [get]
 func GetFile(c *gin.Context) {
-	// Get token from the header
-	token := c.GetHeader("Bearer")
-	_, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
-	if err != nil {
-		if err.Error() == "token expired" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})
-			return
-		}
-		fmt.Println("Error getting user by token:", err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
 
 	// Get the file ID from the URL parameter
 	file := c.Param("id")

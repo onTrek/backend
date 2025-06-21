@@ -2,6 +2,7 @@ package api
 
 import (
 	"OnTrek/db"
+	"OnTrek/utils"
 	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -25,18 +26,9 @@ import (
 // @Failure 500 {object} utils.ErrorResponse "Failed to add friend"
 // @Router /friends/{id} [put]
 func PutFriend(c *gin.Context) {
-	// Get token from the header
-	token := c.GetHeader("Bearer")
-	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
-	if err != nil {
-		if err.Error() == "token expired" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})
-			return
-		}
-		fmt.Println("Error getting user by token:", err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+
+	// Get the user from the context
+	user := c.MustGet("user").(utils.User)
 
 	// Get the user ID from the URL parameter
 	userID := c.Param("id")

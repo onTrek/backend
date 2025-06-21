@@ -26,18 +26,8 @@ import (
 func PostUpload(c *gin.Context) {
 	var title string
 
-	// Get token from the header
-	token := c.GetHeader("Bearer")
-	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
-	if err != nil {
-		if err.Error() == "token expired" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})
-			return
-		}
-		fmt.Println("Error getting user by token:", err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+	// Get the user from the context
+	user := c.MustGet("user").(utils.User)
 
 	// Get the gpx file from the form data
 	file, err := c.FormFile("file")
