@@ -10,10 +10,8 @@ import (
 	"OnTrek/db"
 	_ "OnTrek/docs" // Import the generated docs package
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"log"
 )
 
 func main() {
