@@ -27,6 +27,8 @@ COPY --from=builder /app/docs ./docs
 
 RUN mkdir -p maps gpxs
 
+RUN mkdir -p /root/db
+
 EXPOSE 3000
 
 CMD ["./server"]
