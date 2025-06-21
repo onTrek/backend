@@ -28,8 +28,9 @@ func GetSessionsByUserId(db *sql.DB, userId string) ([]utils.Session, error) {
 	if err := rows.Err(); err != nil {
 		return []utils.Session{}, err
 	}
+
 	if len(session) == 0 {
-		return []utils.Session{}, sql.ErrNoRows
+		return []utils.Session{}, nil
 	} else {
 		return session, nil
 	}

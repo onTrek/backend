@@ -64,10 +64,6 @@ type GPXStats struct {
 	MinAltitude int     `json:"min_altitude" example:"1500"`
 }
 
-type GpxInfoDoc struct {
-	Files []GpxInfo `json:"gpx_files"`
-}
-
 type Session struct {
 	ID          int              `json:"session_id" example:"1"`
 	CreatedBy   string           `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`

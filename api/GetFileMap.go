@@ -16,17 +16,17 @@ import (
 // @Tags         gpx
 // @Accept       json
 // @Produce      image/png
-// @Param 		 Authorization header string true "Bearer token for user authentication"
+// @Param Bearer header string true "Bearer token for user authentication"
 // @Param        id   path      int  true  "File ID"
 // @Success      200 {file} string "Returns the map file as a PNG image"
 // @Failure      400 {object} utils.ErrorResponse "Invalid file ID"
 // @Failure      401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure      404 {object} utils.ErrorResponse "File not found"
 // @Failure      500 {object} utils.ErrorResponse "Internal server error"
-// @Router       /gpx/map/{id} [get]
+// @Router       /gpx/{id}/map [get]
 func GetFileMap(c *gin.Context) {
 	// Get token from the header
-	token := c.GetHeader("Authorization")
+	token := c.GetHeader("Bearer")
 	_, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		if err.Error() == "token expired" {

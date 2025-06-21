@@ -14,7 +14,7 @@ import (
 // @Tags friends
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "Bearer token for user authentication"
+// @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "User ID of the friend to be added"
 // @Success 201 {object} utils.SuccessResponse "Friend added successfully"
 // @Failure 400 {object} utils.ErrorResponse "Missing or invalid user ID"ss
@@ -26,7 +26,7 @@ import (
 // @Router /friends/{id} [put]
 func PutFriend(c *gin.Context) {
 	// Get token from the header
-	token := c.GetHeader("Authorization")
+	token := c.GetHeader("Bearer")
 	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		if err.Error() == "token expired" {

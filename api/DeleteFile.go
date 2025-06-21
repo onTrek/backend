@@ -14,7 +14,7 @@ import (
 // @Description Deletes a file by its ID from both the database and the disk
 // @Tags gpx
 // @Produce json
-// @Param Authorization header string true "Bearer token for user authentication"
+// @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "File ID"
 // @Success 200 {object} utils.SuccessResponse "File deleted successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid file ID"
@@ -24,7 +24,7 @@ import (
 // @Router /gpx/{id} [delete]
 func DeleteFile(c *gin.Context) {
 	// Get token from the header
-	token := c.GetHeader("Authorization")
+	token := c.GetHeader("Bearer")
 	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		if err.Error() == "token expired" {

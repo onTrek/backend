@@ -46,8 +46,8 @@ func main() {
 		gpx.DELETE("/:id", api.DeleteFile)    // elimina un GPX
 		gpx.POST("/", api.PostUpload)         // carica un file GPX
 		gpx.GET("/", api.GetFiles)            // lista dei GPX caricati dall'utente
-		gpx.GET("/download/:id", api.GetFile) // scarica un file GPX specifico
-		gpx.GET("/map/:id", api.GetFileMap)   // scarica la mappa di un file GPX specifico
+		gpx.GET("/:id/download", api.GetFile) // scarica un file GPX specifico
+		gpx.GET("/:id/map", api.GetFileMap)   // scarica la mappa di un file GPX specifico
 	}
 
 	// SESSION API

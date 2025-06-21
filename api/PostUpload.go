@@ -15,7 +15,7 @@ import (
 // @Tags gpx
 // @Accept multipart/form-data
 // @Produce json
-// @Param Authorization header string true "Bearer token for user authentication"
+// @Param Bearer header string true "Bearer token for user authentication"
 // @Param file formData file true "GPX file to upload"
 // @Param title formData string true "Title for the GPX file"
 // @Success 201 {object} utils.SuccessResponse "File uploaded successfully"
@@ -27,7 +27,7 @@ func PostUpload(c *gin.Context) {
 	var title string
 
 	// Get token from the header
-	token := c.GetHeader("Authorization")
+	token := c.GetHeader("Bearer")
 	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		if err.Error() == "token expired" {

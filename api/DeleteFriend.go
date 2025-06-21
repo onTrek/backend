@@ -14,7 +14,7 @@ import (
 // @Tags friends
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "Bearer token for user authentication"
+// @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "Friend ID to be deleted" example:"12345"
 // @Success 200 {object} utils.SuccessResponse "Friend deleted successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid friend ID"
@@ -25,7 +25,7 @@ import (
 // @Router /friends/{id} [delete]
 func DeleteFriend(c *gin.Context) {
 	// Get token from the header
-	token := c.GetHeader("Authorization")
+	token := c.GetHeader("Bearer")
 	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		if err.Error() == "token expired" {

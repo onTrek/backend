@@ -2,6 +2,7 @@ package api
 
 import (
 	"OnTrek/db"
+	"OnTrek/utils"
 	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -13,15 +14,15 @@ import (
 // @Description Returns a list of GPX files associated with the authenticated user
 // @Tags gpx
 // @Produce json
-// @Param Authorization header string true "Bearer token for user authentication"
-// @Success 200 {object} utils.GpxInfoDoc "gpx_files"
+// @Param Bearer header string true "Bearer token for user authentication"
+// @Success 200 {object} []utils.GpxInfo "gpx_files"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "No GPX files found"
 // @Failure 500 {object} utils.ErrorResponse "Error fetching files"
 // @Router /gpx/ [get]
 func GetFiles(c *gin.Context) {
 	// Get token from the header
-	token := c.GetHeader("Authorization")
+	token := c.GetHeader("Bearer")
 	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		if err.Error() == "token expired" {
@@ -42,10 +43,10 @@ func GetFiles(c *gin.Context) {
 	}
 
 	if len(files) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No GPX files found"})
+		c.JSON(http.StatusOK, []utils.GpxInfo{})
 		return
 	}
 
 	// Return the files as JSON
-	c.JSON(http.StatusOK, gin.H{"gpx_files": files})
+	c.JSON(http.StatusOK, files)
 }

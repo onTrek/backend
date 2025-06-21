@@ -136,7 +136,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     }
@@ -147,7 +147,10 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/utils.UserEssentials"
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/utils.UserEssentials"
+                                }
                             }
                         }
                     },
@@ -189,7 +192,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -256,7 +259,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -316,7 +319,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     }
@@ -325,7 +328,10 @@ const docTemplate = `{
                     "200": {
                         "description": "gpx_files",
                         "schema": {
-                            "$ref": "#/definitions/utils.GpxInfoDoc"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.GpxInfo"
+                            }
                         }
                     },
                     "401": {
@@ -364,7 +370,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -411,132 +417,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/gpx/download/{id}": {
-            "get": {
-                "description": "Retrieves a file based on the provided file ID and authorization token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/octet-stream"
-                ],
-                "tags": [
-                    "gpx"
-                ],
-                "summary": "Download a GPX file by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "File ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Returns the requested file as .gpx",
-                        "schema": {
-                            "type": "file"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid file ID",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "File not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/gpx/map/{id}": {
-            "get": {
-                "description": "Get a map file by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "image/png"
-                ],
-                "tags": [
-                    "gpx"
-                ],
-                "summary": "Get a map file by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "File ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Returns the map file as a PNG image",
-                        "schema": {
-                            "type": "file"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid file ID",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "File not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/gpx/{id}": {
             "delete": {
                 "description": "Deletes a file by its ID from both the database and the disk",
@@ -551,7 +431,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -597,6 +477,132 @@ const docTemplate = `{
                 }
             }
         },
+        "/gpx/{id}/download": {
+            "get": {
+                "description": "Retrieves a file based on the provided file ID and authorization token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "gpx"
+                ],
+                "summary": "Download a GPX file by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "File ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the requested file as .gpx",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid file ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "File not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/gpx/{id}/map": {
+            "get": {
+                "description": "Get a map file by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "image/png"
+                ],
+                "tags": [
+                    "gpx"
+                ],
+                "summary": "Get a map file by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "File ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the map file as a PNG image",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid file ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "File not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/profile": {
             "get": {
                 "description": "Fetches the profile information of the user based on the provided token in the Authorization header",
@@ -614,7 +620,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     }
@@ -650,7 +656,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     }
@@ -694,7 +700,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -757,7 +763,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     }
@@ -808,7 +814,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -864,7 +870,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -925,7 +931,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -995,7 +1001,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -1071,7 +1077,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -1138,7 +1144,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Bearer token for user authentication",
-                        "name": "Authorization",
+                        "name": "Bearer",
                         "in": "header",
                         "required": true
                     },
@@ -1245,17 +1251,6 @@ const docTemplate = `{
                 "upload_date": {
                     "type": "string",
                     "example": "2025-05-11T08:00:00Z"
-                }
-            }
-        },
-        "utils.GpxInfoDoc": {
-            "type": "object",
-            "properties": {
-                "gpx_files": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/utils.GpxInfo"
-                    }
                 }
             }
         },

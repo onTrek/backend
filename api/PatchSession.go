@@ -15,7 +15,7 @@ import (
 // @Tags sessions
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "Bearer token for user authentication"
+// @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "Session ID"
 // @Success 200 {object} utils.SuccessResponse "Session closed successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid session ID"
@@ -25,7 +25,7 @@ import (
 // @Router /sessions/{id} [patch]
 func PatchSession(c *gin.Context) {
 	// Get token from the header
-	token := c.GetHeader("Authorization")
+	token := c.GetHeader("Bearer")
 	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		if err.Error() == "token expired" {

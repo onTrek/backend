@@ -14,7 +14,7 @@ import (
 // @Tags search
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "Bearer token for user authentication"
+// @Param Bearer header string true "Bearer token for user authentication"
 // @Param query query string true "Search query"
 // @Success 200 {array} utils.UserEssentials "Returns a list of users matching the search query"
 // @Failure 400 {object} utils.ErrorResponse "Bad request"
@@ -25,7 +25,7 @@ import (
 func GetSearchPeople(c *gin.Context) {
 
 	// Get token from the header
-	token := c.GetHeader("Authorization")
+	token := c.GetHeader("Bearer")
 	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		if err.Error() == "token expired" {

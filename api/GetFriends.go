@@ -2,6 +2,7 @@ package api
 
 import (
 	"OnTrek/db"
+	"OnTrek/utils"
 	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -14,15 +15,15 @@ import (
 // @Tags friends
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "Bearer token for user authentication"
-// @Success 200 {array} utils.UserEssentials "List of friends"
+// @Param Bearer header string true "Bearer token for user authentication"
+// @Success 200 {array} []utils.UserEssentials "List of friends"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "No friends found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /friends/ [get]
 func GetFriends(c *gin.Context) {
 	// Get token from the header
-	token := c.GetHeader("Authorization")
+	token := c.GetHeader("Bearer")
 	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		if err.Error() == "token expired" {
@@ -44,7 +45,7 @@ func GetFriends(c *gin.Context) {
 
 	// Check if the user has any friends
 	if len(friends) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "No friends found"})
+		c.JSON(http.StatusOK, []utils.UserEssentials{})
 		return
 	}
 

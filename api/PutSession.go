@@ -16,7 +16,7 @@ import (
 // @Tags sessions
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "Bearer token for user authentication"
+// @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "Session ID"
 // @Param session body utils.SessionInfoUpdate true "Session information"
 // @Success 200 {object} utils.SuccessResponse "Session updated successfully"
@@ -29,7 +29,7 @@ func PutSession(c *gin.Context) {
 
 	var sessionInfo utils.SessionInfo
 	// Get token from the header
-	token := c.GetHeader("Authorization")
+	token := c.GetHeader("Bearer")
 	user, err := db.GetUserByToken(c.MustGet("db").(*sql.DB), token)
 	if err != nil {
 		if err.Error() == "token expired" {
