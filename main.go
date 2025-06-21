@@ -26,11 +26,6 @@ func main() {
 
 	router.Use(db.DatabaseMiddleware())
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	// AUTH API
