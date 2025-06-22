@@ -32,12 +32,8 @@ func PostSession(c *gin.Context) {
 
 	// Get data from the request body
 	var input struct {
-		Description string  `json:"description" binding:"required"`
-		Latitude    float64 `json:"latitude" binding:"required"`
-		Longitude   float64 `json:"longitude" binding:"required"`
-		Altitude    float64 `json:"altitude" binding:"required"`
-		Accuracy    float64 `json:"accuracy" binding:"required"`
-		FileId      int     `json:"file_id" binding:"required"`
+		Description string `json:"description" binding:"required"`
+		FileId      int    `json:"file_id" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -59,10 +55,6 @@ func PostSession(c *gin.Context) {
 	}
 
 	sessionInfo.Description = input.Description
-	sessionInfo.Latitude = input.Latitude
-	sessionInfo.Longitude = input.Longitude
-	sessionInfo.Altitude = input.Altitude
-	sessionInfo.Accuracy = input.Accuracy
 	sessionInfo.FileId = input.FileId
 
 	// Check if the file exists for the user

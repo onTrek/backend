@@ -99,12 +99,8 @@ type SessionInfo struct {
 }
 
 type SessionInfoCreation struct {
-	Description string  `json:"description" example:"Morning hike with friends"`
-	Latitude    float64 `json:"latitude" example:"40.7128"`
-	Longitude   float64 `json:"longitude" example:"-74.0060"`
-	Altitude    float64 `json:"altitude" example:"10.5"`
-	Accuracy    float64 `json:"accuracy" example:"5.0"`
-	FileId      int     `json:"file_id" example:"1"`
+	Description string `json:"description" example:"Morning hike with friends"`
+	FileId      int    `json:"file_id" example:"1"`
 }
 
 type SessionId struct {

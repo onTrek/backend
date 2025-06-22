@@ -134,24 +134,12 @@ definitions:
     type: object
   utils.SessionInfoCreation:
     properties:
-      accuracy:
-        example: 5
-        type: number
-      altitude:
-        example: 10.5
-        type: number
       description:
         example: Morning hike with friends
         type: string
       file_id:
         example: 1
         type: integer
-      latitude:
-        example: 40.7128
-        type: number
-      longitude:
-        example: -74.006
-        type: number
     type: object
   utils.SessionInfoResponseDoc:
     properties:

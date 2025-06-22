@@ -1649,14 +1649,6 @@ const docTemplate = `{
         "utils.SessionInfoCreation": {
             "type": "object",
             "properties": {
-                "accuracy": {
-                    "type": "number",
-                    "example": 5
-                },
-                "altitude": {
-                    "type": "number",
-                    "example": 10.5
-                },
                 "description": {
                     "type": "string",
                     "example": "Morning hike with friends"
@@ -1664,14 +1656,6 @@ const docTemplate = `{
                 "file_id": {
                     "type": "integer",
                     "example": 1
-                },
-                "latitude": {
-                    "type": "number",
-                    "example": 40.7128
-                },
-                "longitude": {
-                    "type": "number",
-                    "example": -74.006
                 }
             }
         },
