@@ -104,10 +104,12 @@ func SetupDatabase() {
 		help_request BOOLEAN DEFAULT FALSE,
 		going_to TEXT,
 		timestamp TEXT NOT NULL,
+		color TEXT NOT NULL,
 		PRIMARY KEY (session_id, user_id),
 		FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE,
 		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-	    FOREIGN KEY (going_to) REFERENCES users(id) ON DELETE SET NULL
+	    FOREIGN KEY (going_to) REFERENCES users(id) ON DELETE SET NULL,
+	    UNIQUE(session_id, color)
 	);
 	`
 	_, err = db.Exec(createMembriTable)

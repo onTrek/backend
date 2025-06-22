@@ -57,16 +57,7 @@ func CreateSession(db *sql.DB, user utils.User, info utils.SessionInfo) (utils.S
 	}
 
 	// Insert into session_members
-	stmt2, err := tx.Prepare("INSERT INTO session_members (session_id, user_id, latitude, longitude, altitude, accuracy, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)")
-	if err != nil {
-		return utils.Session{}, err
-	}
-	defer stmt2.Close()
-
-	_, err = stmt2.Exec(sessionID, user.ID, info.Latitude, info.Longitude, info.Altitude, info.Accuracy, now)
-	if err != nil {
-		return utils.Session{}, err
-	}
+	err = JoinSession(tx, user.ID, int(sessionID))
 
 	// Commit transaction
 	err = tx.Commit()

@@ -64,8 +64,24 @@ definitions:
     type: object
   utils.MemberInfo:
     properties:
-      session_info:
-        $ref: '#/definitions/utils.SessionInfoUpdate'
+      accuracy:
+        example: 5
+        type: number
+      altitude:
+        example: 10.5
+        type: number
+      going_to:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      help_request:
+        example: false
+        type: boolean
+      latitude:
+        example: 40.7128
+        type: number
+      longitude:
+        example: -74.006
+        type: number
       time_stamp:
         example: "2025-05-11T08:00:00Z"
         type: string
@@ -156,6 +172,10 @@ definitions:
       description:
         example: Morning hike with friends
         type: string
+      members:
+        items:
+          $ref: '#/definitions/utils.SessionMember'
+        type: array
     type: object
   utils.SessionInfoUpdate:
     properties:
@@ -177,6 +197,18 @@ definitions:
       longitude:
         example: -74.006
         type: number
+    type: object
+  utils.SessionMember:
+    properties:
+      color:
+        example: '#e6194b'
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      username:
+        example: John Doe
+        type: string
     type: object
   utils.SuccessResponse:
     properties:
@@ -394,6 +426,47 @@ paths:
       tags:
       - friends
   /friends/requests/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a friend request by user ID
+      parameters:
+      - description: Bearer token for authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: User ID of the friend request sender
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Friend request declined successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Friend request not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to decline friend request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Delete a friend request
+      tags:
+      - friends
     post:
       consumes:
       - application/json
@@ -439,7 +512,6 @@ paths:
       summary: Send a friend request
       tags:
       - friends
-  /friends/requests/{id}/accept:
     put:
       consumes:
       - application/json
@@ -479,48 +551,6 @@ paths:
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: Accept a friend request
-      tags:
-      - friends
-  /friends/requests/{id}/decline:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a friend request by user ID
-      parameters:
-      - description: Bearer token for authentication
-        in: header
-        name: Bearer
-        required: true
-        type: string
-      - description: User ID of the friend request sender
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Friend request declined successfully
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
-        "400":
-          description: Invalid request
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-        "404":
-          description: Friend request not found
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-        "500":
-          description: Failed to decline friend request
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-      summary: Delete a friend request
       tags:
       - friends
   /gpx/:

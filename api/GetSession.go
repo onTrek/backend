@@ -27,9 +27,6 @@ func GetSession(c *gin.Context) {
 
 	var sessionInfo utils.SessionInfoResponse
 
-	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
-
 	// Get session ID from the URL
 	session := c.Param("id")
 	if session == "" {
@@ -60,7 +57,7 @@ func GetSession(c *gin.Context) {
 	}
 
 	// Get session info
-	sessionInfo, err = db.GetSessionInfo(c.MustGet("db").(*sql.DB), sessionId, user.ID)
+	sessionInfo, err = db.GetSessionInfo(c.MustGet("db").(*sql.DB), sessionId)
 	if err != nil {
 		fmt.Println("Error getting session info:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})

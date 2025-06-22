@@ -18,7 +18,7 @@ func GetMembersInfoBySessionId(db *sql.DB, sessionId int) ([]utils.MemberInfo, e
 
 	for rows.Next() {
 		var member utils.MemberInfo
-		err := rows.Scan(&member.User.ID, &member.User.Username, &member.SessionInfo.Latitude, &member.SessionInfo.Longitude, &member.SessionInfo.Altitude, &member.SessionInfo.Accuracy, &member.SessionInfo.HelpRequested, &member.SessionInfo.GoingTo, &member.TimeStamp)
+		err := rows.Scan(&member.User.ID, &member.User.Username, &member.Latitude, &member.Longitude, &member.Altitude, &member.Accuracy, &member.HelpRequested, &member.GoingTo, &member.TimeStamp)
 		if err != nil {
 			return []utils.MemberInfo{}, err
 		}

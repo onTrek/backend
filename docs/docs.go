@@ -214,6 +214,67 @@ const docTemplate = `{
             }
         },
         "/friends/requests/{id}": {
+            "put": {
+                "description": "Accept a friend request from another user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "friends"
+                ],
+                "summary": "Accept a friend request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID of the friend request sender",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Friend request accepted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Friend request not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to accept friend request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Allows a user to add another user as a friend by their user ID",
                 "consumes": [
@@ -280,72 +341,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/friends/requests/{id}/accept": {
-            "put": {
-                "description": "Accept a friend request from another user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "friends"
-                ],
-                "summary": "Accept a friend request",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for authentication",
-                        "name": "Bearer",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "User ID of the friend request sender",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Friend request accepted successfully",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Friend request not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to accept friend request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/friends/requests/{id}/decline": {
+            },
             "delete": {
                 "description": "Delete a friend request by user ID",
                 "consumes": [
@@ -1554,8 +1550,29 @@ const docTemplate = `{
         "utils.MemberInfo": {
             "type": "object",
             "properties": {
-                "session_info": {
-                    "$ref": "#/definitions/utils.SessionInfoUpdate"
+                "accuracy": {
+                    "type": "number",
+                    "example": 5
+                },
+                "altitude": {
+                    "type": "number",
+                    "example": 10.5
+                },
+                "going_to": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "help_request": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "latitude": {
+                    "type": "number",
+                    "example": 40.7128
+                },
+                "longitude": {
+                    "type": "number",
+                    "example": -74.006
                 },
                 "time_stamp": {
                     "type": "string",
@@ -1684,6 +1701,12 @@ const docTemplate = `{
                 "description": {
                     "type": "string",
                     "example": "Morning hike with friends"
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/utils.SessionMember"
+                    }
                 }
             }
         },
@@ -1713,6 +1736,23 @@ const docTemplate = `{
                 "longitude": {
                     "type": "number",
                     "example": -74.006
+                }
+            }
+        },
+        "utils.SessionMember": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "example": "#e6194b"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "John Doe"
                 }
             }
         },

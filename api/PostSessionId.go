@@ -60,7 +60,7 @@ func PostSessionId(c *gin.Context) {
 		return
 	}
 
-	err = db.JoinSession(c.MustGet("db").(*sql.DB), user.ID, sessionId)
+	err = db.JoinSessionById(c.MustGet("db").(*sql.DB), user.ID, sessionId)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
 			fmt.Println("User already joined the session")

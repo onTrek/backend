@@ -128,15 +128,27 @@ type SessionInfoUpdate struct {
 }
 
 type MemberInfo struct {
-	User        UserEssentials    `json:"user"`
-	SessionInfo SessionInfoUpdate `json:"session_info"`
-	TimeStamp   string            `json:"time_stamp" example:"2025-05-11T08:00:00Z"`
+	User          UserEssentials `json:"user"`
+	Latitude      float64        `json:"latitude" example:"40.7128"`
+	Longitude     float64        `json:"longitude" example:"-74.0060"`
+	Altitude      float64        `json:"altitude" example:"10.5"`
+	Accuracy      float64        `json:"accuracy" example:"5.0"`
+	HelpRequested bool           `json:"help_request" example:"false"`
+	GoingTo       string         `json:"going_to" example:"550e8400-e29b-41d4-a716-446655440000"`
+	TimeStamp     string         `json:"time_stamp" example:"2025-05-11T08:00:00Z"`
 }
 type SessionInfoResponse struct {
-	CreatedBy   UserEssentials `json:"created_by"`
-	Description string         `json:"description" example:"Morning hike with friends"`
-	CreatedAt   string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	ClosedAt    sql.NullString `json:"closed_at" example:"2025-05-11T09:00:00Z"`
+	CreatedBy   UserEssentials  `json:"created_by"`
+	Description string          `json:"description" example:"Morning hike with friends"`
+	CreatedAt   string          `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	ClosedAt    sql.NullString  `json:"closed_at" example:"2025-05-11T09:00:00Z"`
+	Members     []SessionMember `json:"members"`
+}
+
+type SessionMember struct {
+	ID       string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Username string `json:"username" example:"John Doe"`
+	Color    string `json:"color" example:"#e6194b"`
 }
 
 type SessionInfoResponseDoc struct {
@@ -147,6 +159,7 @@ type SessionInfoResponseDoc struct {
 		String string `json:"String" example:"2025-05-11T09:00:00Z"`
 		Valid  bool   `json:"Valid" example:"true"`
 	}
+	Members []SessionMember `json:"members"`
 }
 
 type SuccessResponse struct {
