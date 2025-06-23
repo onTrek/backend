@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -43,7 +43,7 @@ func PatchSession(c *gin.Context) {
 		return
 	}
 
-	leader, err := db.GetLeaderBySession(c.MustGet("db").(*sql.DB), sessionId)
+	leader, err := functions.GetLeaderBySession(c.MustGet("db").(*sql.DB), sessionId)
 	if err != nil {
 		fmt.Println("Error getting leader by session:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -56,7 +56,7 @@ func PatchSession(c *gin.Context) {
 		return
 	}
 
-	err = db.CloseSession(c.MustGet("db").(*sql.DB), sessionId)
+	err = functions.CloseSession(c.MustGet("db").(*sql.DB), sessionId)
 	if err != nil {
 		fmt.Println("Error closing session:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})

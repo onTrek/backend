@@ -8,6 +8,7 @@ package main
 import (
 	"OnTrek/api"
 	"OnTrek/db"
+	"OnTrek/db/functions"
 	_ "OnTrek/docs"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -18,6 +19,8 @@ func main() {
 
 	db.SetupDatabase()
 	url := ginSwagger.URL("/swagger/doc.json") // The url pointing to API definition
+
+	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
 
@@ -34,7 +37,7 @@ func main() {
 
 	// GPX API
 	gpx := router.Group("/gpx")
-	gpx.Use(db.AuthMiddleware())
+	gpx.Use(functions.AuthMiddleware())
 	{
 		gpx.DELETE("/:id", api.DeleteFile)    // elimina un GPX
 		gpx.POST("/", api.PostUpload)         // carica un file GPX
@@ -45,7 +48,7 @@ func main() {
 
 	// SESSION API
 	sessions := router.Group("/sessions")
-	sessions.Use(db.AuthMiddleware())
+	sessions.Use(functions.AuthMiddleware())
 	{
 		sessions.POST("/", api.PostSession)                  // crea una nuova sessione
 		sessions.GET("/", api.GetSessions)                   // lista delle sessioni
@@ -59,14 +62,14 @@ func main() {
 	}
 
 	search := router.Group("/search")
-	search.Use(db.AuthMiddleware())
+	search.Use(functions.AuthMiddleware())
 	{
 		search.GET("/", api.GetSearchPeople) // ricerca persone da aggiungere agli amici
 	}
 
 	// FRIENDS API
 	friends := router.Group("/friends")
-	friends.Use(db.AuthMiddleware())
+	friends.Use(functions.AuthMiddleware())
 	{
 		friends.GET("/", api.GetFriends)                                // lista degli amici
 		friends.DELETE("/:id", api.DeleteFriend)                        // elimina un amico
@@ -78,7 +81,7 @@ func main() {
 
 	// USER API
 	user := router.Group("/profile")
-	user.Use(db.AuthMiddleware())
+	user.Use(functions.AuthMiddleware())
 	{
 		user.GET("", api.GetProfile)       // dati personali
 		user.DELETE("", api.DeleteProfile) // cancella l'account

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -47,7 +47,7 @@ func PostSessionId(c *gin.Context) {
 	}
 
 	// Chekc if the session exists
-	s, err := db.CheckSessionExistsById(c.MustGet("db").(*sql.DB), sessionId)
+	s, err := functions.CheckSessionExistsById(c.MustGet("db").(*sql.DB), sessionId)
 	if err != nil {
 		fmt.Println("Error checking session:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -60,7 +60,7 @@ func PostSessionId(c *gin.Context) {
 		return
 	}
 
-	err = db.JoinSessionById(c.MustGet("db").(*sql.DB), user.ID, sessionId)
+	err = functions.JoinSessionById(c.MustGet("db").(*sql.DB), user.ID, sessionId)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
 			fmt.Println("User already joined the session")

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -73,7 +73,7 @@ func PutSession(c *gin.Context) {
 	sessionInfo.GoingTo = input.GoingTo
 
 	// Chekc if the session exists
-	s, err := db.CheckSessionExistsById(c.MustGet("db").(*sql.DB), sessionId)
+	s, err := functions.CheckSessionExistsById(c.MustGet("db").(*sql.DB), sessionId)
 	if err != nil {
 		fmt.Println("Error checking session:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -86,7 +86,7 @@ func PutSession(c *gin.Context) {
 		return
 	}
 
-	err = db.UpdateSession(c.MustGet("db").(*sql.DB), user.ID, sessionInfo)
+	err = functions.UpdateSession(c.MustGet("db").(*sql.DB), user.ID, sessionInfo)
 	if err != nil {
 		fmt.Println("Error updating session:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -24,7 +24,7 @@ func GetSessions(c *gin.Context) {
 	// Get the user from the context
 	user := c.MustGet("user").(utils.User)
 
-	sessions, err := db.GetSessionsByUserId(c.MustGet("db").(*sql.DB), user.ID)
+	sessions, err := functions.GetSessionsByUserId(c.MustGet("db").(*sql.DB), user.ID)
 	if err != nil {
 		fmt.Println("Error getting sessions:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})

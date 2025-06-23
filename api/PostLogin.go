@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -43,7 +43,7 @@ func PostLogin(c *gin.Context) {
 	}
 
 	database := c.MustGet("db").(*sql.DB)
-	user, err := db.Login(database, input.Email, input.Password)
+	user, err := functions.Login(database, input.Email, input.Password)
 	if err != nil {
 		if err.Error() == "user not found" {
 			fmt.Println("User not found")

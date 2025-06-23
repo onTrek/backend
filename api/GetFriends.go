@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -25,7 +25,7 @@ func GetFriends(c *gin.Context) {
 	user := c.MustGet("user").(utils.User)
 
 	// Fetch friends from the database
-	friends, err := db.GetFriends(c.MustGet("db").(*sql.DB), user.ID)
+	friends, err := functions.GetFriends(c.MustGet("db").(*sql.DB), user.ID)
 	if err != nil {
 		fmt.Println("Error fetching friends:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch friends"})

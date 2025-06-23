@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -24,7 +24,7 @@ func GetFiles(c *gin.Context) {
 	user := c.MustGet("user").(utils.User)
 
 	// Get files from the database
-	files, err := db.GetFiles(c.MustGet("db").(*sql.DB), user.ID)
+	files, err := functions.GetFiles(c.MustGet("db").(*sql.DB), user.ID)
 	if err != nil {
 		fmt.Println("Error fetching files:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching files"})

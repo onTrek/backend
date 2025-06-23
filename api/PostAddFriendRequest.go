@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"errors"
@@ -42,7 +42,7 @@ func PostAddFriendRequest(c *gin.Context) {
 	}
 
 	// Check if the user ID is valid
-	user2, err := db.GetUserById(c.MustGet("db").(*sql.DB), userID)
+	user2, err := functions.GetUserById(c.MustGet("db").(*sql.DB), userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("User not found")
@@ -62,7 +62,7 @@ func PostAddFriendRequest(c *gin.Context) {
 	}
 
 	// Add the friend to the database
-	err = db.AddFriend(c.MustGet("db").(*sql.DB), user.ID, user2.ID)
+	err = functions.AddFriend(c.MustGet("db").(*sql.DB), user.ID, user2.ID)
 	if err != nil {
 		if err.Error() == "Users are already friends" {
 			fmt.Println("Users are already friends")

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"errors"
@@ -39,7 +39,7 @@ func DeleteDeclineFriendRequest(c *gin.Context) {
 	}
 
 	// Check if the user ID is valid
-	_, err := db.GetUserById(c.MustGet("db").(*sql.DB), userID)
+	_, err := functions.GetUserById(c.MustGet("db").(*sql.DB), userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("User not found")
@@ -52,7 +52,7 @@ func DeleteDeclineFriendRequest(c *gin.Context) {
 	}
 
 	// Call the service to accept the friend request
-	err = db.DeleteFriendRequest(c.MustGet("db").(*sql.DB), user.ID, userID)
+	err = functions.DeleteFriendRequest(c.MustGet("db").(*sql.DB), user.ID, userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("Friend request not found")

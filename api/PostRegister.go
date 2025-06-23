@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -53,7 +53,7 @@ func PostRegister(c *gin.Context) {
 	user.ID = uuid.New().String()
 	user.CreatedAt = time.Now().Format(time.RFC3339)
 
-	err := db.RegisterUser(c.MustGet("db").(*sql.DB), user)
+	err := functions.RegisterUser(c.MustGet("db").(*sql.DB), user)
 	if err != nil {
 		if err.Error() == "UNIQUE constraint failed: users.email" {
 			fmt.Println("Email already exists")

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -38,7 +38,7 @@ func DeleteFriend(c *gin.Context) {
 		return
 	}
 
-	user2, err := db.GetUserById(c.MustGet("db").(*sql.DB), friendID)
+	user2, err := functions.GetUserById(c.MustGet("db").(*sql.DB), friendID)
 	if err != nil {
 		fmt.Println("Error getting user by ID:", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
@@ -46,7 +46,7 @@ func DeleteFriend(c *gin.Context) {
 	}
 
 	// Call the function to delete the friend
-	err = db.DeleteFriend(c.MustGet("db").(*sql.DB), user.ID, user2.ID)
+	err = functions.DeleteFriend(c.MustGet("db").(*sql.DB), user.ID, user2.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			fmt.Println("Friend not found")

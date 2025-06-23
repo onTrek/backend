@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -37,7 +37,7 @@ func GetFileMap(c *gin.Context) {
 	}
 
 	// Fetch the file from the database
-	gpx, err := db.GetFileByID(c.MustGet("db").(*sql.DB), fileID)
+	gpx, err := functions.GetFileByID(c.MustGet("db").(*sql.DB), fileID)
 	if err != nil {
 		fmt.Println("Error fetching file from database:", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"errors"
@@ -58,7 +58,7 @@ func PostSession(c *gin.Context) {
 	sessionInfo.FileId = input.FileId
 
 	// Check if the file exists for the user
-	_, err := db.GetFileByID(c.MustGet("db").(*sql.DB), sessionInfo.FileId)
+	_, err := functions.GetFileByID(c.MustGet("db").(*sql.DB), sessionInfo.FileId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("File not found for user: " + user.Username)
@@ -71,7 +71,7 @@ func PostSession(c *gin.Context) {
 	}
 
 	// Create a new session
-	session, err := db.CreateSession(c.MustGet("db").(*sql.DB), user, sessionInfo)
+	session, err := functions.CreateSession(c.MustGet("db").(*sql.DB), user, sessionInfo)
 	if err != nil {
 		fmt.Println("Error creating session:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

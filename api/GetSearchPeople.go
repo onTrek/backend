@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -36,7 +36,7 @@ func GetSearchPeople(c *gin.Context) {
 	}
 
 	// Fetch users matching the search query from the database
-	users, err := db.SearchUsers(c.MustGet("db").(*sql.DB), query, user.ID)
+	users, err := functions.SearchUsers(c.MustGet("db").(*sql.DB), query, user.ID)
 	if err != nil {
 		fmt.Println("Error searching users:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to search users"})

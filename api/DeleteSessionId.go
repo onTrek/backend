@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"errors"
@@ -45,7 +45,7 @@ func DeleteSessionId(c *gin.Context) {
 	}
 
 	// Chekc if the session exists
-	s, err := db.CheckSessionExistsById(c.MustGet("db").(*sql.DB), sessionId)
+	s, err := functions.CheckSessionExistsById(c.MustGet("db").(*sql.DB), sessionId)
 	if err != nil {
 		fmt.Println("Error checking session:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -58,7 +58,7 @@ func DeleteSessionId(c *gin.Context) {
 		return
 	}
 
-	err = db.LeaveSessionById(c.MustGet("db").(*sql.DB), user.ID, sessionId)
+	err = functions.LeaveSessionById(c.MustGet("db").(*sql.DB), user.ID, sessionId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("User not found in session")

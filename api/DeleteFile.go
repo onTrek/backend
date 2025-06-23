@@ -1,7 +1,7 @@
 package api
 
 import (
-	"OnTrek/db"
+	"OnTrek/db/functions"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
@@ -37,7 +37,7 @@ func DeleteFile(c *gin.Context) {
 	}
 
 	// Fetch the file from the database
-	gpx, err := db.GetFileByIDAndUserId(c.MustGet("db").(*sql.DB), fileID, user.ID)
+	gpx, err := functions.GetFileByIDAndUserId(c.MustGet("db").(*sql.DB), fileID, user.ID)
 	if err != nil {
 		fmt.Println("Error fetching file from database:", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
@@ -45,7 +45,7 @@ func DeleteFile(c *gin.Context) {
 	}
 
 	// Delete file from the database
-	err = db.DeleteFileById(c.MustGet("db").(*sql.DB), fileID, user.ID, gpx)
+	err = functions.DeleteFileById(c.MustGet("db").(*sql.DB), fileID, user.ID, gpx)
 	if err != nil {
 		fmt.Println("Error deleting file from database:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete file from database"})

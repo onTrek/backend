@@ -22,13 +22,16 @@ RUN apk add --no-cache sqlite
 WORKDIR /root/
 
 COPY --from=builder /app/server .
-
 COPY --from=builder /app/docs ./docs
+COPY ./migrations ./migrations
 
-RUN mkdir -p maps gpxs
+COPY ./entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
-RUN mkdir -p /root/db
+RUN mkdir -p maps gpxs /root/db
 
 EXPOSE 3000
+
+ENTRYPOINT ["./entrypoint.sh"]
 
 CMD ["./server"]
