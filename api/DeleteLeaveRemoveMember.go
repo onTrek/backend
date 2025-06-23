@@ -25,7 +25,7 @@ import (
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Group not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /group/{id}/members [delete]
+// @Router /groups/{id}/members [delete]
 func DeleteLeaveRemoveMember(c *gin.Context) {
 
 	user := c.MustGet("user").(utils.User)
