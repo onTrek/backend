@@ -21,7 +21,7 @@ func GetGroupsByUserId(db *sql.DB, userId string) ([]utils.Group, error) {
 		var fileID sql.NullInt64
         	var fileName sql.NullString
 		
-		err := rows.Scan(&s.ID, &s.Description, &s.CreatedBy, &s.CreatedAt, &fileId, &fileName)
+		err := rows.Scan(&s.ID, &s.Description, &s.CreatedBy, &s.CreatedAt, &fileID, &fileName)
 
 	        if fileID.Valid {
 	            s.File.ID = int(fileID.Int64)
