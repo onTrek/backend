@@ -23,7 +23,7 @@ WORKDIR /root/
 
 COPY --from=builder /app/server .
 COPY --from=builder /app/docs ./docs
-COPY ./migrations ./migrations
+COPY ./db/migrations ./migrations
 
 COPY ./entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
