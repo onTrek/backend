@@ -2,7 +2,7 @@
 set -e
 
 DB_FILE="/root/db/ontrek.db"
-MIGRATIONS_DIR="/root/db/migrations"
+MIGRATIONS_DIR="/root/migrations"
 
 sqlite3 "$DB_FILE" "CREATE TABLE IF NOT EXISTS migrations (filename TEXT PRIMARY KEY, applied_at DATETIME DEFAULT CURRENT_TIMESTAMP);"
 
