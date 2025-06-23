@@ -1,9 +1,5 @@
 package utils
 
-import (
-	"database/sql"
-)
-
 type User struct {
 	ID        string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Email     string `json:"email" example:"user@example.com"`
@@ -64,29 +60,24 @@ type GPXStats struct {
 	MinAltitude int     `json:"min_altitude" example:"1500"`
 }
 
-type Session struct {
-	ID          int              `json:"session_id" example:"1"`
+type Group struct {
+	ID          int              `json:"group_id" example:"1"`
 	CreatedBy   string           `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Description string           `json:"description" example:"Morning hike with friends"`
 	CreatedAt   string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	ClosedAt    sql.NullString   `json:"closed_at" example:"2025-05-11T09:00:00Z"`
 	File        GpxInfoEssential `json:"file"`
 }
 
-type SessionDoc struct {
-	ID          int    `json:"session_id" example:"1"`
-	CreatedBy   string `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Description string `json:"description" example:"Morning hike with friends"`
-	CreatedAt   string `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	ClosedAt    struct {
-		String string `json:"String" example:"2025-05-11T09:00:00Z"`
-		Valid  bool   `json:"Valid" example:"true"`
-	}
-	File GpxInfoEssential `json:"file"`
+type GroupDoc struct {
+	ID          int              `json:"group_id" example:"1"`
+	CreatedBy   string           `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Description string           `json:"description" example:"Morning hike with friends"`
+	CreatedAt   string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	File        GpxInfoEssential `json:"file"`
 }
 
-type SessionInfo struct {
-	SessionID   int     `json:"session_id" example:"1"`
+type GroupInfo struct {
+	GroupID     int     `json:"group_id" example:"1"`
 	Description string  `json:"description" example:"Morning hike with friends"`
 	Latitude    float64 `json:"latitude" example:"40.7128"`
 	Longitude   float64 `json:"longitude" example:"-74.0060"`
@@ -98,23 +89,23 @@ type SessionInfo struct {
 	FileId      int     `json:"file_id" example:"1"`
 }
 
-type SessionInfoCreation struct {
+type GroupInfoCreation struct {
 	Description string `json:"description" example:"Morning hike with friends"`
 	FileId      int    `json:"file_id" example:"1"`
 }
 
-type SessionId struct {
-	ID string `json:"session_id" example:"1"`
+type GroupId struct {
+	ID string `json:"group_id" example:"1"`
 }
 
-type SessionInfoJoin struct {
+type GroupInfoJoin struct {
 	Latitude  float64 `json:"latitude" example:"40.7128"`
 	Longitude float64 `json:"longitude" example:"-74.0060"`
 	Altitude  float64 `json:"altitude" example:"10.5"`
 	Accuracy  float64 `json:"accuracy" example:"5.0"`
 }
 
-type SessionInfoUpdate struct {
+type GroupInfoUpdate struct {
 	Latitude      float64 `json:"latitude" example:"40.7128"`
 	Longitude     float64 `json:"longitude" example:"-74.0060"`
 	Altitude      float64 `json:"altitude" example:"10.5"`
@@ -133,29 +124,29 @@ type MemberInfo struct {
 	GoingTo       string         `json:"going_to" example:"550e8400-e29b-41d4-a716-446655440000"`
 	TimeStamp     string         `json:"time_stamp" example:"2025-05-11T08:00:00Z"`
 }
-type SessionInfoResponse struct {
-	CreatedBy   UserEssentials  `json:"created_by"`
-	Description string          `json:"description" example:"Morning hike with friends"`
-	CreatedAt   string          `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	ClosedAt    sql.NullString  `json:"closed_at" example:"2025-05-11T09:00:00Z"`
-	Members     []SessionMember `json:"members"`
+
+type FileBody struct {
+	FileId int `json:"file_id" example:"1"`
 }
 
-type SessionMember struct {
+type GroupInfoResponse struct {
+	CreatedBy   UserEssentials `json:"created_by"`
+	Description string         `json:"description" example:"Morning hike with friends"`
+	CreatedAt   string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	Members     []GroupMember  `json:"members"`
+}
+
+type GroupMember struct {
 	ID       string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Username string `json:"username" example:"John Doe"`
 	Color    string `json:"color" example:"#e6194b"`
 }
 
-type SessionInfoResponseDoc struct {
+type GroupInfoResponseDoc struct {
 	CreatedBy   UserEssentials `json:"created_by"`
 	Description string         `json:"description" example:"Morning hike with friends"`
 	CreatedAt   string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	ClosedAt    struct {
-		String string `json:"String" example:"2025-05-11T09:00:00Z"`
-		Valid  bool   `json:"Valid" example:"true"`
-	}
-	Members []SessionMember `json:"members"`
+	Members     []GroupMember  `json:"members"`
 }
 
 type SuccessResponse struct {

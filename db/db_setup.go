@@ -25,8 +25,8 @@ func SetupDatabase() {
 		"users",
 		"tokens",
 		"gpx_files",
-		"sessions",
-		"session_members",
+		"groups",
+		"group_members",
 		"friends",
 	}
 

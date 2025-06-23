@@ -2,10 +2,10 @@ package functions
 
 import "database/sql"
 
-func GetLeaderBySession(db *sql.DB, sessionId int) (string, error) {
+func GetLeaderByGroup(db *sql.DB, groupId int) (string, error) {
 	var leaderId string
-	query := "SELECT created_by FROM sessions WHERE id = ?"
-	err := db.QueryRow(query, sessionId).Scan(&leaderId)
+	query := "SELECT created_by FROM groups WHERE id = ?"
+	err := db.QueryRow(query, groupId).Scan(&leaderId)
 	if err != nil {
 		return "", err
 	}

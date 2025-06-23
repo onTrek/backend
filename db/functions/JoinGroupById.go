@@ -2,7 +2,7 @@ package functions
 
 import "database/sql"
 
-func JoinSessionById(db *sql.DB, userId string, sessionId int) error {
+func JoinGroupById(db *sql.DB, userId string, groupId int) error {
 	// Start a transaction
 	tx, err := db.Begin()
 	if err != nil {
@@ -16,8 +16,8 @@ func JoinSessionById(db *sql.DB, userId string, sessionId int) error {
 		}
 	}()
 
-	// Insert into session_members
-	err = JoinSession(tx, userId, sessionId)
+	// Insert into group_members
+	err = JoinGroup(tx, userId, groupId)
 	if err != nil {
 		return err
 	}

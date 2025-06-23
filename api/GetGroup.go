@@ -10,20 +10,22 @@ import (
 	"strconv"
 )
 
-// GetMembersInfo godoc
-// @Summary Get members information of a group
-// @Description Get members information by group ID
+// GetGroup godoc
+// @Summary Get group information by group ID
+// @Description Get group information by group ID
 // @Tags groups
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "Group ID"
-// @Success 200 {array} utils.MemberInfo "List of members in the group"
-// @Failure 400 {object} utils.ErrorResponse "Bad request"
+// @Success 200 {object} utils.GroupInfoResponseDoc "Group information"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 400 {object} utils.ErrorResponse "Bad request"
 // @Failure 404 {object} utils.ErrorResponse "Group not found"
-// @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /groups/{id}/members/ [get]
-func GetMembersInfo(c *gin.Context) {
+// @Failure 500 {object} utils.ErrorResponse "Error fetching files"
+// @Router /groups/{id} [get]
+func GetGroup(c *gin.Context) {
+
+	var groupInfo utils.GroupInfoResponse
 
 	// Get group ID from the URL
 	group := c.Param("id")
@@ -40,31 +42,25 @@ func GetMembersInfo(c *gin.Context) {
 		return
 	}
 
-	// Check if the group exists
 	s, err := functions.CheckGroupExistsById(c.MustGet("db").(*sql.DB), groupId)
 	if err != nil {
 		fmt.Println("Error checking group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		return
 	}
-	// Check if the group is valid
+
 	if !s {
 		fmt.Println("Group not found")
 		c.JSON(http.StatusNotFound, gin.H{"error": "Group not found"})
 		return
 	}
 
-	members, err := functions.GetMembersInfoByGroupId(c.MustGet("db").(*sql.DB), groupId)
+	groupInfo, err = functions.GetGroupInfo(c.MustGet("db").(*sql.DB), groupId)
 	if err != nil {
-		fmt.Println("Error getting groups:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		fmt.Println("Error getting group info:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		return
 	}
 
-	if len(members) == 0 {
-		c.JSON(http.StatusOK, []utils.MemberInfo{})
-		return
-	}
-
-	c.JSON(http.StatusOK, members)
+	c.JSON(http.StatusOK, groupInfo)
 }

@@ -9,32 +9,32 @@ import (
 	"net/http"
 )
 
-// GetSessions godoc
-// @Summary Get sessions by user ID
-// @Description Get all sessions for a user by their ID
-// @Tags sessions
+// GetGroups godoc
+// @Summary Get groups
+// @Description Get all groups for the authenticated user
+// @Tags groups
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Success 200 {object} []utils.SessionDoc "List of sessions"
+// @Success 200 {object} []utils.GroupDoc "List of groups"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Error fetching files"
-// @Router /sessions/ [get]
-func GetSessions(c *gin.Context) {
+// @Router /groups/ [get]
+func GetGroups(c *gin.Context) {
 
 	// Get the user from the context
 	user := c.MustGet("user").(utils.User)
 
-	sessions, err := functions.GetSessionsByUserId(c.MustGet("db").(*sql.DB), user.ID)
+	groups, err := functions.GetGroupsByUserId(c.MustGet("db").(*sql.DB), user.ID)
 	if err != nil {
 		fmt.Println("Error getting sessions:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return
 	}
 
-	if len(sessions) == 0 {
-		c.JSON(http.StatusOK, []utils.SessionDoc{})
+	if len(groups) == 0 {
+		c.JSON(http.StatusOK, []utils.GroupDoc{})
 		return
 	}
 
-	c.JSON(http.StatusOK, sessions)
+	c.JSON(http.StatusOK, groups)
 }

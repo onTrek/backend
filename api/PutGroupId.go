@@ -8,22 +8,28 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
-// GetMembersInfo godoc
-// @Summary Get members information of a group
-// @Description Get members information by group ID
+// PutGroupId godoc
+// @Summary Join a group using group ID
+// @Description Allows a user to join a group by providing their group ID
 // @Tags groups
+// @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Param id path int true "Group ID"
-// @Success 200 {array} utils.MemberInfo "List of members in the group"
-// @Failure 400 {object} utils.ErrorResponse "Bad request"
+// @Param id path string true "Group ID"
+// @Success 201 {object} utils.SuccessResponse "Successfully joined group"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request"
+// @Failure 400 {object} utils.ErrorResponse "Group ID is required"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Group not found"
+// @Failure 409 {object} utils.ErrorResponse "User already joined the group"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /groups/{id}/members/ [get]
-func GetMembersInfo(c *gin.Context) {
+// @Router /groups/{id}/members/ [put]
+func PutGroupId(c *gin.Context) {
+	// Get the user from the context
+	user := c.MustGet("user").(utils.User)
 
 	// Get group ID from the URL
 	group := c.Param("id")
@@ -40,7 +46,7 @@ func GetMembersInfo(c *gin.Context) {
 		return
 	}
 
-	// Check if the group exists
+	// Chekc if the group exists
 	s, err := functions.CheckGroupExistsById(c.MustGet("db").(*sql.DB), groupId)
 	if err != nil {
 		fmt.Println("Error checking group:", err)
@@ -54,17 +60,17 @@ func GetMembersInfo(c *gin.Context) {
 		return
 	}
 
-	members, err := functions.GetMembersInfoByGroupId(c.MustGet("db").(*sql.DB), groupId)
+	err = functions.JoinGroupById(c.MustGet("db").(*sql.DB), user.ID, groupId)
 	if err != nil {
-		fmt.Println("Error getting groups:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
+			fmt.Println("User already joined the group")
+			c.JSON(http.StatusConflict, gin.H{"error": "User already joined the group"})
+			return
+		}
+		fmt.Println("Error joining group:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to join group"})
 		return
 	}
-
-	if len(members) == 0 {
-		c.JSON(http.StatusOK, []utils.MemberInfo{})
-		return
-	}
-
-	c.JSON(http.StatusOK, members)
+	// Return success response
+	c.JSON(http.StatusCreated, gin.H{"message": "Successfully joined group"})
 }

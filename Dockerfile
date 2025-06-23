@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
-
+ENTRYPOINT ["./entrypoint.sh"]
 COPY . .
 COPY ./docs ./docs
 
@@ -33,5 +33,3 @@ RUN mkdir -p maps gpxs /root/db
 EXPOSE 3000
 
 ENTRYPOINT ["./entrypoint.sh"]
-
-CMD ["./server"]

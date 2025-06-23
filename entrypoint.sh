@@ -2,10 +2,13 @@
 set -e
 
 DB_FILE="/root/db/ontrek.db"
+MIGRATIONS_DIR="/root/db/migrations"
 
 sqlite3 "$DB_FILE" "CREATE TABLE IF NOT EXISTS migrations (filename TEXT PRIMARY KEY, applied_at DATETIME DEFAULT CURRENT_TIMESTAMP);"
 
-for f in /root/migrations/*.sql; do
+for f in "$MIGRATIONS_DIR"/*.sql; do
+  [ -e "$f" ] || continue
+
   FILENAME=$(basename "$f")
   if ! sqlite3 "$DB_FILE" "SELECT 1 FROM migrations WHERE filename = '$FILENAME'" | grep -q 1; then
     echo ">> Applying migration: $FILENAME"

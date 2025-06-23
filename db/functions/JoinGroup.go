@@ -6,7 +6,8 @@ import (
 	"time"
 )
 
-func JoinSession(tx *sql.Tx, userId string, sessionId int) error {
+func JoinGroup(tx *sql.Tx, userId string, groupId int) error {
+
 	// Enable foreign key enforcement
 	_, err := tx.Exec("PRAGMA foreign_keys = ON") // Enable foreign key enforcement
 	if err != nil {
@@ -15,7 +16,7 @@ func JoinSession(tx *sql.Tx, userId string, sessionId int) error {
 
 	// Prepare the SQL statement
 	stmt, err := tx.Prepare(`
-		INSERT INTO session_members (session_id, user_id, timestamp, color)
+		INSERT INTO group_members (group_id, user_id, timestamp, color)
 		VALUES (?, ?, ?, (
 			SELECT color
 			FROM (
@@ -42,8 +43,8 @@ func JoinSession(tx *sql.Tx, userId string, sessionId int) error {
 			) AS color_pool
 			WHERE color NOT IN (
 				SELECT color
-				FROM session_members
-				WHERE session_id = ?
+				FROM group_members
+				WHERE group_id = ?
 			)
 			LIMIT 1
 		));
@@ -54,8 +55,8 @@ func JoinSession(tx *sql.Tx, userId string, sessionId int) error {
 	defer stmt.Close()
 
 	now := time.Now().Format(time.RFC3339)
-	// Execute the statement with sessionId and userId
-	_, err = stmt.Exec(sessionId, userId, now, sessionId)
+
+	_, err = stmt.Exec(groupId, userId, now, groupId)
 	if err != nil {
 		return err
 	}
