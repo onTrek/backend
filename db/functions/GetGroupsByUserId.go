@@ -22,14 +22,14 @@ func GetGroupsByUserId(db *sql.DB, userId string) ([]utils.Group, error) {
 		var s utils.Group
 		err := rows.Scan(&s.ID, &s.Description, &s.CreatedBy, &s.CreatedAt, &fileId, &fileName)
 
-		if fileId.Valid {
-		    s.File.ID = fileID.Int64
+		if fileId != nil {
+		    s.File.ID = *fileId
 		} else {
 		    s.File.ID = -1
 		}
 		
-		if fileName.Valid {
-		    s.File.Filename = fileName.String
+		if fileName != nil {
+		    s.File.Filename = *fileName
 		} else {
 		    s.File.Filename = ""
 		}
