@@ -33,3 +33,5 @@ RUN mkdir -p maps gpxs /root/db
 EXPOSE 3000
 
 ENTRYPOINT ["./entrypoint.sh"]
+
+CMD ["./server"]
