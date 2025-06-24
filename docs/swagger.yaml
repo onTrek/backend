@@ -265,9 +265,10 @@ paths:
     post:
       consumes:
       - application/json
-      description: Registers a new user with an email, password, and name
+      description: Registers a new user with an email, password, and name.
       parameters:
-      - description: User registration credentials
+      - description: User registration credentials. Email must be unique. Password
+          must be at least 8 characters long.
         in: body
         name: register
         required: true
@@ -285,7 +286,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
         "409":
-          description: Email already exists
+          description: User with this email already exists
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
         "500":

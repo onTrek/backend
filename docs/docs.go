@@ -69,7 +69,7 @@ const docTemplate = `{
         },
         "/auth/register": {
             "post": {
-                "description": "Registers a new user with an email, password, and name",
+                "description": "Registers a new user with an email, password, and name.",
                 "consumes": [
                     "application/json"
                 ],
@@ -82,7 +82,7 @@ const docTemplate = `{
                 "summary": "Register a new user",
                 "parameters": [
                     {
-                        "description": "User registration credentials",
+                        "description": "User registration credentials. Email must be unique. Password must be at least 8 characters long.",
                         "name": "register",
                         "in": "body",
                         "required": true,
@@ -105,7 +105,7 @@ const docTemplate = `{
                         }
                     },
                     "409": {
-                        "description": "Email already exists",
+                        "description": "User with this email already exists",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorResponse"
                         }
