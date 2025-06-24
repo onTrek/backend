@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -21,10 +21,10 @@ import (
 // @Router /gpx/ [get]
 func GetFiles(c *gin.Context) {
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get files from the database
-	files, err := functions.GetFiles(c.MustGet("db").(*sql.DB), user.ID)
+	files, err := models.GetFiles(c.MustGet("db").(*gorm.DB), user.ID)
 	if err != nil {
 		fmt.Println("Error fetching files:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching files"})

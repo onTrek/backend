@@ -2,10 +2,12 @@ package api
 
 import (
 	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
 	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
@@ -90,7 +92,7 @@ func PatchSessionGpx(c *gin.Context) {
 		return
 	}
 
-	file, err := functions.GetFileByIDAndUserId(c.MustGet("db").(*sql.DB), input.FileId, user.ID)
+	file, err := models.GetFileByIDAndUserID(c.MustGet("db").(*gorm.DB), input.FileId, user.ID)
 	if err != nil {
 		fmt.Println("Error getting file:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})

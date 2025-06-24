@@ -1,0 +1,147 @@
+package models
+
+import (
+	"OnTrek/utils"
+	"fmt"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+	"mime/multipart"
+	"time"
+)
+
+type Gpx struct {
+	ID          int       `json:"id" example:"1" gorm:"primaryKey;autoIncrement"`
+	UserID      string    `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000" gorm:"type:uuid;not null"`
+	Filename    string    `json:"filename" example:"MonteBianco.gpx" gorm:"not null"`
+	StoragePath string    `json:"storage_path" example:"123e4567-e89b-12d3-a456-426614174000.gpx" gorm:"not null;unique"`
+	UploadDate  time.Time `json:"upload_date" example:"2025-05-11T08:00:00Z" gorm:"not null;default:CURRENT_TIMESTAMP"`
+	Title       string    `json:"title" example:"Monte Faggeto" gorm:"not null"`
+	KM          float64   `json:"km" example:"14.5" gorm:"not null;default:0"`
+	Ascent      int       `json:"ascent" example:"1000" gorm:"not null;default:0"`
+	Descent     int       `json:"descent" example:"1000" gorm:"not null;default:0"`
+	Duration    string    `json:"duration" example:"06:30:00" gorm:"not null;default:''"`
+	MaxAltitude int       `json:"max_altitude" example:"2500" gorm:"not null;default:0"`
+	MinAltitude int       `json:"min_altitude" example:"1500" gorm:"not null;default:0"`
+
+	User User `json:"user" gorm:"foreignKey:UserID;references:id;constraint:OnDelete:CASCADE"`
+}
+
+func (Gpx) TableName() string {
+	return "gpx_files"
+}
+
+func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
+	var files []Gpx
+	err := db.
+		Table("gpx_files").
+		Select(`id, filename, upload_date, 
+                title, km, duration, ascent, descent, max_altitude, min_altitude`).
+		Where("user_id = ?", userID).
+		Scan(&files).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var result []utils.GpxInfo
+	for _, row := range files {
+		info := utils.GpxInfo{
+			ID:         row.ID,
+			Filename:   row.Filename,
+			UploadDate: row.UploadDate.Format(time.RFC3339),
+			Title:      row.Title,
+			Stats: utils.GPXStats{
+				Km:          row.KM,
+				Duration:    row.Duration,
+				Ascent:      row.Ascent,
+				Descent:     row.Descent,
+				MaxAltitude: row.MaxAltitude,
+				MinAltitude: row.MinAltitude,
+			},
+		}
+		result = append(result, info)
+	}
+
+	return result, nil
+}
+
+func GetFileByID(db *gorm.DB, fileID int) (utils.Gpx, error) {
+	var file utils.Gpx
+
+	err := db.Table("gpx_files").
+		Select(`id, user_id, filename, storage_path, upload_date, title`).
+		Where("id = ?", fileID).
+		First(&file).Error
+
+	if err != nil {
+		return file, err
+	}
+
+	return file, nil
+}
+
+func GetFileByIDAndUserID(db *gorm.DB, fileID int, userID string) (utils.Gpx, error) {
+	var file utils.Gpx
+
+	err := db.Table("gpx_files").Select(`id, user_id, filename, storage_path, upload_date, title`).
+		Where("id = ? AND user_id = ?", fileID, userID).
+		First(&file).Error
+
+	if err != nil {
+		return file, err
+	}
+
+	return file, nil
+}
+
+func DeleteFileByID(db *gorm.DB, fileID int, userID string, gpx utils.Gpx) error {
+	return db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
+			return fmt.Errorf("error enabling foreign key enforcement: %v", err)
+		}
+
+		if err := tx.Table("gpx_files").Where("id = ? AND user_id = ?", fileID, userID).Delete(&utils.Gpx{}).Error; err != nil {
+			return err
+		}
+
+		if err := utils.DeleteFiles(gpx); err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) error {
+	return db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
+			return fmt.Errorf("error enabling foreign key enforcement: %v", err)
+		}
+
+		stats, err := utils.CalculateStats(file)
+		if err != nil {
+			return err
+		}
+
+		gpx.StoragePath = uuid.New().String()
+		gpx.KM = stats.Km
+		gpx.Ascent = stats.Ascent
+		gpx.Descent = stats.Descent
+		gpx.Duration = stats.Duration
+		gpx.MaxAltitude = stats.MaxAltitude
+		gpx.MinAltitude = stats.MinAltitude
+
+		if err := tx.Create(&gpx).Error; err != nil {
+			return err
+		}
+
+		if err := utils.SaveFile(file, gpx.StoragePath); err != nil {
+			return err
+		}
+
+		if err := utils.CreateMap(file, gpx.StoragePath); err != nil {
+			return fmt.Errorf("error creating map: %v", err)
+		}
+
+		return nil
+	})
+}

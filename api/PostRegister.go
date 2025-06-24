@@ -1,16 +1,13 @@
 package api
 
 import (
-	"OnTrek/db/functions"
-	"OnTrek/utils"
-	"database/sql"
+	"OnTrek/db/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"net/http"
 	"strings"
-	"time"
 )
 
 // PostRegister godoc
@@ -27,7 +24,7 @@ import (
 // @Router /auth/register [post]
 func PostRegister(c *gin.Context) {
 	// Get the request body
-	var user utils.User
+	var user models.User
 	var input struct {
 		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required,min=8"`
@@ -50,11 +47,9 @@ func PostRegister(c *gin.Context) {
 	user.Email = input.Email
 	user.Username = input.Username
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
-	user.Password = string(hashedPassword)
-	user.ID = uuid.New().String()
-	user.CreatedAt = time.Now().Format(time.RFC3339)
+	user.PasswordHash = string(hashedPassword)
 
-	err := functions.RegisterUser(c.MustGet("db").(*sql.DB), user)
+	err := models.RegisterUser(c.MustGet("db").(*gorm.DB), user)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed: users.email") {
 			fmt.Println("Email already exists")

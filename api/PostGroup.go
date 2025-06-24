@@ -2,11 +2,13 @@ package api
 
 import (
 	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
 	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -59,7 +61,7 @@ func PostGroup(c *gin.Context) {
 			return
 		}
 
-		_, err := functions.GetFileByID(c.MustGet("db").(*sql.DB), groupInfo.FileId)
+		_, err := models.GetFileByID(c.MustGet("db").(*gorm.DB), groupInfo.FileId)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				fmt.Println("File not found for user: " + user.Username)

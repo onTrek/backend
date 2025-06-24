@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -27,7 +27,7 @@ func PostUpload(c *gin.Context) {
 	var title string
 
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get the gpx file from the form data
 	file, err := c.FormFile("file")
@@ -53,11 +53,11 @@ func PostUpload(c *gin.Context) {
 		return
 	}
 	// Save the file to the server
-	var gpx utils.Gpx
+	var gpx models.Gpx
 	gpx.UserID = user.ID
 	gpx.Filename = file.Filename
 	gpx.Title = title
-	err = functions.SaveFile(c.MustGet("db").(*sql.DB), gpx, file)
+	err = models.SaveFile(c.MustGet("db").(*gorm.DB), gpx, file)
 	if err != nil {
 		fmt.Println("Error saving file:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})

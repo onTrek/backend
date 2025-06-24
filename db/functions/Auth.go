@@ -1,9 +1,10 @@
 package functions
 
 import (
-	"database/sql"
+	"OnTrek/db/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -16,7 +17,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		user, err := GetUserByToken(c.MustGet("db").(*sql.DB), token)
+		user, err := models.GetUserByToken(c.MustGet("db").(*gorm.DB), token)
 		if err != nil {
 			if err.Error() == "token expired" {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})

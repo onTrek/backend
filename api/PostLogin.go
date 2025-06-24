@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -42,8 +42,7 @@ func PostLogin(c *gin.Context) {
 		return
 	}
 
-	database := c.MustGet("db").(*sql.DB)
-	user, err := functions.Login(database, input.Email, input.Password)
+	user, err := models.Login(c.MustGet("db").(*gorm.DB), input.Email, input.Password)
 	if err != nil {
 		if err.Error() == "user not found" {
 			fmt.Println("User not found")

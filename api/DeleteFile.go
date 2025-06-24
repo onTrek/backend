@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
@@ -25,7 +25,7 @@ import (
 // @Router /gpx/{id} [delete]
 func DeleteFile(c *gin.Context) {
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	file := c.Param("id")
 	// Validate the file ID
@@ -37,7 +37,7 @@ func DeleteFile(c *gin.Context) {
 	}
 
 	// Fetch the file from the database
-	gpx, err := functions.GetFileByIDAndUserId(c.MustGet("db").(*sql.DB), fileID, user.ID)
+	gpx, err := models.GetFileByIDAndUserID(c.MustGet("db").(*gorm.DB), fileID, user.ID)
 	if err != nil {
 		fmt.Println("Error fetching file from database:", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
@@ -45,7 +45,7 @@ func DeleteFile(c *gin.Context) {
 	}
 
 	// Delete file from the database
-	err = functions.DeleteFileById(c.MustGet("db").(*sql.DB), fileID, user.ID, gpx)
+	err = models.DeleteFileByID(c.MustGet("db").(*gorm.DB), fileID, user.ID, gpx)
 	if err != nil {
 		fmt.Println("Error deleting file from database:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete file from database"})

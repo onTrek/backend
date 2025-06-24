@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS gpx_files (
      km FLOAT NOT NULL DEFAULT 0,
      ascent FLOAT NOT NULL DEFAULT 0,
      descent FLOAT NOT NULL DEFAULT 0,
-     duration INTEGER NOT NULL DEFAULT 0,
+     duration TEXT NOT NULL DEFAULT 0,
      max_altitude FLOAT NOT NULL DEFAULT 0,
      min_altitude FLOAT NOT NULL DEFAULT 0,
      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
