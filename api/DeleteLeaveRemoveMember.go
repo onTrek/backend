@@ -1,12 +1,13 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
 	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
@@ -19,7 +20,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "Group ID"
-// @Param user_id query string false "User ID (optional, if not provided, the user ID from the token will be used)"
+// @Param user_id query string false "If provided, the user with this ID will be removed from the group if the authenticated user is the leader"
 // @Success 201 {object} utils.SuccessResponse "Successfully left group"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
@@ -28,7 +29,7 @@ import (
 // @Router /groups/{id}/members [delete]
 func DeleteLeaveRemoveMember(c *gin.Context) {
 
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	removeUser := true
 
@@ -51,13 +52,10 @@ func DeleteLeaveRemoveMember(c *gin.Context) {
 	userId := c.Query("user_id")
 	if userId == "" {
 		removeUser = false
-		fmt.Println("User ID is required to remove a user from the group")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID is required to remove a user from the group"})
-		return
 	}
 
 	// Check if the group exists
-	s, err := functions.CheckGroupExistsById(c.MustGet("db").(*sql.DB), groupId)
+	s, err := models.CheckGroupExistsById(c.MustGet("db").(*gorm.DB), groupId)
 	if err != nil {
 		fmt.Println("Error checking group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -72,7 +70,7 @@ func DeleteLeaveRemoveMember(c *gin.Context) {
 
 	if removeUser {
 		// Check if the user is the leader of the group
-		leader, err := functions.GetLeaderByGroup(c.MustGet("db").(*sql.DB), groupId)
+		leader, err := models.GetLeaderByGroup(c.MustGet("db").(*gorm.DB), groupId)
 		if err != nil {
 			fmt.Println("Error getting group leader:", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -85,7 +83,7 @@ func DeleteLeaveRemoveMember(c *gin.Context) {
 			return
 		}
 
-		err = functions.LeaveGroupById(c.MustGet("db").(*sql.DB), userId, groupId)
+		err = models.LeaveGroupById(c.MustGet("db").(*gorm.DB), userId, groupId)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				fmt.Println("User not found in group")
@@ -99,7 +97,7 @@ func DeleteLeaveRemoveMember(c *gin.Context) {
 		// Return success response
 		c.JSON(http.StatusCreated, gin.H{"message": "User successfully removed from group"})
 	} else {
-		err = functions.LeaveGroupById(c.MustGet("db").(*sql.DB), user.ID, groupId)
+		err = models.LeaveGroupById(c.MustGet("db").(*gorm.DB), user.ID, groupId)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				fmt.Println("User not found in group")

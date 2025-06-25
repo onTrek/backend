@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
@@ -27,7 +27,7 @@ import (
 // @Router /groups/{id} [delete]
 func DeleteGroup(c *gin.Context) {
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get group ID from the URL
 	group := c.Param("id")
@@ -44,7 +44,7 @@ func DeleteGroup(c *gin.Context) {
 	}
 
 	// Check if the group exists
-	s, err := functions.CheckGroupExistsById(c.MustGet("db").(*sql.DB), groupId)
+	s, err := models.CheckGroupExistsById(c.MustGet("db").(*gorm.DB), groupId)
 	if err != nil {
 		fmt.Println("Error checking group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -57,7 +57,7 @@ func DeleteGroup(c *gin.Context) {
 		return
 	}
 
-	leader, err := functions.GetLeaderByGroup(c.MustGet("db").(*sql.DB), groupId)
+	leader, err := models.GetLeaderByGroup(c.MustGet("db").(*gorm.DB), groupId)
 	if err != nil {
 		fmt.Println("Error getting leader by group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve group leader"})
@@ -72,7 +72,7 @@ func DeleteGroup(c *gin.Context) {
 	}
 
 	// Call the database function to delete the group
-	err = functions.DeleteGroupById(c.MustGet("db").(*sql.DB), user.ID, groupId)
+	err = models.DeleteGroupById(c.MustGet("db").(*gorm.DB), user.ID, groupId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete group"})
 		return

@@ -1,10 +1,8 @@
 package api
 
 import (
-	"OnTrek/db/functions"
 	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -30,7 +28,7 @@ import (
 // @Router /groups/{id}/gpx [patch]
 func PatchSessionGpx(c *gin.Context) {
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get group ID from the URL
 	group := c.Param("id")
@@ -65,21 +63,20 @@ func PatchSessionGpx(c *gin.Context) {
 	}
 
 	// Check if the group exists
-	s, err := functions.CheckGroupExistsByIdAndUserId(c.MustGet("db").(*sql.DB), groupId, user.ID)
+	s, err := models.CheckGroupExistsByIdAndUserId(c.MustGet("db").(*gorm.DB), groupId, user.ID)
 	if err != nil {
 		fmt.Println("Error checking group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		return
 	}
 
-	// Check if the group is valid
 	if !s {
 		fmt.Println("Group not found")
 		c.JSON(http.StatusNotFound, gin.H{"error": "Group not found"})
 		return
 	}
 
-	leader, err := functions.GetLeaderByGroup(c.MustGet("db").(*sql.DB), groupId)
+	leader, err := models.GetLeaderByGroup(c.MustGet("db").(*gorm.DB), groupId)
 	if err != nil {
 		fmt.Println("Error getting group leader:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -105,7 +102,7 @@ func PatchSessionGpx(c *gin.Context) {
 		return
 	}
 
-	err = functions.UpdateFileForTheGroup(c.MustGet("db").(*sql.DB), groupId, input.FileId)
+	err = models.UpdateFileForTheGroup(c.MustGet("db").(*gorm.DB), groupId, input.FileId)
 	if err != nil {
 		fmt.Println("Error updating group file:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})

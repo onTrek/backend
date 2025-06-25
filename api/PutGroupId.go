@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 	"strings"
@@ -29,7 +29,7 @@ import (
 // @Router /groups/{id}/members/ [put]
 func PutGroupId(c *gin.Context) {
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get group ID from the URL
 	group := c.Param("id")
@@ -47,7 +47,7 @@ func PutGroupId(c *gin.Context) {
 	}
 
 	// Chekc if the group exists
-	s, err := functions.CheckGroupExistsById(c.MustGet("db").(*sql.DB), groupId)
+	s, err := models.CheckGroupExistsById(c.MustGet("db").(*gorm.DB), groupId)
 	if err != nil {
 		fmt.Println("Error checking group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -60,7 +60,19 @@ func PutGroupId(c *gin.Context) {
 		return
 	}
 
-	err = functions.JoinGroupById(c.MustGet("db").(*sql.DB), user.ID, groupId)
+	db := c.MustGet("db").(*gorm.DB)
+
+	err = db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
+			return fmt.Errorf("error enabling foreign key enforcement: %v", err)
+		}
+
+		if err := models.JoinGroup(tx, user.ID, groupId); err != nil {
+			return fmt.Errorf("error joining group: %v", err)
+		}
+
+		return nil
+	})
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
 			fmt.Println("User already joined the group")

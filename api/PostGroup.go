@@ -1,7 +1,6 @@
 package api
 
 import (
-	"OnTrek/db/functions"
 	"OnTrek/db/models"
 	"OnTrek/utils"
 	"database/sql"
@@ -27,10 +26,10 @@ import (
 // @Router /groups/ [post]
 func PostGroup(c *gin.Context) {
 
-	var groupInfo utils.GroupInfo
+	var groupInfo models.Group
 
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get data from the request body
 	var input struct {
@@ -51,17 +50,19 @@ func PostGroup(c *gin.Context) {
 	}
 
 	groupInfo.Description = input.Description
+	groupInfo.CreatedBy = user.ID
 	// If FileId is provided, check if it exists
 	if input.FileId != nil {
-		groupInfo.FileId = *input.FileId
 
-		if groupInfo.FileId < 0 {
+		if *input.FileId < 0 {
 			fmt.Println("Invalid file ID")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file ID"})
 			return
 		}
 
-		_, err := models.GetFileByID(c.MustGet("db").(*gorm.DB), groupInfo.FileId)
+		groupInfo.FileId = input.FileId
+
+		_, err := models.GetFileByID(c.MustGet("db").(*gorm.DB), *groupInfo.FileId)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				fmt.Println("File not found for user: " + user.Username)
@@ -72,12 +73,9 @@ func PostGroup(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 			return
 		}
-	} else {
-		groupInfo.FileId = -1
 	}
 
-	// Create a new group
-	group, err := functions.CreateGroup(c.MustGet("db").(*sql.DB), user, groupInfo)
+	groupId, err := models.CreateGroup(c.MustGet("db").(*gorm.DB), groupInfo)
 	if err != nil {
 		fmt.Println("Error creating group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -85,6 +83,6 @@ func PostGroup(c *gin.Context) {
 	}
 
 	// Return the session ID
-	c.JSON(http.StatusCreated, gin.H{"group_id": group.ID})
+	c.JSON(http.StatusCreated, gin.H{"group_id": groupId})
 
 }

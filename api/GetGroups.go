@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -22,9 +22,9 @@ import (
 func GetGroups(c *gin.Context) {
 
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
-	groups, err := functions.GetGroupsByUserId(c.MustGet("db").(*sql.DB), user.ID)
+	groups, err := models.GetGroupsByUserId(c.MustGet("db").(*gorm.DB), user.ID)
 	if err != nil {
 		fmt.Println("Error getting sessions:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})

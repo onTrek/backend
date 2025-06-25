@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
@@ -18,7 +18,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "Group ID"
-// @Param location body utils.GroupInfoUpdate true "Location data for the user in the group"
+// @Param location body utils.GroupInfoUpdate true "Location data for the user in the group. GoingTo is optional."
 // @Success 200 {object} utils.SuccessResponse "Location updated successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
@@ -27,10 +27,10 @@ import (
 // @Router /groups/{id}/members/location [put]
 func PutGroupLocation(c *gin.Context) {
 
-	var groupInfo utils.GroupInfo
+	var groupInfo models.GroupMember
 
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get group ID from the URL
 	group := c.Param("id")
@@ -54,7 +54,7 @@ func PutGroupLocation(c *gin.Context) {
 		Altitude    float64 `json:"altitude" binding:"required"`
 		Accuracy    float64 `json:"accuracy" binding:"required"`
 		HelpRequest *bool   `json:"help_request" binding:"required"`
-		GoingTo     string  `json:"going_to" binding:"omitempty"`
+		GoingTo     *string `json:"going_to" binding:"omitempty"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -64,16 +64,19 @@ func PutGroupLocation(c *gin.Context) {
 	}
 
 	// Create a new group object
-	groupInfo.GroupID = groupId
+	groupInfo.GroupId = groupId
 	groupInfo.Latitude = input.Latitude
 	groupInfo.Longitude = input.Longitude
 	groupInfo.Altitude = input.Altitude
 	groupInfo.HelpRequest = *input.HelpRequest
 	groupInfo.Accuracy = input.Accuracy
-	groupInfo.GoingTo = input.GoingTo
+
+	if input.GoingTo != nil {
+		groupInfo.GoingTo = input.GoingTo
+	}
 
 	// Check if the group exists
-	s, err := functions.CheckGroupExistsById(c.MustGet("db").(*sql.DB), groupId)
+	s, err := models.CheckGroupExistsById(c.MustGet("db").(*gorm.DB), groupId)
 	if err != nil {
 		fmt.Println("Error checking group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -86,7 +89,7 @@ func PutGroupLocation(c *gin.Context) {
 		return
 	}
 
-	err = functions.UpdateGroup(c.MustGet("db").(*sql.DB), user.ID, groupInfo)
+	err = models.UpdateGroupMember(c.MustGet("db").(*gorm.DB), user.ID, groupInfo)
 	if err != nil {
 		fmt.Println("Error updating group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})

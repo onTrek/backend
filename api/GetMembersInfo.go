@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
@@ -41,7 +41,7 @@ func GetMembersInfo(c *gin.Context) {
 	}
 
 	// Check if the group exists
-	s, err := functions.CheckGroupExistsById(c.MustGet("db").(*sql.DB), groupId)
+	s, err := models.CheckGroupExistsById(c.MustGet("db").(*gorm.DB), groupId)
 	if err != nil {
 		fmt.Println("Error checking group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -54,7 +54,7 @@ func GetMembersInfo(c *gin.Context) {
 		return
 	}
 
-	members, err := functions.GetMembersInfoByGroupId(c.MustGet("db").(*sql.DB), groupId)
+	members, err := models.GetMembersInfoByGroupId(c.MustGet("db").(*gorm.DB), groupId)
 	if err != nil {
 		fmt.Println("Error getting groups:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
