@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -16,7 +16,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Param query query string true "Search query"
+// @Param query query string true "Search query for username"
 // @Success 200 {array} utils.UserEssentials "Returns a list of users matching the search query"
 // @Failure 400 {object} utils.ErrorResponse "Bad request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
@@ -26,7 +26,7 @@ import (
 func GetSearchPeople(c *gin.Context) {
 
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get the search query from the request
 	query := c.Query("query")
@@ -36,7 +36,7 @@ func GetSearchPeople(c *gin.Context) {
 	}
 
 	// Fetch users matching the search query from the database
-	users, err := functions.SearchUsers(c.MustGet("db").(*sql.DB), query, user.ID)
+	users, err := models.SearchUsers(c.MustGet("db").(*gorm.DB), query, user.ID)
 	if err != nil {
 		fmt.Println("Error searching users:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to search users"})
@@ -45,7 +45,7 @@ func GetSearchPeople(c *gin.Context) {
 
 	// Check if any users were found
 	if len(users) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "No users found"})
+		c.JSON(http.StatusOK, []utils.UserEssentials{})
 		return
 	}
 	// Return the list of users matching the search query

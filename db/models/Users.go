@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"strings"
 	"time"
 )
 
@@ -36,6 +37,14 @@ func RegisterUser(db *gorm.DB, user User) error {
 
 		return nil
 	})
+}
+
+func DeleteUser(db *gorm.DB, userID string) error {
+	err := db.
+		Where("id = ?", userID).
+		Delete(&User{}).Error
+
+	return err
 }
 
 func Login(db *gorm.DB, email string, password string) (utils.UserToken, error) {
@@ -90,4 +99,29 @@ func Login(db *gorm.DB, email string, password string) (utils.UserToken, error) 
 	return utils.UserToken{
 		Token: token.Token,
 	}, nil
+}
+
+func SearchUsers(db *gorm.DB, query string, userId string) ([]utils.UserEssentials, error) {
+	var users []utils.UserEssentials
+
+	err := db.
+		Table("users").
+		Select("id, username").
+		Where("LOWER(username) LIKE ? AND id != ?", "%"+strings.ToLower(query)+"%", userId).
+		Limit(100).
+		Scan(&users).Error
+
+	return users, err
+}
+
+func GetUserById(db *gorm.DB, userId string) (utils.UserEssentials, error) {
+	var user utils.UserEssentials
+	err := db.Table("users").Select("id, username").First(&user, "id = ?", userId).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return utils.UserEssentials{}, fmt.Errorf("user not found")
+		}
+		return utils.UserEssentials{}, fmt.Errorf("failed to query user: %w", err)
+	}
+	return user, nil
 }

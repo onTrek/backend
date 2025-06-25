@@ -1,12 +1,13 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
 	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -26,7 +27,7 @@ import (
 // @Router /friends/requests/{id} [delete]
 func DeleteDeclineFriendRequest(c *gin.Context) {
 	// Get the user ID from the context
-	user := c.MustGet("userId").(utils.User)
+	user := c.MustGet("userId").(utils.UserInfo)
 
 	// Get the user ID from the URL parameter
 	userID := c.Param("id")
@@ -39,7 +40,7 @@ func DeleteDeclineFriendRequest(c *gin.Context) {
 	}
 
 	// Check if the user ID is valid
-	_, err := functions.GetUserById(c.MustGet("db").(*sql.DB), userID)
+	_, err := models.GetUserById(c.MustGet("db").(*gorm.DB), userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("User not found")
@@ -52,7 +53,7 @@ func DeleteDeclineFriendRequest(c *gin.Context) {
 	}
 
 	// Call the service to accept the friend request
-	err = functions.DeleteFriendRequest(c.MustGet("db").(*sql.DB), user.ID, userID)
+	err = models.DeleteFriendRequest(c.MustGet("db").(*gorm.DB), user.ID, userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("Friend request not found")

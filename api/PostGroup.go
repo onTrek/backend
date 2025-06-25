@@ -18,7 +18,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Param group body utils.GroupInfoCreation true "Group information"
+// @Param group body utils.GroupInfoCreation true "Group information. Fields: description (required), file_id (optional)"
 // @Success 201 {object} utils.GroupId "group_id"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"

@@ -1,11 +1,13 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -26,7 +28,7 @@ import (
 // @Router /friends/{id} [delete]
 func DeleteFriend(c *gin.Context) {
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get the friend ID from the URL parameters
 	friendID := c.Param("id")
@@ -38,17 +40,16 @@ func DeleteFriend(c *gin.Context) {
 		return
 	}
 
-	user2, err := functions.GetUserById(c.MustGet("db").(*sql.DB), friendID)
+	user2, err := models.GetUserById(c.MustGet("db").(*gorm.DB), friendID)
 	if err != nil {
 		fmt.Println("Error getting user by ID:", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
-	// Call the function to delete the friend
-	err = functions.DeleteFriend(c.MustGet("db").(*sql.DB), user.ID, user2.ID)
+	err = models.DeleteFriend(c.MustGet("db").(*gorm.DB), user.ID, user2.ID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("Friend not found")
 			c.JSON(http.StatusNotFound, gin.H{"error": "Friend not found"})
 			return

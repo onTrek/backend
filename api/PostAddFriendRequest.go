@@ -1,12 +1,13 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
 	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -29,7 +30,7 @@ import (
 func PostAddFriendRequest(c *gin.Context) {
 
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get the user ID from the URL parameter
 	userID := c.Param("id")
@@ -42,7 +43,7 @@ func PostAddFriendRequest(c *gin.Context) {
 	}
 
 	// Check if the user ID is valid
-	user2, err := functions.GetUserById(c.MustGet("db").(*sql.DB), userID)
+	user2, err := models.GetUserById(c.MustGet("db").(*gorm.DB), userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			fmt.Println("User not found")
@@ -62,9 +63,9 @@ func PostAddFriendRequest(c *gin.Context) {
 	}
 
 	// Add the friend to the database
-	err = functions.AddFriend(c.MustGet("db").(*sql.DB), user.ID, user2.ID)
+	err = models.AddFriend(c.MustGet("db").(*gorm.DB), user.ID, user2.ID)
 	if err != nil {
-		if err.Error() == "Users are already friends" {
+		if err.Error() == "users are already friends" {
 			fmt.Println("Users are already friends")
 			c.JSON(http.StatusConflict, gin.H{"error": "Users are already friends"})
 			return

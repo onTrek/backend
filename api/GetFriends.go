@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -22,10 +22,10 @@ import (
 // @Router /friends/ [get]
 func GetFriends(c *gin.Context) {
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Fetch friends from the database
-	friends, err := functions.GetFriends(c.MustGet("db").(*sql.DB), user.ID)
+	friends, err := models.GetFriends(c.MustGet("db").(*gorm.DB), user.ID)
 	if err != nil {
 		fmt.Println("Error fetching friends:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch friends"})

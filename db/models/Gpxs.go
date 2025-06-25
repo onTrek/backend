@@ -36,7 +36,7 @@ func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
 		Table("gpx_files").
 		Select(`id, filename, upload_date, 
                 title, km, duration, ascent, descent, max_altitude, min_altitude`).
-		Where("user_id = ?", userID).
+		Where("user_id = ?", userID).Order("upload_date DESC").
 		Scan(&files).Error
 	if err != nil {
 		return nil, err

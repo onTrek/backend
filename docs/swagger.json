@@ -753,75 +753,6 @@
                 }
             }
         },
-        "/group/{id}/members": {
-            "delete": {
-                "description": "Allows a user to leave a group by providing their group ID or remove a user from the group if the user is the leader.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "groups"
-                ],
-                "summary": "Leave a group using group ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Bearer",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Group ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "User ID (optional, if not provided, the user ID from the token will be used)",
-                        "name": "user_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Successfully left group",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Group not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/groups/": {
             "get": {
                 "description": "Get all groups for the authenticated user",
@@ -886,7 +817,7 @@
                         "required": true
                     },
                     {
-                        "description": "Group information",
+                        "description": "Group information. Fields: description (required), file_id (optional)",
                         "name": "group",
                         "in": "body",
                         "required": true,
@@ -1128,6 +1059,75 @@
                 }
             }
         },
+        "/groups/{id}/members": {
+            "delete": {
+                "description": "Allows a user to leave a group by providing their group ID or remove a user from the group if the user is the leader.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Leave a group using group ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "If provided, the user with this ID will be removed from the group if the authenticated user is the leader",
+                        "name": "user_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully left group",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Group not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/groups/{id}/members/": {
             "get": {
                 "description": "Get members information by group ID",
@@ -1287,7 +1287,7 @@
                         "required": true
                     },
                     {
-                        "description": "Location data for the user in the group",
+                        "description": "Location data for the user in the group. GoingTo is optional.",
                         "name": "location",
                         "in": "body",
                         "required": true,
@@ -1433,7 +1433,7 @@
                     },
                     {
                         "type": "string",
-                        "description": "Search query",
+                        "description": "Search query for username",
                         "name": "query",
                         "in": "query",
                         "required": true

@@ -17,14 +17,7 @@ import (
 // @Router /profile [get]
 func GetProfile(c *gin.Context) {
 	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
+	user := c.MustGet("user").(utils.UserInfo)
 
-	// Get user profile from the database
-	var userInfo utils.UserInfo
-
-	userInfo.ID = user.ID
-	userInfo.Username = user.Username
-	userInfo.Email = user.Email
-
-	c.JSON(200, userInfo)
+	c.JSON(200, user)
 }

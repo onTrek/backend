@@ -1,11 +1,11 @@
 package api
 
 import (
-	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -21,11 +21,10 @@ import (
 // @Failure 500 {object} utils.ErrorResponse "Failed to delete user"
 // @Router /profile [delete]
 func DeleteProfile(c *gin.Context) {
-	// Get the user from the context
-	user := c.MustGet("user").(utils.User)
 
-	// Delete user from the database
-	err := functions.DeleteUser(c.MustGet("db").(*sql.DB), user.ID)
+	user := c.MustGet("user").(utils.UserInfo)
+
+	err := models.DeleteUser(c.MustGet("db").(*gorm.DB), user.ID)
 	if err != nil {
 		fmt.Println("Error deleting user:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
