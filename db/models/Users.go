@@ -19,7 +19,7 @@ type User struct {
 	CreatedAt    time.Time `json:"created_at" example:"2025-05-11T08:00:00Z" gorm:"not null;default:CURRENT_TIMESTAMP"`
 }
 
-var tokenExpiry = 7 * 24 * time.Hour
+var tokenExpiry = 365 * 24 * time.Hour
 
 func RegisterUser(db *gorm.DB, user User) error {
 	if user.ID == "" {
@@ -79,13 +79,15 @@ func Login(db *gorm.DB, email string, password string) (utils.UserToken, error) 
 	}
 
 	if errors.Is(err, gorm.ErrRecordNotFound) || time.Since(token.CreatedAt) > tokenExpiry {
+		token = Token{}
+
 		err = UpdateToken(tx, user.ID)
 		if err != nil {
 			tx.Rollback()
 			return utils.UserToken{}, fmt.Errorf("failed to update token: %w", err)
 		}
 
-		err = tx.Where("user_id = ?", user.ID).First(&token).Error
+		err = tx.Table("tokens").Where("user_id = ?", user.ID).First(&token).Error
 		if err != nil {
 			tx.Rollback()
 			return utils.UserToken{}, fmt.Errorf("failed to retrieve new token: %w", err)
