@@ -17,7 +17,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "File ID"
-// @Success 200 {object} utils.SuccessResponse "File deleted successfully"
+// @Success 204 "No Content"
 // @Failure 400 {object} utils.ErrorResponse "Invalid file ID"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "File not found"
@@ -52,6 +52,6 @@ func DeleteFile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "File deleted successfully"})
+	c.JSON(http.StatusNoContent, nil)
 
 }

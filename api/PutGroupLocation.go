@@ -19,7 +19,7 @@ import (
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "Group ID"
 // @Param location body utils.GroupInfoUpdate true "Location data for the user in the group. GoingTo is optional."
-// @Success 200 {object} utils.SuccessResponse "Location updated successfully"
+// @Success 204 "No Content"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Group not found"
@@ -96,6 +96,6 @@ func PutGroupLocation(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Group updated successfully"})
+	c.JSON(http.StatusNoContent, nil)
 
 }

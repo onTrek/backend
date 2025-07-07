@@ -33,6 +33,12 @@ definitions:
         example: 1500
         type: integer
     type: object
+  utils.GpxID:
+    properties:
+      file_id:
+        example: 1
+        type: integer
+    type: object
   utils.GpxInfo:
     properties:
       filename:
@@ -277,10 +283,8 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: User registered successfully
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "400":
           description: Invalid request
           schema:
@@ -348,10 +352,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: Friend deleted successfully
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "400":
           description: Invalid friend ID
           schema:
@@ -421,10 +423,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: Friend request declined successfully
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "400":
           description: Invalid request
           schema:
@@ -462,10 +462,8 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Friend added successfully
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "400":
           description: Missing or invalid user ID"ss
           schema:
@@ -507,10 +505,10 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Friend request accepted successfully
+        "204":
+          description: No Content
           schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+            type: string
         "400":
           description: Invalid request
           schema:
@@ -584,9 +582,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: File uploaded successfully
+          description: File id of the uploaded GPX file
           schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+            $ref: '#/definitions/utils.GpxID'
         "400":
           description: Invalid file
           schema:
@@ -619,10 +617,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: File deleted successfully
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "400":
           description: Invalid file ID
           schema:
@@ -814,10 +810,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: Group deleted successfully
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "400":
           description: Invalid group ID
           schema:
@@ -957,10 +951,8 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Successfully left group
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "400":
           description: Invalid request
           schema:
@@ -1040,10 +1032,8 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Successfully joined group
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "400":
           description: Group ID is required
           schema:
@@ -1093,10 +1083,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: Location updated successfully
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "400":
           description: Invalid request
           schema:
@@ -1130,10 +1118,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: User deleted successfully
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "401":
           description: Unauthorized
           schema:

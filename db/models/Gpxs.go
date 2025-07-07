@@ -111,8 +111,10 @@ func DeleteFileByID(db *gorm.DB, fileID int, userID string, gpx utils.Gpx) error
 	})
 }
 
-func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) error {
-	return db.Transaction(func(tx *gorm.DB) error {
+func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
+	var createdID int
+
+	err := db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
 			return fmt.Errorf("error enabling foreign key enforcement: %v", err)
 		}
@@ -134,6 +136,8 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) error {
 			return err
 		}
 
+		createdID = gpx.ID
+
 		if err := utils.SaveFile(file, gpx.StoragePath); err != nil {
 			return err
 		}
@@ -144,4 +148,6 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) error {
 
 		return nil
 	})
+
+	return createdID, err
 }

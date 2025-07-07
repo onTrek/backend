@@ -18,7 +18,7 @@ import (
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param file formData file true "GPX file to upload"
 // @Param title formData string true "Title for the GPX file"
-// @Success 201 {object} utils.SuccessResponse "File uploaded successfully"
+// @Success 201 {object} utils.GpxID "File id of the uploaded GPX file"
 // @Failure 400 {object} utils.ErrorResponse "Invalid file"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Failed to save file"
@@ -57,12 +57,12 @@ func PostUpload(c *gin.Context) {
 	gpx.UserID = user.ID
 	gpx.Filename = file.Filename
 	gpx.Title = title
-	err = models.SaveFile(c.MustGet("db").(*gorm.DB), gpx, file)
+	gpx.ID, err = models.SaveFile(c.MustGet("db").(*gorm.DB), gpx, file)
 	if err != nil {
 		fmt.Println("Error saving file:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "File uploaded successfully"})
+	c.JSON(http.StatusCreated, gin.H{"file_id": gpx.ID})
 }

@@ -21,7 +21,7 @@ import (
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "Group ID"
 // @Param user_id query string false "If provided, the user with this ID will be removed from the group if the authenticated user is the leader"
-// @Success 201 {object} utils.SuccessResponse "Successfully left group"
+// @Success 204 "No Content"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Group not found"
@@ -95,7 +95,7 @@ func DeleteLeaveRemoveMember(c *gin.Context) {
 			return
 		}
 		// Return success response
-		c.JSON(http.StatusCreated, gin.H{"message": "User successfully removed from group"})
+		c.JSON(http.StatusNoContent, nil)
 	} else {
 		err = models.LeaveGroupById(c.MustGet("db").(*gorm.DB), user.ID, groupId)
 		if err != nil {
@@ -109,7 +109,7 @@ func DeleteLeaveRemoveMember(c *gin.Context) {
 			return
 		}
 		// Return success response
-		c.JSON(http.StatusCreated, gin.H{"message": "Successfully left group"})
+		c.JSON(http.StatusNoContent, nil)
 	}
 	return
 }

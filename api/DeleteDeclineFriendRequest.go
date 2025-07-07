@@ -19,7 +19,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for authentication"
 // @Param id path string true "User ID of the friend request sender"
-// @Success 200 {object} utils.SuccessResponse "Friend request declined successfully"
+// @Success 204 "No Content"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Friend request not found"
@@ -64,5 +64,5 @@ func DeleteDeclineFriendRequest(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Friend request declined successfully"})
+	c.JSON(http.StatusNoContent, nil)
 }

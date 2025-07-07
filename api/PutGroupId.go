@@ -19,7 +19,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "Group ID"
-// @Success 201 {object} utils.SuccessResponse "Successfully joined group"
+// @Success 204 "No Content"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 400 {object} utils.ErrorResponse "Group ID is required"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
@@ -84,5 +84,5 @@ func PutGroupId(c *gin.Context) {
 		return
 	}
 	// Return success response
-	c.JSON(http.StatusCreated, gin.H{"message": "Successfully joined group"})
+	c.JSON(http.StatusNoContent, nil)
 }

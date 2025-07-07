@@ -18,7 +18,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "Group ID to be deleted" example:"12345"
-// @Success 200 {object} utils.SuccessResponse "Group deleted successfully"
+// @Success 204 "No Content"
 // @Failure 400 {object} utils.ErrorResponse "Invalid group ID"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 403 {object} utils.ErrorResponse "Forbidden - User is not the leader of the group"
@@ -79,5 +79,5 @@ func DeleteGroup(c *gin.Context) {
 	}
 
 	// Return a success response
-	c.JSON(http.StatusOK, gin.H{"message": "Group deleted successfully"})
+	c.JSON(http.StatusNoContent, nil)
 }

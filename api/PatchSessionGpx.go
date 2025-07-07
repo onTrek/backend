@@ -19,7 +19,7 @@ import (
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "Group ID"
 // @Param file_id body utils.FileBody true "File ID of the GPX file to be used for the group"
-// @Success 200 {object} utils.SuccessResponse "Group GPX updated successfully"
+// @Success 204 "No Content"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 403 {object} utils.ErrorResponse "Forbidden"
@@ -109,5 +109,5 @@ func PatchSessionGpx(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Group GPX updated successfully"})
+	c.JSON(http.StatusNoContent, nil)
 }

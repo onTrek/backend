@@ -19,7 +19,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for authentication"
 // @Param id path string true "User ID of the friend request sender"
-// @Success 201 {object} utils.SuccessResponse "Friend request accepted successfully"
+// @Success 204 {string} string "No Content"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Friend request not found"
@@ -64,5 +64,5 @@ func PutAcceptFriendRequest(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Friend request accepted successfully"})
+	c.JSON(http.StatusNoContent, nil)
 }

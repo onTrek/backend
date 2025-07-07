@@ -17,7 +17,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param register body utils.RegisterInput true "User registration credentials. Email must be unique. Password must be at least 8 characters long."
-// @Success 201 {object} utils.SuccessResponse "User registered successfully"
+// @Success 204 "No Content"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 409 {object} utils.ErrorResponse "User with this email already exists"
 // @Failure 500 {object} utils.ErrorResponse "Failed to register user"
@@ -61,5 +61,5 @@ func PostRegister(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+	c.JSON(http.StatusNoContent, nil)
 }

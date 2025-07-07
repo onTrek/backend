@@ -47,18 +47,18 @@ func main() {
 	}
 
 	// SESSION API
-	sessions := router.Group("/groups")
-	sessions.Use(functions.AuthMiddleware())
+	groups := router.Group("/groups")
+	groups.Use(functions.AuthMiddleware())
 	{
-		sessions.POST("/", api.PostGroup)
-		sessions.GET("/", api.GetGroups)
-		sessions.DELETE("/:id", api.DeleteGroup)
-		sessions.GET("/:id", api.GetGroup)
-		sessions.PATCH("/:id/gpx", api.PatchSessionGpx)
-		sessions.PUT("/:id/members/location", api.PutGroupLocation)
-		sessions.PUT("/:id/members/", api.PutGroupId)
-		sessions.GET("/:id/members/", api.GetMembersInfo)
-		sessions.DELETE(":id/members/", api.DeleteLeaveRemoveMember)
+		groups.POST("/", api.PostGroup)
+		groups.GET("/", api.GetGroups)
+		groups.DELETE("/:id", api.DeleteGroup)
+		groups.GET("/:id", api.GetGroup)
+		groups.PATCH("/:id/gpx", api.PatchSessionGpx)
+		groups.PUT("/:id/members/location", api.PutGroupLocation)
+		groups.PUT("/:id/members/", api.PutGroupId)
+		groups.GET("/:id/members/", api.GetMembersInfo)
+		groups.DELETE(":id/members/", api.DeleteLeaveRemoveMember)
 	}
 
 	search := router.Group("/search")

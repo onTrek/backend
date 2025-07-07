@@ -16,7 +16,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Success 200 {object} utils.SuccessResponse "User deleted successfully"
+// @Success 204 "No Content"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Failed to delete user"
 // @Router /profile [delete]
@@ -31,5 +31,5 @@ func DeleteProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "User deleted successfully"})
+	c.JSON(http.StatusNoContent, nil)
 }

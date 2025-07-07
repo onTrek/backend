@@ -19,7 +19,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "Friend ID to be deleted" example:"12345"
-// @Success 200 {object} utils.SuccessResponse "Friend deleted successfully"
+// @Success 204 "No Content"
 // @Failure 400 {object} utils.ErrorResponse "Invalid friend ID"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "User not found"
@@ -55,9 +55,9 @@ func DeleteFriend(c *gin.Context) {
 			return
 		}
 		fmt.Println("Error deleting friend:", err)
-		c.JSON(500, gin.H{"error": "Failed to delete friend"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete friend"})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Friend deleted successfully"})
+	c.JSON(http.StatusNoContent, nil)
 }
