@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
+	"strings"
 )
 
 // PostLogin godoc
@@ -44,8 +45,13 @@ func PostLogin(c *gin.Context) {
 
 	user, err := models.Login(c.MustGet("db").(*gorm.DB), input.Email, input.Password)
 	if err != nil {
-		if err.Error() == "user not found" {
+		if strings.Contains(err.Error(), "user not found") {
 			fmt.Println("User not found")
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User does not exist"})
+			return
+		}
+		if strings.Contains(err.Error(), "invalid password") {
+			fmt.Println("Invalid password")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 			return
 		}

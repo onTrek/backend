@@ -59,7 +59,7 @@ func Login(db *gorm.DB, email string, password string) (utils.UserToken, error) 
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
-		return utils.UserToken{}, fmt.Errorf("invalid password: %w", err)
+		return utils.UserToken{}, fmt.Errorf("invalid password")
 	}
 
 	tx := db.Begin()
