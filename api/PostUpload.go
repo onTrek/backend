@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
+	"strings"
 )
 
 // PostUpload godoc
@@ -59,6 +60,11 @@ func PostUpload(c *gin.Context) {
 	gpx.Title = title
 	gpx.ID, err = models.SaveFile(c.MustGet("db").(*gorm.DB), gpx, file)
 	if err != nil {
+		if strings.Contains(err.Error(), "invalid GPX file: no coordinates found") {
+			fmt.Println("Invalid GPX file: no coordinates found")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid GPX file: no coordinates found"})
+			return
+		}
 		fmt.Println("Error saving file:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
 		return

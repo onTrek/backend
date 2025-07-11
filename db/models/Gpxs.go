@@ -143,7 +143,7 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 		}
 
 		if err := utils.CreateMap(file, gpx.StoragePath); err != nil {
-			return fmt.Errorf("error creating map: %v", err)
+			return err
 		}
 
 		return nil

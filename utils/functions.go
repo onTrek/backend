@@ -173,7 +173,7 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 	}
 
 	if count == 0 {
-		return fmt.Errorf("nessun punto trovato nel file GPX")
+		return fmt.Errorf("invalid GPX file: no coordinates found")
 	}
 
 	centerLat := sumLat / float64(count)
@@ -200,32 +200,29 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 		token,
 	)
 
-	// Richiesta HTTP a Mapbox
 	resp, err := http.Get(url)
 	if err != nil {
-		return fmt.Errorf("errore download mappa: %w", err)
+		return fmt.Errorf("mapbox error request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("errore risposta Mapbox: %s", resp.Status)
+		return fmt.Errorf("mapbox error response: %s", resp.Status)
 	}
 
-	// Crea directory se non esiste
 	if err := os.MkdirAll("./maps", os.ModePerm); err != nil {
-		return fmt.Errorf("errore creazione cartella output: %w", err)
+		return fmt.Errorf("error creating maps directory: %w", err)
 	}
 
-	// Scrive il file
 	outFile, err := os.Create(filePath)
 	if err != nil {
-		return fmt.Errorf("errore creazione file immagine: %w", err)
+		return fmt.Errorf("error creating map file: %w", err)
 	}
 	defer outFile.Close()
 
 	_, err = io.Copy(outFile, resp.Body)
 	if err != nil {
-		return fmt.Errorf("errore salvataggio immagine: %w", err)
+		return fmt.Errorf("error copying map data: %w", err)
 	}
 
 	return nil

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
+	"strings"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
@@ -13,6 +14,12 @@ func AuthMiddleware() gin.HandlerFunc {
 		token := c.GetHeader("Bearer")
 		if token == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Missing token"})
+			c.Abort()
+			return
+		}
+
+		if strings.Contains(token, " ") {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token format"})
 			c.Abort()
 			return
 		}
