@@ -4,12 +4,14 @@ import (
 	"OnTrek/utils"
 	"fmt"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Friend struct {
-	UserId1 string `json:"user_id1" gorm:"type:uuid;primaryKey"`
-	UserId2 string `json:"user_id2" gorm:"type:uuid;primaryKey"`
-	Pending bool   `json:"pending" gorm:"default:true"`
+	UserId1 string    `json:"user_id1" gorm:"type:uuid;primaryKey"`
+	UserId2 string    `json:"user_id2" gorm:"type:uuid;primaryKey"`
+	Pending bool      `json:"pending" gorm:"default:true"`
+	Date    time.Time `json:"date" example:"2025-05-11T08:00:00Z" gorm:"not null;default:CURRENT_TIMESTAMP"`
 
 	User1 User `gorm:"foreignKey:UserId1;references:ID"`
 	User2 User `gorm:"foreignKey:UserId2;references:ID"`
@@ -79,13 +81,31 @@ func AddFriend(db *gorm.DB, userID string, friendID string) error {
 	return nil
 }
 
-func GetFriendRequestsByUserId(db *gorm.DB, userId string) ([]utils.UserEssentials, error) {
+func GetFriendRequestsReceivedById(db *gorm.DB, userId string) ([]utils.UserEssentials, error) {
 	var friendRequests []utils.UserEssentials
 
 	err := db.Table("users u").
-		Select("u.id, u.username").
+		Select("u.id, u.username, f.date").
 		Joins("JOIN friends f ON u.id = f.user_id1").
 		Where("f.user_id2 = ? AND f.pending = TRUE", userId).
+		Order("f.date DESC").
+		Scan(&friendRequests).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return friendRequests, nil
+}
+
+func GetFriendRequestsSentById(db *gorm.DB, userId string) ([]utils.UserEssentials, error) {
+	var friendRequests []utils.UserEssentials
+
+	err := db.Table("users u").
+		Select("u.id, u.username, f.date").
+		Joins("JOIN friends f ON u.id = f.user_id2").
+		Where("f.user_id1 = ? AND f.pending = TRUE", userId).
+		Order("f.date DESC").
 		Scan(&friendRequests).Error
 
 	if err != nil {
@@ -98,7 +118,10 @@ func GetFriendRequestsByUserId(db *gorm.DB, userId string) ([]utils.UserEssentia
 func AcceptFriendRequest(db *gorm.DB, userID, friendID string) error {
 	result := db.Model(&Friend{}).
 		Where("user_id1 = ? AND user_id2 = ? AND pending = TRUE", friendID, userID).
-		Update("pending", false)
+		Updates(map[string]interface{}{
+			"pending": false,
+			"date":    gorm.Expr("strftime('%Y-%m-%dT%H:%M:%SZ', 'now')"),
+		})
 
 	if result.Error != nil {
 		return result.Error

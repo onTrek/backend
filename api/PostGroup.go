@@ -18,7 +18,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Param group body utils.GroupInfoCreation true "Group information. Fields: description (required), file_id (optional)"
+// @Param group body utils.GroupInfoCreation true "Group information. Fields: description (required, max 64 characters), file_id (optional, must be a valid file ID)"
 // @Success 201 {object} utils.GroupId "group_id"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
@@ -46,6 +46,12 @@ func PostGroup(c *gin.Context) {
 	if input.Description == "" {
 		fmt.Println("Description is required")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Description is required"})
+		return
+	}
+
+	if len(input.Description) > 64 {
+		fmt.Println("Description is too long(64 characters max)")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Description is too long(64 characters max)"})
 		return
 	}
 

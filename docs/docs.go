@@ -163,9 +163,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/friends/requests/": {
+        "/friends/requests/received/": {
             "get": {
-                "description": "Retrieve all friend requests for the authenticated user",
+                "description": "Retrieve all friend requests received by the authenticated user",
                 "consumes": [
                     "application/json"
                 ],
@@ -175,7 +175,7 @@ const docTemplate = `{
                 "tags": [
                     "friends"
                 ],
-                "summary": "Get friend requests",
+                "summary": "Get friend requests received",
                 "parameters": [
                     {
                         "type": "string",
@@ -187,7 +187,54 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of friend requests",
+                        "description": "List of friend requests ordered by date received",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.UserEssentials"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve friend requests",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/friends/requests/sent/": {
+            "get": {
+                "description": "Retrieve all friend requests sent by the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "friends"
+                ],
+                "summary": "Get friend requests sent",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of friend requests ordered by date sent",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -527,7 +574,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Title for the GPX file",
+                        "description": "Title for the GPX file(max 64 characters)",
                         "name": "title",
                         "in": "formData",
                         "required": true
@@ -562,6 +609,67 @@ const docTemplate = `{
             }
         },
         "/gpx/{id}": {
+            "get": {
+                "description": "Retrieve information about a specific GPX file by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gpx"
+                ],
+                "summary": "Get File Info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "File ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Gpx file information",
+                        "schema": {
+                            "$ref": "#/definitions/utils.GpxInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid file ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "File not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Deletes a file by its ID from both the database and the disk",
                 "produces": [
@@ -808,7 +916,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Group information. Fields: description (required), file_id (optional)",
+                        "description": "Group information. Fields: description (required, max 64 characters), file_id (optional, must be a valid file ID)",
                         "name": "group",
                         "in": "body",
                         "required": true,
@@ -1008,11 +1116,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Group GPX updated successfully",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
+                    "204": {
+                        "description": "No Content"
                     },
                     "400": {
                         "description": "Invalid request",
@@ -1413,11 +1518,17 @@ const docTemplate = `{
                         "name": "query",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Search for friends only (optional, true/false, default is false)",
+                        "name": "friendsOnly",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns a list of users matching the search query",
+                        "description": "Returns a list of users matching the search query ordered by username",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -1724,15 +1835,6 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "John Doe"
-                }
-            }
-        },
-        "utils.SuccessResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Success"
                 }
             }
         },

@@ -79,6 +79,35 @@ func GetFileByID(db *gorm.DB, fileID int) (utils.Gpx, error) {
 	return file, nil
 }
 
+func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfo, error) {
+	var file Gpx
+
+	err := db.Table("gpx_files").
+		Where("id = ?", fileID).
+		First(&file).Error
+
+	if err != nil {
+		return utils.GpxInfo{}, err
+	}
+
+	info := utils.GpxInfo{
+		ID:         file.ID,
+		Filename:   file.Filename,
+		UploadDate: file.UploadDate.Format(time.RFC3339),
+		Title:      file.Title,
+		Stats: utils.GPXStats{
+			Km:          file.KM,
+			Duration:    file.Duration,
+			Ascent:      file.Ascent,
+			Descent:     file.Descent,
+			MaxAltitude: file.MaxAltitude,
+			MinAltitude: file.MinAltitude,
+		},
+	}
+
+	return info, nil
+}
+
 func GetFileByIDAndUserID(db *gorm.DB, fileID int, userID string) (utils.Gpx, error) {
 	var file utils.Gpx
 

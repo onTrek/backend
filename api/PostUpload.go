@@ -18,7 +18,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param file formData file true "GPX file to upload"
-// @Param title formData string true "Title for the GPX file"
+// @Param title formData string true "Title for the GPX file(max 64 characters)"
 // @Success 201 {object} utils.GpxID "File id of the uploaded GPX file"
 // @Failure 400 {object} utils.ErrorResponse "Invalid file"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
@@ -44,6 +44,12 @@ func PostUpload(c *gin.Context) {
 	if title == "" {
 		fmt.Println("Title is required")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Title is required"})
+		return
+	}
+
+	if len(title) > 64 {
+		fmt.Println("Title is too long, maximum 64 characters allowed")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Title is too long, maximum 64 characters allowed"})
 		return
 	}
 

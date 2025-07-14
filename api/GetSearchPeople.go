@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
+	"strconv"
 )
 
 // GetSearchPeople godoc
@@ -17,7 +18,8 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param query query string true "Search query for username"
-// @Success 200 {array} utils.UserEssentials "Returns a list of users matching the search query"
+// @Param friendsOnly query bool false "Search for friends only (optional, true/false, default is false)"
+// @Success 200 {array} utils.UserEssentials "Returns a list of users matching the search query ordered by username"
 // @Failure 400 {object} utils.ErrorResponse "Bad request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "No users found"
@@ -35,8 +37,19 @@ func GetSearchPeople(c *gin.Context) {
 		return
 	}
 
+	friends := c.Query("friendsOnly")
+	if friends == "" {
+		friends = "false"
+	}
+
+	friendsValue, err := strconv.ParseBool(friends)
+	if err != nil {
+		fmt.Println("Error:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid value for 'friends' parameter"})
+	}
+
 	// Fetch users matching the search query from the database
-	users, err := models.SearchUsers(c.MustGet("db").(*gorm.DB), query, user.ID)
+	users, err := models.SearchUsers(c.MustGet("db").(*gorm.DB), query, friendsValue, user.ID)
 	if err != nil {
 		fmt.Println("Error searching users:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to search users"})

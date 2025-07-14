@@ -8,22 +8,22 @@ import (
 	"net/http"
 )
 
-// GetFriendRequests godoc
-// @Summary Get friend requests
-// @Description Retrieve all friend requests for the authenticated user
+// GetFriendRequestsSent godoc
+// @Summary Get friend requests sent
+// @Description Retrieve all friend requests sent by the authenticated user
 // @Tags friends
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Success 200 {array} utils.UserEssentials "List of friend requests"
+// @Success 200 {array} utils.UserEssentials "List of friend requests ordered by date sent"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Failed to retrieve friend requests"
-// @Router /friends/requests/ [get]
-func GetFriendRequests(c *gin.Context) {
+// @Router /friends/requests/sent/ [get]
+func GetFriendRequestsSent(c *gin.Context) {
 
 	user := c.MustGet("user").(utils.UserInfo)
 
-	friendRequests, err := models.GetFriendRequestsByUserId(c.MustGet("db").(*gorm.DB), user.ID)
+	friendRequests, err := models.GetFriendRequestsSentById(c.MustGet("db").(*gorm.DB), user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve friend requests"})
 		return

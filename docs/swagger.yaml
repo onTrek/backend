@@ -192,12 +192,6 @@ definitions:
         example: John Doe
         type: string
     type: object
-  utils.SuccessResponse:
-    properties:
-      message:
-        example: Success
-        type: string
-    type: object
   utils.UserEssentials:
     properties:
       id:
@@ -373,37 +367,6 @@ paths:
       summary: Delete a friend from the user's friend list
       tags:
       - friends
-  /friends/requests/:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve all friend requests for the authenticated user
-      parameters:
-      - description: Bearer token for user authentication
-        in: header
-        name: Bearer
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of friend requests
-          schema:
-            items:
-              $ref: '#/definitions/utils.UserEssentials'
-            type: array
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-        "500":
-          description: Failed to retrieve friend requests
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-      summary: Get friend requests
-      tags:
-      - friends
   /friends/requests/{id}:
     delete:
       consumes:
@@ -528,6 +491,68 @@ paths:
       summary: Accept a friend request
       tags:
       - friends
+  /friends/requests/received/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all friend requests received by the authenticated user
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of friend requests ordered by date received
+          schema:
+            items:
+              $ref: '#/definitions/utils.UserEssentials'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to retrieve friend requests
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get friend requests received
+      tags:
+      - friends
+  /friends/requests/sent/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all friend requests sent by the authenticated user
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of friend requests ordered by date sent
+          schema:
+            items:
+              $ref: '#/definitions/utils.UserEssentials'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to retrieve friend requests
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get friend requests sent
+      tags:
+      - friends
   /gpx/:
     get:
       description: Returns a list of GPX files associated with the authenticated user
@@ -573,7 +598,7 @@ paths:
         name: file
         required: true
         type: file
-      - description: Title for the GPX file
+      - description: Title for the GPX file(max 64 characters)
         in: formData
         name: title
         required: true
@@ -636,6 +661,47 @@ paths:
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: Delete a file by ID
+      tags:
+      - gpx
+    get:
+      consumes:
+      - application/json
+      description: Retrieve information about a specific GPX file by its ID
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Gpx file information
+          schema:
+            $ref: '#/definitions/utils.GpxInfo'
+        "400":
+          description: Invalid file ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get File Info
       tags:
       - gpx
   /gpx/{id}/download:
@@ -762,7 +828,8 @@ paths:
         name: Bearer
         required: true
         type: string
-      - description: 'Group information. Fields: description (required), file_id (optional)'
+      - description: 'Group information. Fields: description (required, max 64 characters),
+          file_id (optional, must be a valid file ID)'
         in: body
         name: group
         required: true
@@ -899,10 +966,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: Group GPX updated successfully
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+        "204":
+          description: No Content
         "400":
           description: Invalid request
           schema:
@@ -1172,11 +1237,16 @@ paths:
         name: query
         required: true
         type: string
+      - description: Search for friends only (optional, true/false, default is false)
+        in: query
+        name: friendsOnly
+        type: boolean
       produces:
       - application/json
       responses:
         "200":
-          description: Returns a list of users matching the search query
+          description: Returns a list of users matching the search query ordered by
+            username
           schema:
             items:
               $ref: '#/definitions/utils.UserEssentials'

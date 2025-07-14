@@ -55,11 +55,12 @@ func PutAcceptFriendRequest(c *gin.Context) {
 	// Call the service to accept the friend request
 	err = models.AcceptFriendRequest(c.MustGet("db").(*gorm.DB), user.ID, userID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			fmt.Println("Friend request not found")
 			c.JSON(http.StatusNotFound, gin.H{"error": "Friend request not found"})
 			return
 		}
+		fmt.Println("Error accepting friend request:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to accept friend request"})
 		return
 	}

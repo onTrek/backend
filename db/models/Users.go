@@ -103,16 +103,25 @@ func Login(db *gorm.DB, email string, password string) (utils.UserToken, error) 
 	}, nil
 }
 
-func SearchUsers(db *gorm.DB, query string, userId string) ([]utils.UserEssentials, error) {
+func SearchUsers(db *gorm.DB, query string, friends bool, userId string) ([]utils.UserEssentials, error) {
 	var users []utils.UserEssentials
 
-	err := db.
+	baseQuery := db.
 		Table("users").
-		Select("id, username").
-		Where("LOWER(username) LIKE ? AND id != ?", "%"+strings.ToLower(query)+"%", userId).
-		Limit(100).
-		Scan(&users).Error
+		Select("users.id, users.username").
+		Where("LOWER(users.username) LIKE ? AND users.id != ?", "%"+strings.ToLower(query)+"%", userId).
+		Limit(100)
 
+	if friends {
+		baseQuery = baseQuery.Joins(`
+			JOIN friends ON (
+				(friends.user_id1 = users.id AND friends.user_id2 = ?) OR
+				(friends.user_id2 = users.id AND friends.user_id1 = ?)
+			)
+		`, userId, userId).Where("friends.pending = FALSE")
+	}
+
+	err := baseQuery.Order("users.username").Scan(&users).Error
 	return users, err
 }
 

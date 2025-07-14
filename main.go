@@ -42,6 +42,7 @@ func main() {
 		gpx.DELETE("/:id", api.DeleteFile)    // elimina un GPX
 		gpx.POST("/", api.PostUpload)         // carica un file GPX
 		gpx.GET("/", api.GetFiles)            // lista dei GPX caricati dall'utente
+		gpx.GET("/:id", api.GetFileInfo)      // ritorna i dati di un file GPX specifico
 		gpx.GET("/:id/download", api.GetFile) // scarica un file GPX specifico
 		gpx.GET("/:id/map", api.GetFileMap)   // scarica la mappa di un file GPX specifico
 	}
@@ -71,12 +72,13 @@ func main() {
 	friends := router.Group("/friends")
 	friends.Use(functions.AuthMiddleware())
 	{
-		friends.GET("/", api.GetFriends)                                // lista degli amici
-		friends.DELETE("/:id", api.DeleteFriend)                        // elimina un amico
-		friends.POST("/requests/:id", api.PostAddFriendRequest)         // aggiungi un amico
-		friends.GET("/requests/", api.GetFriendRequests)                // lista delle richieste di amicizia
-		friends.PUT("/requests/:id", api.PutAcceptFriendRequest)        // accetta una richiesta di amicizia
-		friends.DELETE("/requests/:id", api.DeleteDeclineFriendRequest) // rifiuta una richiesta di amicizia
+		friends.GET("/", api.GetFriends)                                  // lista degli amici
+		friends.DELETE("/:id", api.DeleteFriend)                          // elimina un amico
+		friends.POST("/requests/:id", api.PostAddFriendRequest)           // aggiungi un amico
+		friends.GET("/requests/received/", api.GetFriendRequestsReceived) // lista delle richieste di amicizia ricevute
+		friends.GET("/requests/sent/", api.GetFriendRequestsSent)         // lista delle richieste di amicizia inviate
+		friends.PUT("/requests/:id", api.PutAcceptFriendRequest)          // accetta una richiesta di amicizia
+		friends.DELETE("/requests/:id", api.DeleteDeclineFriendRequest)   // rifiuta una richiesta di amicizia
 	}
 
 	// USER API
