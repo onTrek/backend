@@ -117,12 +117,12 @@ func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfo, error) {
 		path := "gpxs/" + file.StoragePath
 		info, err := os.Stat(path)
 		if err != nil {
-			return nil, fmt.Errorf("error getting file size: %v", err)
+			return utils.GpxInfo{}, fmt.Errorf("error getting file size: %v", err)
 		}
 		size = info.Size()
 		err = FixFileSize(db, file.ID, size)
 		if err != nil {
-			return nil, fmt.Errorf("error fixing file size in database: %v", err)
+			return utils.GpxInfo{}, fmt.Errorf("error fixing file size in database: %v", err)
 		}
 	} else {
 		size = file.Size
