@@ -125,7 +125,12 @@ func CalculateStats(file *multipart.FileHeader) (GPXStats, error) {
 	var durationStr string
 	if startTime != nil && endTime != nil {
 		duration := endTime.Sub(*startTime)
-		durationStr = duration.String()
+		hours := int(duration.Hours())
+		minutes := int(duration.Minutes()) % 60
+		seconds := int(duration.Seconds()) % 60
+		durationStr = fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
+	} else {
+		durationStr = "00:00:00"	
 	}
 
 	// Popola i risultati
