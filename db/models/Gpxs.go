@@ -103,6 +103,7 @@ func GetFileByID(db *gorm.DB, fileID int) (utils.Gpx, error) {
 
 func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfo, error) {
 	var file Gpx
+	var size int64
 
 	err := db.Table("gpx_files").
 		Where("id = ?", fileID).
@@ -110,6 +111,21 @@ func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfo, error) {
 
 	if err != nil {
 		return utils.GpxInfo{}, err
+	}
+
+	if file.Size <= 0 {
+		path := "gpxs/" + file.StoragePath
+		info, err := os.Stat(path)
+		if err != nil {
+			return nil, fmt.Errorf("error getting file size: %v", err)
+		}
+		size = info.Size()
+		err = FixFileSize(db, file.ID, size)
+		if err != nil {
+			return nil, fmt.Errorf("error fixing file size in database: %v", err)
+		}
+	} else {
+		size = file.Size
 	}
 
 	info := utils.GpxInfo{
@@ -125,6 +141,7 @@ func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfo, error) {
 			MaxAltitude: file.MaxAltitude,
 			MinAltitude: file.MinAltitude,
 		},
+		FileSize: float64(size) / 1000,
 	}
 
 	return info, nil
