@@ -81,8 +81,8 @@ func AddFriend(db *gorm.DB, userID string, friendID string) error {
 	return nil
 }
 
-func GetFriendRequestsReceivedById(db *gorm.DB, userId string) ([]utils.UserEssentials, error) {
-	var friendRequests []utils.UserEssentials
+func GetFriendRequestsReceivedById(db *gorm.DB, userId string) ([]utils.FriendRequest, error) {
+	var friendRequests []utils.FriendRequest
 
 	err := db.Table("users u").
 		Select("u.id, u.username, f.date").
@@ -98,8 +98,8 @@ func GetFriendRequestsReceivedById(db *gorm.DB, userId string) ([]utils.UserEsse
 	return friendRequests, nil
 }
 
-func GetFriendRequestsSentById(db *gorm.DB, userId string) ([]utils.UserEssentials, error) {
-	var friendRequests []utils.UserEssentials
+func GetFriendRequestsSentById(db *gorm.DB, userId string) ([]utils.FriendRequest, error) {
+	var friendRequests []utils.FriendRequest
 
 	err := db.Table("users u").
 		Select("u.id, u.username, f.date").

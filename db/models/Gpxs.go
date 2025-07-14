@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"mime/multipart"
+	"os"
 	"time"
 )
 
@@ -22,6 +23,7 @@ type Gpx struct {
 	Duration    string    `json:"duration" example:"06:30:00" gorm:"not null;default:''"`
 	MaxAltitude int       `json:"max_altitude" example:"2500" gorm:"not null;default:0"`
 	MinAltitude int       `json:"min_altitude" example:"1500" gorm:"not null;default:0"`
+	Size        int64     `json:"size" example:"2048000" gorm:"not null;default:0"`
 
 	User User `json:"user" gorm:"foreignKey:UserID;references:id;constraint:OnDelete:CASCADE"`
 }
@@ -32,10 +34,11 @@ func (Gpx) TableName() string {
 
 func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
 	var files []Gpx
+
 	err := db.
 		Table("gpx_files").
-		Select(`id, filename, upload_date, 
-                title, km, duration, ascent, descent, max_altitude, min_altitude`).
+		Select(`id, filename, storage_path, upload_date, 
+                title, km, duration, ascent, descent, max_altitude, min_altitude, size`).
 		Where("user_id = ?", userID).Order("upload_date DESC").
 		Scan(&files).Error
 	if err != nil {
@@ -44,6 +47,23 @@ func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
 
 	var result []utils.GpxInfo
 	for _, row := range files {
+		var size int64
+
+		if row.Size <= 0 {
+			path := "gpxs/" + row.StoragePath
+			info, err := os.Stat(path)
+			if err != nil {
+				return nil, fmt.Errorf("error getting file size: %v", err)
+			}
+			size = info.Size()
+			err = FixFileSize(db, row.ID, size)
+			if err != nil {
+				return nil, fmt.Errorf("error fixing file size in database: %v", err)
+			}
+		} else {
+			size = row.Size
+		}
+
 		info := utils.GpxInfo{
 			ID:         row.ID,
 			Filename:   row.Filename,
@@ -57,7 +77,9 @@ func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
 				MaxAltitude: row.MaxAltitude,
 				MinAltitude: row.MinAltitude,
 			},
+			FileSize: float64(size) / 1000, // Convert to KB
 		}
+
 		result = append(result, info)
 	}
 
@@ -160,6 +182,7 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 		gpx.Duration = stats.Duration
 		gpx.MaxAltitude = stats.MaxAltitude
 		gpx.MinAltitude = stats.MinAltitude
+		gpx.Size = file.Size
 
 		if err := tx.Create(&gpx).Error; err != nil {
 			return err
@@ -179,4 +202,8 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 	})
 
 	return createdID, err
+}
+
+func FixFileSize(db *gorm.DB, fileID int, size int64) error {
+	return db.Table("gpx_files").Where("id = ?", fileID).Update("size", size).Error
 }

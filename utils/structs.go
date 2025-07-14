@@ -1,5 +1,7 @@
 package utils
 
+import "time"
+
 type User struct {
 	ID        string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Email     string `json:"email" example:"user@example.com"`
@@ -44,6 +46,7 @@ type GpxInfo struct {
 	UploadDate string   `json:"upload_date" example:"2025-05-11T08:00:00Z"`
 	Title      string   `json:"title" example:"Monte Faggeto"`
 	Stats      GPXStats `json:"stats"`
+	FileSize   float64  `json:"size" example:"110.744"` // in KB
 }
 
 type GpxID struct {
@@ -151,6 +154,12 @@ type GroupInfoResponseDoc struct {
 	Description string         `json:"description" example:"Morning hike with friends"`
 	CreatedAt   string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
 	Members     []GroupMember  `json:"members"`
+}
+
+type FriendRequest struct {
+	ID       string    `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Username string    `json:"username" example:"John Doe"`
+	Date     time.Time `json:"date" example:"2025-05-11T08:00:00Z"`
 }
 
 type SuccessResponse struct {

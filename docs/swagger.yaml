@@ -12,6 +12,18 @@ definitions:
         example: 1
         type: integer
     type: object
+  utils.FriendRequest:
+    properties:
+      date:
+        example: "2025-05-11T08:00:00Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      username:
+        example: John Doe
+        type: string
+    type: object
   utils.GPXStats:
     properties:
       ascent:
@@ -47,6 +59,10 @@ definitions:
       id:
         example: 1
         type: integer
+      size:
+        description: in KB
+        example: 110.744
+        type: number
       stats:
         $ref: '#/definitions/utils.GPXStats'
       title:
@@ -509,7 +525,7 @@ paths:
           description: List of friend requests ordered by date received
           schema:
             items:
-              $ref: '#/definitions/utils.UserEssentials'
+              $ref: '#/definitions/utils.FriendRequest'
             type: array
         "401":
           description: Unauthorized
@@ -540,7 +556,7 @@ paths:
           description: List of friend requests ordered by date sent
           schema:
             items:
-              $ref: '#/definitions/utils.UserEssentials'
+              $ref: '#/definitions/utils.FriendRequest'
             type: array
         "401":
           description: Unauthorized
@@ -555,7 +571,8 @@ paths:
       - friends
   /gpx/:
     get:
-      description: Returns a list of GPX files associated with the authenticated user
+      description: Returns a list of GPX files associated with the authenticated user(File
+        size is represented in KB)
       parameters:
       - description: Bearer token for user authentication
         in: header

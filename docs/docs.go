@@ -191,7 +191,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/utils.UserEssentials"
+                                "$ref": "#/definitions/utils.FriendRequest"
                             }
                         }
                     },
@@ -238,7 +238,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/utils.UserEssentials"
+                                "$ref": "#/definitions/utils.FriendRequest"
                             }
                         }
                     },
@@ -504,7 +504,7 @@ const docTemplate = `{
         },
         "/gpx/": {
             "get": {
-                "description": "Returns a list of GPX files associated with the authenticated user",
+                "description": "Returns a list of GPX files associated with the authenticated user(File size is represented in KB)",
                 "produces": [
                     "application/json"
                 ],
@@ -1583,6 +1583,23 @@ const docTemplate = `{
                 }
             }
         },
+        "utils.FriendRequest": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string",
+                    "example": "2025-05-11T08:00:00Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
+            }
+        },
         "utils.GPXStats": {
             "type": "object",
             "properties": {
@@ -1631,6 +1648,11 @@ const docTemplate = `{
                 "id": {
                     "type": "integer",
                     "example": 1
+                },
+                "size": {
+                    "description": "in KB",
+                    "type": "number",
+                    "example": 110.744
                 },
                 "stats": {
                     "$ref": "#/definitions/utils.GPXStats"

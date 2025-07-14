@@ -15,7 +15,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Success 200 {array} utils.UserEssentials "List of friend requests ordered by date sent"
+// @Success 200 {array} utils.FriendRequest "List of friend requests ordered by date sent"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Failed to retrieve friend requests"
 // @Router /friends/requests/sent/ [get]
