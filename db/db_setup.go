@@ -6,14 +6,27 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
+	"os"
+	"time"
 )
 
 var DB *gorm.DB
 
 func SetupDatabase() {
 	var err error
-	DB, err = gorm.Open(sqlite.Open("./db/ontrek.db"), &gorm.Config{})
+	DB, err = gorm.Open(sqlite.Open("./db/ontrek.db"), &gorm.Config{
+		Logger: logger.New(
+			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			logger.Config{
+				SlowThreshold: time.Second,
+				LogLevel:      logger.Silent,
+				Colorful:      true,
+			},
+		),
+	})
+
 	if err != nil {
 		log.Fatal("Errore apertura DB:", err)
 	}

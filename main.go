@@ -9,6 +9,7 @@ import (
 	"OnTrek/api"
 	"OnTrek/db"
 	"OnTrek/db/functions"
+	"OnTrek/db/models"
 	_ "OnTrek/docs"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -19,6 +20,8 @@ func main() {
 
 	db.SetupDatabase()
 	url := ginSwagger.URL("/swagger/doc.json") // The url pointing to API definition
+
+	err := models.CleanUnusedFiles(db.DB)
 
 	gin.SetMode(gin.ReleaseMode)
 
@@ -91,7 +94,7 @@ func main() {
 
 	router.Static("/docs", "./docs")
 
-	err := router.Run(":8080")
+	err = router.Run(":8080")
 	if err != nil {
 		panic(err)
 	}

@@ -11,7 +11,7 @@ import (
 
 // GetFiles godoc
 // @Summary Retrieve user's GPX files
-// @Description Returns a list of GPX files associated with the authenticated user(File size is represented in KB)
+// @Description Returns a list of GPX files associated with the authenticated user(File size is represented in Bytes)
 // @Tags gpx
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"

@@ -61,8 +61,8 @@ definitions:
         type: integer
       size:
         description: in KB
-        example: 110.744
-        type: number
+        example: 110744
+        type: integer
       stats:
         $ref: '#/definitions/utils.GPXStats'
       title:

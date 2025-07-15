@@ -16,15 +16,29 @@ import (
 func DeleteFiles(path Gpx) error {
 	gpxPath := "gpxs/" + path.StoragePath
 	mapsPath := "maps/" + path.StoragePath + ".png"
-	err := os.Remove(gpxPath)
-	if err != nil {
-		return fmt.Errorf("failed to delete file: %w", err)
+
+	if _, err := os.Stat(gpxPath); err == nil {
+		err := os.Remove(gpxPath)
+		if err != nil {
+			return fmt.Errorf("failed to delete file: %w", err)
+		}
+	} else if os.IsNotExist(err) {
+		return nil
+	} else {
+		return err
 	}
 
-	err = os.Remove(mapsPath)
-	if err != nil {
-		return fmt.Errorf("failed to delete map file: %w", err)
+	if _, err := os.Stat(mapsPath); err == nil {
+		err := os.Remove(mapsPath)
+		if err != nil {
+			return fmt.Errorf("failed to delete file: %w", err)
+		}
+	} else if os.IsNotExist(err) {
+		return nil
+	} else {
+		return err
 	}
+
 	return nil
 }
 
@@ -130,7 +144,7 @@ func CalculateStats(file *multipart.FileHeader) (GPXStats, error) {
 		seconds := int(duration.Seconds()) % 60
 		durationStr = fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 	} else {
-		durationStr = "00:00:00"	
+		durationStr = "00:00:00"
 	}
 
 	// Popola i risultati

@@ -46,7 +46,7 @@ type GpxInfo struct {
 	UploadDate string   `json:"upload_date" example:"2025-05-11T08:00:00Z"`
 	Title      string   `json:"title" example:"Monte Faggeto"`
 	Stats      GPXStats `json:"stats"`
-	FileSize   float64  `json:"size" example:"110.744"` // in KB
+	FileSize   int64    `json:"size" example:"110744"` // in KB
 }
 
 type GpxID struct {

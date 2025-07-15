@@ -2,6 +2,7 @@ package models
 
 import (
 	"OnTrek/utils"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -47,23 +48,6 @@ func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
 
 	var result []utils.GpxInfo
 	for _, row := range files {
-		var size int64
-
-		if row.Size <= 0 {
-			path := "gpxs/" + row.StoragePath
-			info, err := os.Stat(path)
-			if err != nil {
-				return nil, fmt.Errorf("error getting file size: %v", err)
-			}
-			size = info.Size()
-			err = FixFileSize(db, row.ID, size)
-			if err != nil {
-				return nil, fmt.Errorf("error fixing file size in database: %v", err)
-			}
-		} else {
-			size = row.Size
-		}
-
 		info := utils.GpxInfo{
 			ID:         row.ID,
 			Filename:   row.Filename,
@@ -77,7 +61,7 @@ func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
 				MaxAltitude: row.MaxAltitude,
 				MinAltitude: row.MinAltitude,
 			},
-			FileSize: float64(size) / 1000, // Convert to KB
+			FileSize: row.Size, // Convert to KB
 		}
 
 		result = append(result, info)
@@ -101,9 +85,23 @@ func GetFileByID(db *gorm.DB, fileID int) (utils.Gpx, error) {
 	return file, nil
 }
 
+func GetFileByPath(db *gorm.DB, storagePath string) (utils.Gpx, error) {
+	var file utils.Gpx
+
+	err := db.Table("gpx_files").
+		Select(`id, user_id, filename, storage_path, upload_date, title`).
+		Where("storage_path = ?", storagePath).
+		First(&file).Error
+
+	if err != nil {
+		return utils.Gpx{}, err
+	}
+
+	return file, nil
+}
+
 func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfo, error) {
 	var file Gpx
-	var size int64
 
 	err := db.Table("gpx_files").
 		Where("id = ?", fileID).
@@ -111,21 +109,6 @@ func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfo, error) {
 
 	if err != nil {
 		return utils.GpxInfo{}, err
-	}
-
-	if file.Size <= 0 {
-		path := "gpxs/" + file.StoragePath
-		info, err := os.Stat(path)
-		if err != nil {
-			return utils.GpxInfo{}, fmt.Errorf("error getting file size: %v", err)
-		}
-		size = info.Size()
-		err = FixFileSize(db, file.ID, size)
-		if err != nil {
-			return utils.GpxInfo{}, fmt.Errorf("error fixing file size in database: %v", err)
-		}
-	} else {
-		size = file.Size
 	}
 
 	info := utils.GpxInfo{
@@ -141,7 +124,7 @@ func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfo, error) {
 			MaxAltitude: file.MaxAltitude,
 			MinAltitude: file.MinAltitude,
 		},
-		FileSize: float64(size) / 1000,
+		FileSize: file.Size,
 	}
 
 	return info, nil
@@ -218,9 +201,44 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 		return nil
 	})
 
+	if err != nil {
+		fmt.Println("Error during transaction:", err)
+		fmt.Println("Attempting to delete files due to error...")
+		err = utils.DeleteFiles(utils.Gpx{StoragePath: gpx.StoragePath})
+		if err != nil {
+			fmt.Println("Error deleting files after transaction failure:", err)
+			return -1, err
+		} else {
+			fmt.Println("Files deleted successfully after transaction failure.")
+		}
+		return -1, err
+	}
+
 	return createdID, err
 }
 
-func FixFileSize(db *gorm.DB, fileID int, size int64) error {
-	return db.Table("gpx_files").Where("id = ?", fileID).Update("size", size).Error
+func CleanUnusedFiles(db *gorm.DB) error {
+	files, err := os.ReadDir("gpxs")
+	if err != nil {
+		return fmt.Errorf("error reading gpxs directory: %w", err)
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+
+		_, err := GetFileByPath(db, file.Name())
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				// File not found in the database, delete it
+				err = utils.DeleteFiles(utils.Gpx{StoragePath: file.Name()})
+				fmt.Println("Deleted unused file:", file.Name())
+			} else {
+				return fmt.Errorf("error checking file %s in database: %w", file.Name(), err)
+			}
+		}
+	}
+
+	return nil
 }

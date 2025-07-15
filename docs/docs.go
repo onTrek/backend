@@ -1651,8 +1651,8 @@ const docTemplate = `{
                 },
                 "size": {
                     "description": "in KB",
-                    "type": "number",
-                    "example": 110.744
+                    "type": "integer",
+                    "example": 110744
                 },
                 "stats": {
                     "$ref": "#/definitions/utils.GPXStats"

@@ -27,7 +27,7 @@ import (
 // @Router /friends/requests/{id} [delete]
 func DeleteDeclineFriendRequest(c *gin.Context) {
 	// Get the user ID from the context
-	user := c.MustGet("userId").(utils.UserInfo)
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get the user ID from the URL parameter
 	userID := c.Param("id")
