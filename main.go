@@ -17,7 +17,6 @@ import (
 )
 
 func main() {
-
 	db.SetupDatabase()
 	url := ginSwagger.URL("/swagger/doc.json") // The url pointing to API definition
 

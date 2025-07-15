@@ -224,18 +224,21 @@ func CleanUnusedFiles(db *gorm.DB) error {
 	}
 
 	for _, file := range files {
-		if file.IsDir() {
+		fileName := file.Name()
+
+		// Skip db
+		if fileName == "ontrek.db" || file.IsDir() {
 			continue
 		}
 
-		_, err := GetFileByPath(db, file.Name())
+		_, err := GetFileByPath(db, fileName)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				// File not found in the database, delete it
-				err = utils.DeleteFiles(utils.Gpx{StoragePath: file.Name()})
-				fmt.Println("Deleted unused file:", file.Name())
+				err = utils.DeleteFiles(utils.Gpx{StoragePath: fileName})
+				fmt.Println("Deleted unused file:", fileName)
 			} else {
-				return fmt.Errorf("error checking file %s in database: %w", file.Name(), err)
+				return fmt.Errorf("error checking file %s in database: %w", fileName, err)
 			}
 		}
 	}
