@@ -109,8 +109,7 @@ func SearchUsers(db *gorm.DB, query string, friends bool, userId string) ([]util
 	baseQuery := db.
 		Table("users").
 		Select("users.id, users.username").
-		Where("LOWER(users.username) LIKE ? AND users.id != ?", "%"+strings.ToLower(query)+"%", userId).
-		Limit(100)
+		Where("LOWER(users.username) LIKE ? AND users.id != ?", "%"+strings.ToLower(query)+"%", userId)
 
 	if friends {
 		baseQuery = baseQuery.Joins(`

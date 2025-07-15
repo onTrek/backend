@@ -55,9 +55,7 @@ func DeleteFriend(db *gorm.DB, userID, friendID string) error {
 }
 
 func AddFriend(db *gorm.DB, userID string, friendID string) error {
-
 	var count int64
-	var pending bool
 
 	// Check if the users are already friends
 	err := db.Model(&Friend{}).
@@ -80,19 +78,19 @@ func AddFriend(db *gorm.DB, userID string, friendID string) error {
 		return err
 	}
 	if count > 0 {
-		pending = false
+		err = AcceptFriendRequest(db, userID, friendID)
+		if err != nil {
+			return err
+		}
 	} else {
-		pending = true
-	}
-
-	// Add the friend request with pending = TRUE
-	friend := Friend{
-		UserId1: userID,
-		UserId2: friendID,
-		Pending: pending,
-	}
-	if err := db.Create(&friend).Error; err != nil {
-		return err
+		friend := Friend{
+			UserId1: userID,
+			UserId2: friendID,
+			Pending: true,
+		}
+		if err := db.Create(&friend).Error; err != nil {
+			return err
+		}
 	}
 
 	return nil
