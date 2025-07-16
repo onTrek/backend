@@ -175,51 +175,96 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 	}
 
 	var coords [][]float64
-	var sumLat, sumLon float64
-	var count int
+	var urlPath string
+
+	minLat, maxLat := 90.0, -90.0
+	minLon, maxLon := 180.0, -180.0
 
 	for _, track := range gpxData.Tracks {
 		for _, segment := range track.Segments {
 			for _, point := range segment.Points {
 				lat := point.Latitude
 				lon := point.Longitude
-				sumLat += lat
-				sumLon += lon
+
+				if lat < minLat {
+					minLat = lat
+				}
+				if lat > maxLat {
+					maxLat = lat
+				}
+				if lon < minLon {
+					minLon = lon
+				}
+				if lon > maxLon {
+					maxLon = lon
+				}
 				coords = append(coords, []float64{lat, lon})
-				count++
 			}
 		}
 	}
 
-	if count == 0 {
+	if len(coords) == 0 {
 		return fmt.Errorf("invalid GPX file: no coordinates found")
 	}
 
-	centerLat := sumLat / float64(count)
-	centerLon := sumLon / float64(count)
+	centerLat := (minLat + maxLat) / 2
+	centerLon := (minLon + maxLon) / 2
+
+	width := 800.0
+	height := 800.0
+	padding := 0.1
+
+	latDiff := maxLat - minLat
+	lonDiff := maxLon - minLon
+
+	zoomLat := math.Log2(360 / (latDiff * (1 + padding)))
+	zoomLon := math.Log2(360 / (lonDiff * (1 + padding)))
+	zoom := math.Min(zoomLat, zoomLon)
+	zoom = math.Min(zoom, 20)
+	zoom = math.Max(zoom, 1)
+
 	path := string(polyline.EncodeCoords(coords))
 	path = url.QueryEscape(path)
 
-	const zoom = 13
-	const bearing = 0
-	const width = 800
-	const height = 800
-	var token = os.Getenv("MAPBOX_TOKEN")
-	var filePath = "./maps/" + storagePath + ".png"
+	token := os.Getenv("MAPBOX_TOKEN")
+	filePath := "./maps/" + storagePath + ".png"
 
-	url := fmt.Sprintf(
-		"https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/path-2+1a5fb4(%s)/%f,%f,%d,%d/%dx%d?access_token=%s",
-		path,
-		centerLon,
-		centerLat,
-		zoom,
-		bearing,
-		width,
-		height,
-		token,
-	)
+	start := coords[0]
+	startMarker := fmt.Sprintf("%f,%f", start[1], start[0])
+	startMarker = url.QueryEscape(startMarker)
 
-	resp, err := http.Get(url)
+	end := coords[len(coords)-1]
+	endMarker := fmt.Sprintf("%f,%f", end[1], end[0])
+	endMarker = url.QueryEscape(endMarker)
+
+	if HaversineDistance(start[0], start[1], end[0], end[1]) > 20 {
+		urlPath = fmt.Sprintf(
+			"https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/path-2+1a5fb4(%s),pin-s-car+f74e4e(%s),pin-s-racetrack+00c924(%s)/%f,%f,%.2f,0/%.0fx%.0f?access_token=%s",
+			path,
+			startMarker,
+			endMarker,
+			centerLon,
+			centerLat,
+			zoom,
+			width,
+			height,
+			token,
+		)
+	} else {
+		urlPath = fmt.Sprintf(
+			"https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/path-2+1a5fb4(%s),pin-s-car+f74e4e(%s)/%f,%f,%.2f,0/%.0fx%.0f?access_token=%s",
+			path,
+			startMarker,
+			centerLon,
+			centerLat,
+			zoom,
+			width,
+			height,
+			token,
+		)
+	}
+
+	resp, err := http.Get(urlPath)
 	if err != nil {
 		return fmt.Errorf("mapbox error request: %w", err)
 	}
@@ -245,4 +290,19 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 	}
 
 	return nil
+}
+
+func HaversineDistance(lat1, lon1, lat2, lon2 float64) float64 {
+	const R = 6371e3
+
+	lat1Rad := lat1 * math.Pi / 180
+	lat2Rad := lat2 * math.Pi / 180
+	dLat := (lat2 - lat1) * math.Pi / 180
+	dLon := (lon2 - lon1) * math.Pi / 180
+
+	a := math.Sin(dLat/2)*math.Sin(dLat/2) +
+		math.Cos(lat1Rad)*math.Cos(lat2Rad)*math.Sin(dLon/2)*math.Sin(dLon/2)
+	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+
+	return R * c
 }
