@@ -210,8 +210,8 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 	centerLat := (minLat + maxLat) / 2
 	centerLon := (minLon + maxLon) / 2
 
-	width := 1000
-	height := 750
+	width := 1080.0
+	height := 810.0
 	padding := 0.1
 
 	latDiff := maxLat - minLat
