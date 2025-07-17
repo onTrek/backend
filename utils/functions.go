@@ -210,8 +210,8 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 	centerLat := (minLat + maxLat) / 2
 	centerLon := (minLon + maxLon) / 2
 
-	width := 800.0
-	height := 800.0
+	width := 810
+	height := 1080
 	padding := 0.1
 
 	latDiff := maxLat - minLat
@@ -237,9 +237,9 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 	endMarker := fmt.Sprintf("%f,%f", end[1], end[0])
 	endMarker = url.QueryEscape(endMarker)
 
-	if HaversineDistance(start[0], start[1], end[0], end[1]) > 20 {
+	if HaversineDistance(start[0], start[1], end[0], end[1]) > 60 {
 		urlPath = fmt.Sprintf(
-			"https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/path-2+1a5fb4(%s),pin-s-car+f74e4e(%s),pin-s-racetrack+00c924(%s)/%f,%f,%.2f,0/%.0fx%.0f?access_token=%s",
+			"https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/path-2+1a5fb4(%s),pin-s-pitch+003a1d(%s),pin-s-racetrack+003a1d(%s)/%f,%f,%.2f,0/%.0fx%.0f?access_token=%s",
 			path,
 			startMarker,
 			endMarker,
@@ -252,7 +252,7 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 		)
 	} else {
 		urlPath = fmt.Sprintf(
-			"https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/path-2+1a5fb4(%s),pin-s-car+f74e4e(%s)/%f,%f,%.2f,0/%.0fx%.0f?access_token=%s",
+			"https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/path-2+1a5fb4(%s),pin-s-pitch+003a1d(%s)/%f,%f,%.2f,0/%.0fx%.0f?access_token=%s",
 			path,
 			startMarker,
 			centerLon,
