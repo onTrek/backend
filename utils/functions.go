@@ -264,6 +264,8 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 		)
 	}
 
+	urlPath = url.QueryEscape(urlPath)
+
 	resp, err := http.Get(urlPath)
 	if err != nil {
 		return fmt.Errorf("mapbox error request: %w", err)
