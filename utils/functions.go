@@ -210,8 +210,8 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 	centerLat := (minLat + maxLat) / 2
 	centerLon := (minLon + maxLon) / 2
 
-	width := 1080
-	height := 810
+	width := 1000
+	height := 750
 	padding := 0.1
 
 	latDiff := maxLat - minLat
@@ -263,8 +263,6 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 			token,
 		)
 	}
-
-	urlPath = url.QueryEscape(urlPath)
 
 	resp, err := http.Get(urlPath)
 	if err != nil {
