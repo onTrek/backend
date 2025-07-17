@@ -76,5 +76,10 @@ func PostUpload(c *gin.Context) {
 		return
 	}
 
+	if gpx.ID == -1 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+
 	c.JSON(http.StatusCreated, gin.H{"file_id": gpx.ID})
 }
