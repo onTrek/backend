@@ -225,6 +225,7 @@ func CleanUnusedFiles(db *gorm.DB) error {
 
 	for _, file := range files {
 		fileName := file.Name()
+		fmt.Println(fileName)
 
 		// Skip db
 		if fileName == "ontrek.db" || file.IsDir() {
