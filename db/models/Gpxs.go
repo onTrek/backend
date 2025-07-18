@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 	"os"
 	"time"
+	"path/filepath"
 )
 
 type Gpx struct {
@@ -218,24 +219,22 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 }
 
 func CleanUnusedFiles(db *gorm.DB) error {
-	files, err := os.ReadDir("maps")
+	files, err := os.ReadDir("gpxs")
 	if err != nil {
 		return fmt.Errorf("error reading gpxs directory: %w", err)
 	}
 
 	for _, file := range files {
 		fileName := file.Name()
-		fmt.Println(fileName)
 
-		// Skip db
-		if fileName == "ontrek.db" || file.IsDir() {
+		// Skip db and png files
+		if fileName == "ontrek.db" || file.IsDir() || filepath.Ext(fileName) == ".png" {
 			continue
 		}
 
 		_, err := GetFileByPath(db, fileName)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// File not found in the database, delete it
 				err = utils.DeleteFiles(utils.Gpx{StoragePath: fileName})
 				fmt.Println("Deleted unused file:", fileName)
 			} else {
