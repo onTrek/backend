@@ -183,7 +183,7 @@ func CleanUnusedProfileImages(db *gorm.DB) error {
 				if err != nil {
 					return fmt.Errorf("error deleting unused profile image %s: %w", file, err)
 				}
-				fmt.Println("Deleted unused profile image:", fileName)
+				fmt.Println("Deleted unused profile image by function - profile:", fileName)
 			} else {
 				return fmt.Errorf("error checking user %s in database: %w", file, err)
 			}

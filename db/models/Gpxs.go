@@ -236,7 +236,7 @@ func CleanUnusedFiles(db *gorm.DB) error {
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				err = utils.DeleteFiles(utils.Gpx{StoragePath: fileName})
-				fmt.Println("Deleted unused file:", fileName)
+				fmt.Println("Deleted unused file by function - files:", fileName)
 			} else {
 				return fmt.Errorf("error checking file %s in database: %w", fileName, err)
 			}
