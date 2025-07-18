@@ -16,7 +16,7 @@ func CleanUnusedFiles(db *gorm.DB) error {
 	for _, file := range files {
 		fileName := file.Name()
 
-		if fileName == "gpxs" || fileName == "db" || fileName == "maps" || fileName == "profile" {
+		if fileName == "gpxs" || fileName == "maps" || fileName == "profile" {
 			if file.IsDir() {
 				fmt.Println("Checking directory:", file.Name())
 				subFiles, err := os.ReadDir(filepath.Join("./gpxs", file.Name()))
