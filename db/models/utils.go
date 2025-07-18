@@ -8,31 +8,34 @@ import (
 )
 
 func CleanUnusedFiles(db *gorm.DB) error {
-	files, err := os.ReadDir("./gpxs")
+	files, err := os.ReadDir(".")
 	if err != nil {
 		return fmt.Errorf("error reading gpxs directory: %w", err)
 	}
 
 	for _, file := range files {
-		if file.IsDir() {
-			fmt.Println("Checking directory:", file.Name())
-			subFiles, err := os.ReadDir(filepath.Join("./gpxs", file.Name()))
-			if err != nil {
-				return fmt.Errorf("error reading subdirectory %s: %w", file.Name(), err)
-			}
-			for _, subFile := range subFiles {
-				subFileName := subFile.Name()
+		fileName := file.Name()
 
-				// Skip db
-				if subFileName == "ontrek.db" {
-					continue
+		if fileName == "gpxs" || fileName == "db" || fileName == "maps" || fileName == "profile" {
+			if file.IsDir() {
+				fmt.Println("Checking directory:", file.Name())
+				subFiles, err := os.ReadDir(filepath.Join("./gpxs", file.Name()))
+				if err != nil {
+					return fmt.Errorf("error reading subdirectory %s: %w", file.Name(), err)
 				}
-				// Get file without any extension
-				subFileName = subFileName[:len(subFileName)-len(filepath.Ext(subFileName))] + filepath.Ext(file.Name())
-				fmt.Println("Checking file:", subFileName)
+				for _, subFile := range subFiles {
+					subFileName := subFile.Name()
+
+					// Skip db
+					if subFileName == "ontrek.db" {
+						continue
+					}
+					// Get file without any extension
+					subFileName = subFileName[:len(subFileName)-len(filepath.Ext(subFileName))] + filepath.Ext(file.Name())
+					fmt.Println("Checking file:", subFileName)
+				}
 			}
 		}
-
 	}
 
 	return nil
