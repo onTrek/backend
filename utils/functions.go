@@ -318,7 +318,7 @@ func HaversineDistance(lat1, lon1, lat2, lon2 float64) float64 {
 
 func FindFileByID(id string) (string, error) {
 
-	files, err := os.ReadDir("profile")
+	files, err := os.ReadDir("avatars")
 	if err != nil {
 		return "", fmt.Errorf("error reading profile directory: %w", err)
 	}

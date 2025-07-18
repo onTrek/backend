@@ -39,13 +39,15 @@ func CleanUnusedFiles(db *gorm.DB) error {
 					}
 
 					subFileName = subFileName[:len(subFileName)-len(filepath.Ext(subFileName))] + filepath.Ext(file.Name())
-					fmt.Println("Checking file:", subFileName)
 
 					if fileName == "gpxs" {
 						_, err = GetFileByPath(db, subFileName)
 						if err != nil {
 							if errors.Is(err, gorm.ErrRecordNotFound) {
 								err = utils.DeleteFiles(utils.Gpx{StoragePath: subFileName})
+								if err != nil {
+									return fmt.Errorf("error deleting file %s: %w", subFileName, err)
+								}
 								fmt.Println("Deleted unused file:", subFileName)
 							} else {
 								return fmt.Errorf("error checking file %s in database: %w", subFileName, err)
@@ -56,6 +58,10 @@ func CleanUnusedFiles(db *gorm.DB) error {
 						if err != nil {
 							if strings.Contains(err.Error(), "user not found") {
 								err = os.Remove(filepath.Join(".", fileName, subFile.Name()))
+								if err != nil {
+									return fmt.Errorf("error deleting file %s: %w", subFileName, err)
+								}
+								fmt.Println("Deleted unused user file:", subFileName)
 							} else {
 								return fmt.Errorf("error checking user %s in database: %w", subFileName, err)
 							}
