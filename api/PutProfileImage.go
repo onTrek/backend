@@ -51,7 +51,7 @@ func PutProfileImage(c *gin.Context) {
 	}
 
 	// Save the profile image
-	err = utils.SaveFile(file, "profile", user.ID, extension)
+	err = utils.SaveFile(file, "avatars", user.ID, extension)
 	if err != nil {
 		fmt.Println("Error saving profile image:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save profile image"})

@@ -14,7 +14,7 @@ import (
 )
 
 func DeleteFiles(path Gpx) error {
-	gpxPath := "gpxs/" + path.StoragePath
+	gpxPath := "gpxs/" + path.StoragePath + ".gpx"
 	mapsPath := "maps/" + path.StoragePath + ".png"
 
 	if _, err := os.Stat(gpxPath); err == nil {
@@ -58,7 +58,7 @@ func SaveFile(file *multipart.FileHeader, directory string, storagePath string, 
 	// Create the destination file
 	if directory == "gpxs" {
 		storagePath = fmt.Sprintf("%s/%s%s", directory, storagePath, extension)
-	} else if directory == "profile" {
+	} else if directory == "avatars" {
 		storagePath = fmt.Sprintf("%s/%s%s", directory, storagePath, extension)
 	} else {
 		return fmt.Errorf("invalid storage path: %s", storagePath)
