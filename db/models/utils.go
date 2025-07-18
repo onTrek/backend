@@ -9,7 +9,7 @@ import (
 )
 
 func CleanUnusedFiles(db *gorm.DB) error {
-	files, err := os.ReadDir(".")
+	files, err := os.ReadDir("./root/gpxs")
 	if err != nil {
 		return fmt.Errorf("error reading gpxs directory: %w", err)
 	}
