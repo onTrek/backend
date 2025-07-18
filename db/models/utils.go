@@ -8,27 +8,30 @@ import (
 )
 
 func CleanUnusedFiles(db *gorm.DB) error {
-	files, err := os.ReadDir(".")
+	files, err := os.ReadDir("./gpxs")
 	if err != nil {
 		return fmt.Errorf("error reading gpxs directory: %w", err)
 	}
 
 	for _, file := range files {
-		fileName := file.Name()
-
-		// Skip db and png files
-		if fileName == "ontrek.db" {
-			continue
-		}
-
 		if file.IsDir() {
-			fmt.Println("Skipping directory:", fileName)
-			continue
-		}
+			fmt.Println("Checking directory:", file.Name())
+			subFiles, err := os.ReadDir(filepath.Join("./gpxs", file.Name()))
+			if err != nil {
+				return fmt.Errorf("error reading subdirectory %s: %w", file.Name(), err)
+			}
+			for _, subFile := range subFiles {
+				subFileName := subFile.Name()
 
-		// Get file without any extension
-		fileName = fileName[:len(fileName)-len(filepath.Ext(fileName))] + filepath.Ext(file.Name())
-		fmt.Println("Checking file:", fileName)
+				// Skip db
+				if subFileName == "ontrek.db" {
+					continue
+				}
+				// Get file without any extension
+				subFileName = subFileName[:len(subFileName)-len(filepath.Ext(subFileName))] + filepath.Ext(file.Name())
+				fmt.Println("Checking file:", subFileName)
+			}
+		}
 
 	}
 
