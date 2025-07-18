@@ -4,6 +4,7 @@ set -e
 BACKUP_DIR="/backups"
 DB_FILE="/root/db/ontrek.db"
 MIGRATIONS_DIR="/root/migrations"
+mkdir -p "$BACKUP_DIR"
 
 if [ -f "$DB_FILE" ]; then
   TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
