@@ -42,9 +42,8 @@ func CleanUnusedFiles(db *gorm.DB) error {
 					fmt.Println("Checking file:", subFileName)
 
 					if fileName == "gpxs" {
-						_, err = GetFileByPath(db, fileName)
+						_, err = GetFileByPath(db, subFileName)
 						if err != nil {
-							fmt.Println("Error checking file in database:", err)
 							if errors.Is(err, gorm.ErrRecordNotFound) {
 								err = utils.DeleteFiles(utils.Gpx{StoragePath: subFileName})
 								fmt.Println("Deleted unused file:", subFileName)
