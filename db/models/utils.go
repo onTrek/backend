@@ -23,7 +23,7 @@ func CleanUnusedFiles(db *gorm.DB) error {
 			continue
 		}
 
-		if fileName == "gpxs" || fileName == "profile" {
+		if fileName == "gpxs" || fileName == "avatars" {
 			if file.IsDir() {
 				fmt.Println("Checking directory:", file.Name())
 				subFiles, err := os.ReadDir(filepath.Join(".", file.Name()))
