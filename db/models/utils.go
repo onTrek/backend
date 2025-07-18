@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"gorm.io/gorm"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -13,12 +12,6 @@ func CleanUnusedFiles(db *gorm.DB) error {
 	if err != nil {
 		return fmt.Errorf("error reading gpxs directory: %w", err)
 	}
-
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Current working directory:", cwd)
 
 	for _, file := range files {
 		fileName := file.Name()
