@@ -1,8 +1,18 @@
 #!/bin/sh
 set -e
 
+BACKUP_DIR="/backups"
 DB_FILE="/root/db/ontrek.db"
 MIGRATIONS_DIR="/root/migrations"
+
+if [ -f "$DB_FILE" ]; then
+  TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+  BACKUP_FILE="$BACKUP_DIR/ontrek-$TIMESTAMP.db.bak"
+  cp "$DB_FILE" "$BACKUP_FILE"
+  echo ">> Backup creato: $BACKUP_FILE"
+else
+  echo ">> Nessun file DB trovato. Nessun backup effettuato."
+fi
 
 sqlite3 "$DB_FILE" "CREATE TABLE IF NOT EXISTS migrations (filename TEXT PRIMARY KEY, applied_at DATETIME DEFAULT CURRENT_TIMESTAMP);"
 
