@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -40,11 +42,33 @@ func RegisterUser(db *gorm.DB, user User) error {
 }
 
 func DeleteUser(db *gorm.DB, userID string) error {
-	err := db.
-		Where("id = ?", userID).
-		Delete(&User{}).Error
+	return db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("id = ?", userID).Delete(&User{}).Error; err != nil {
+			return fmt.Errorf("failed to delete user token: %w", err)
+		}
 
-	return err
+		filepath, err := utils.FindFileByID(userID)
+		if err != nil {
+			return fmt.Errorf("failed to find user file: %w", err)
+		}
+		fmt.Println("File path to delete:", filepath)
+
+		if filepath == "" {
+			return nil
+		} else {
+			if _, err := os.Stat(filepath); err == nil {
+				err := os.Remove(filepath)
+				if err != nil {
+					return fmt.Errorf("failed to delete file: %w", err)
+				}
+			} else if os.IsNotExist(err) {
+				return nil
+			} else {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 func Login(db *gorm.DB, email string, password string) (utils.UserToken, error) {
@@ -134,4 +158,37 @@ func GetUserById(db *gorm.DB, userId string) (utils.UserEssentials, error) {
 		return utils.UserEssentials{}, fmt.Errorf("failed to query user: %w", err)
 	}
 	return user, nil
+}
+
+func CleanUnusedProfileImages(db *gorm.DB) error {
+	files, err := os.ReadDir("profile")
+	if err != nil {
+		return fmt.Errorf("error reading gpxs directory: %w", err)
+	}
+
+	for _, file := range files {
+		fileName := file.Name()
+
+		// Skip db file and directories
+		if fileName == "ontrek.db" || file.IsDir() {
+			continue
+		}
+
+		// Get file without any extension
+		file := fileName[:len(fileName)-len(filepath.Ext(fileName))]
+		_, err = GetUserById(db, file)
+		if err != nil {
+			if strings.Contains(err.Error(), "user not found") {
+				err = os.Remove(filepath.Join("profile", fileName))
+				if err != nil {
+					return fmt.Errorf("error deleting unused profile image %s: %w", file, err)
+				}
+				fmt.Println("Deleted unused profile image:", fileName)
+			} else {
+				return fmt.Errorf("error checking user %s in database: %w", file, err)
+			}
+		}
+	}
+
+	return nil
 }

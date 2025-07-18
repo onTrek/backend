@@ -21,6 +21,14 @@ func main() {
 	url := ginSwagger.URL("/swagger/doc.json") // The url pointing to API definition
 
 	err := models.CleanUnusedFiles(db.DB)
+	if err != nil {
+		panic(err)
+	}
+
+	err = models.CleanUnusedProfileImages(db.DB)
+	if err != nil {
+		panic(err)
+	}
 
 	gin.SetMode(gin.ReleaseMode)
 
@@ -87,8 +95,10 @@ func main() {
 	user := router.Group("/profile")
 	user.Use(functions.AuthMiddleware())
 	{
-		user.GET("", api.GetProfile)       // dati personali
-		user.DELETE("", api.DeleteProfile) // cancella l'account
+		user.GET("", api.GetProfile)            // dati personali
+		user.PUT("/image", api.PutProfileImage) // carica la foto profilo
+		user.GET("/image", api.GetProfileImage) // scarica la foto profilo
+		user.DELETE("", api.DeleteProfile)      // cancella l'account
 	}
 
 	router.Static("/docs", "./docs")

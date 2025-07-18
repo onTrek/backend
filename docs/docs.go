@@ -504,7 +504,7 @@ const docTemplate = `{
         },
         "/gpx/": {
             "get": {
-                "description": "Returns a list of GPX files associated with the authenticated user(File size is represented in KB)",
+                "description": "Returns a list of GPX files associated with the authenticated user(File size is represented in Bytes)",
                 "produces": [
                     "application/json"
                 ],
@@ -1484,6 +1484,99 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to delete user",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/image": {
+            "get": {
+                "description": "Retrieves the profile image for the authenticated user.",
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Get profile image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile image",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Profile image not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to save file",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Uploads a profile image for the authenticated user. The image must be sent as form-data with the key 'file'. It must be an image file (jpg, jpeg, png) and should not exceed 5MB in size.",
+                "consumes": [
+                    "image/*"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Upload a profile image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Profile image to upload",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Invalid file",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to save file",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorResponse"
                         }

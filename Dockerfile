@@ -28,7 +28,7 @@ COPY ./db/migrations ./migrations
 COPY ./entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
-RUN mkdir -p maps gpxs /root/db
+RUN mkdir -p maps gpxs profile /root/db
 
 EXPOSE 3000
 

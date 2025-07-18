@@ -572,7 +572,7 @@ paths:
   /gpx/:
     get:
       description: Returns a list of GPX files associated with the authenticated user(File
-        size is represented in KB)
+        size is represented in Bytes)
       parameters:
       - description: Bearer token for user authentication
         in: header
@@ -1236,6 +1236,70 @@ paths:
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: Get user profile by token
+      tags:
+      - profile
+  /profile/image:
+    get:
+      description: Retrieves the profile image for the authenticated user.
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Profile image
+          schema:
+            type: file
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Profile image not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to save file
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get profile image
+      tags:
+      - profile
+    put:
+      consumes:
+      - image/*
+      description: Uploads a profile image for the authenticated user. The image must
+        be sent as form-data with the key 'file'. It must be an image file (jpg, jpeg,
+        png) and should not exceed 5MB in size.
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: Profile image to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid file
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to save file
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Upload a profile image
       tags:
       - profile
   /search:

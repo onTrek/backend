@@ -8,8 +8,8 @@ import (
 	"gorm.io/gorm"
 	"mime/multipart"
 	"os"
-	"time"
 	"path/filepath"
+	"time"
 )
 
 type Gpx struct {
@@ -191,7 +191,7 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 
 		createdID = gpx.ID
 
-		if err := utils.SaveFile(file, gpx.StoragePath); err != nil {
+		if err := utils.SaveFile(file, "gpxs", gpx.StoragePath, ""); err != nil {
 			return err
 		}
 

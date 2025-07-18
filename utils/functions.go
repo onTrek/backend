@@ -42,23 +42,31 @@ func DeleteFiles(path Gpx) error {
 	return nil
 }
 
-func SaveFile(file *multipart.FileHeader, storagePath string) error {
-	// Open the file
+func SaveFile(file *multipart.FileHeader, directory string, storagePath string, extension string) error {
 	src, err := file.Open()
 	if err != nil {
+		fmt.Println("Error opening file:", err)
 		return err
 	}
 	defer src.Close()
 
 	// Create the directory if it doesn't exist
-	if err := os.MkdirAll("gpxs", os.ModePerm); err != nil {
-		return fmt.Errorf("errore creazione cartella gpxs: %w", err)
+	if err := os.MkdirAll(directory, os.ModePerm); err != nil {
+		return fmt.Errorf("error creating directory: %w", err)
 	}
 
 	// Create the destination file
-	storagePath = "gpxs/" + storagePath
+	if directory == "gpxs" {
+		storagePath = fmt.Sprintf("%s/%s", directory, storagePath)
+	} else if directory == "profile" {
+		storagePath = fmt.Sprintf("%s/%s%s", directory, storagePath, extension)
+	} else {
+		return fmt.Errorf("invalid storage path: %s", storagePath)
+	}
+
 	dst, err := os.Create(storagePath)
 	if err != nil {
+		fmt.Println("Error creating destination file:", err)
 		return err
 	}
 	defer dst.Close()
@@ -66,6 +74,7 @@ func SaveFile(file *multipart.FileHeader, storagePath string) error {
 	// Copy the file
 	_, err = io.Copy(dst, src)
 	if err != nil {
+		fmt.Println("Error copying file:", err)
 		return err
 	}
 
@@ -305,4 +314,20 @@ func HaversineDistance(lat1, lon1, lat2, lon2 float64) float64 {
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 
 	return R * c
+}
+
+func FindFileByID(id string) (string, error) {
+
+	files, err := os.ReadDir("profile")
+	if err != nil {
+		return "", fmt.Errorf("error reading profile directory: %w", err)
+	}
+
+	for _, file := range files {
+		if file.Name() == id+".jpg" || file.Name() == id+".jpeg" || file.Name() == id+".png" {
+			return "profile/" + file.Name(), nil
+		}
+	}
+	return "", nil
+
 }
