@@ -6,8 +6,6 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"mime/multipart"
-	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -215,27 +213,4 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 	}
 
 	return createdID, err
-}
-
-func CleanUnusedFiles(db *gorm.DB) error {
-	files, err := os.ReadDir("./root")
-	if err != nil {
-		return fmt.Errorf("error reading gpxs directory: %w", err)
-	}
-
-	for _, file := range files {
-		fileName := file.Name()
-
-		// Skip db and png files
-		if fileName == "ontrek.db" || file.IsDir() {
-			continue
-		}
-
-		// Get file without any extension
-		fileName = fileName[:len(fileName)-len(filepath.Ext(fileName))] + filepath.Ext(file.Name())
-		fmt.Println("Checking file:", fileName)
-
-	}
-
-	return nil
 }
