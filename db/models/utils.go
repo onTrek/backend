@@ -17,7 +17,12 @@ func CleanUnusedFiles(db *gorm.DB) error {
 		fileName := file.Name()
 
 		// Skip db and png files
-		if fileName == "ontrek.db" || file.IsDir() {
+		if fileName == "ontrek.db" {
+			continue
+		}
+
+		if file.IsDir() {
+			fmt.Println("Skipping directory:", fileName)
 			continue
 		}
 
