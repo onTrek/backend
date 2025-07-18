@@ -57,7 +57,7 @@ func SaveFile(file *multipart.FileHeader, directory string, storagePath string, 
 
 	// Create the destination file
 	if directory == "gpxs" {
-		storagePath = fmt.Sprintf("%s/%s", directory, storagePath)
+		storagePath = fmt.Sprintf("%s/%s%s", directory, storagePath, extension)
 	} else if directory == "profile" {
 		storagePath = fmt.Sprintf("%s/%s%s", directory, storagePath, extension)
 	} else {

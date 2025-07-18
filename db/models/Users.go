@@ -8,7 +8,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 )
@@ -158,37 +157,4 @@ func GetUserById(db *gorm.DB, userId string) (utils.UserEssentials, error) {
 		return utils.UserEssentials{}, fmt.Errorf("failed to query user: %w", err)
 	}
 	return user, nil
-}
-
-func CleanUnusedProfileImages(db *gorm.DB) error {
-	files, err := os.ReadDir("profile")
-	if err != nil {
-		return fmt.Errorf("error reading gpxs directory: %w", err)
-	}
-
-	for _, file := range files {
-		fileName := file.Name()
-
-		// Skip db file and directories
-		if fileName == "ontrek.db" || file.IsDir() {
-			continue
-		}
-
-		// Get file without any extension
-		file := fileName[:len(fileName)-len(filepath.Ext(fileName))]
-		_, err = GetUserById(db, file)
-		if err != nil {
-			if strings.Contains(err.Error(), "user not found") {
-				err = os.Remove(filepath.Join("profile", fileName))
-				if err != nil {
-					return fmt.Errorf("error deleting unused profile image %s: %w", file, err)
-				}
-				fmt.Println("Deleted unused profile image by function - profile:", fileName)
-			} else {
-				return fmt.Errorf("error checking user %s in database: %w", file, err)
-			}
-		}
-	}
-
-	return nil
 }

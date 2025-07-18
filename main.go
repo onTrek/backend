@@ -25,11 +25,6 @@ func main() {
 		panic(err)
 	}
 
-	err = models.CleanUnusedProfileImages(db.DB)
-	if err != nil {
-		panic(err)
-	}
-
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()

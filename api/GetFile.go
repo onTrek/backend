@@ -43,7 +43,7 @@ func GetFile(c *gin.Context) {
 		return
 	}
 
-	path := "gpxs/" + gpx.StoragePath
+	path := "gpxs/" + gpx.StoragePath + ".gpx"
 	gpxFile, err := os.OpenFile(path, os.O_RDONLY, 0644)
 	if err != nil {
 		fmt.Println("Error opening file:", err)

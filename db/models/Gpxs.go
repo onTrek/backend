@@ -2,7 +2,6 @@ package models
 
 import (
 	"OnTrek/utils"
-	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -191,7 +190,7 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 
 		createdID = gpx.ID
 
-		if err := utils.SaveFile(file, "gpxs", gpx.StoragePath, ""); err != nil {
+		if err := utils.SaveFile(file, "gpxs", gpx.StoragePath, ".gpx"); err != nil {
 			return err
 		}
 
@@ -219,7 +218,7 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 }
 
 func CleanUnusedFiles(db *gorm.DB) error {
-	files, err := os.ReadDir("gpxs")
+	files, err := os.ReadDir("./root")
 	if err != nil {
 		return fmt.Errorf("error reading gpxs directory: %w", err)
 	}
@@ -228,19 +227,14 @@ func CleanUnusedFiles(db *gorm.DB) error {
 		fileName := file.Name()
 
 		// Skip db and png files
-		if fileName == "ontrek.db" || file.IsDir() || filepath.Ext(fileName) == ".png" {
+		if fileName == "ontrek.db" || file.IsDir() {
 			continue
 		}
 
-		_, err := GetFileByPath(db, fileName)
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				err = utils.DeleteFiles(utils.Gpx{StoragePath: fileName})
-				fmt.Println("Deleted unused file by function - files:", fileName)
-			} else {
-				return fmt.Errorf("error checking file %s in database: %w", fileName, err)
-			}
-		}
+		// Get file without any extension
+		fileName = fileName[:len(fileName)-len(filepath.Ext(fileName))] + filepath.Ext(file.Name())
+		fmt.Println("Checking file:", fileName)
+
 	}
 
 	return nil
