@@ -218,7 +218,7 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 }
 
 func CleanUnusedFiles(db *gorm.DB) error {
-	files, err := os.ReadDir("gpxs")
+	files, err := os.ReadDir("maps")
 	if err != nil {
 		return fmt.Errorf("error reading gpxs directory: %w", err)
 	}
