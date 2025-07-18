@@ -325,7 +325,7 @@ func FindFileByID(id string) (string, error) {
 
 	for _, file := range files {
 		if file.Name() == id+".jpg" || file.Name() == id+".jpeg" || file.Name() == id+".png" {
-			return "profile/" + file.Name(), nil
+			return "avatars/" + file.Name(), nil
 		}
 	}
 	return "", nil
