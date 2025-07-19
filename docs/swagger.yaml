@@ -1239,34 +1239,6 @@ paths:
       tags:
       - profile
   /profile/image:
-    get:
-      description: Retrieves the profile image for the authenticated user.
-      parameters:
-      - description: Bearer token for user authentication
-        in: header
-        name: Bearer
-        required: true
-        type: string
-      responses:
-        "200":
-          description: Profile image
-          schema:
-            type: file
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-        "404":
-          description: Profile image not found
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-        "500":
-          description: Failed to save file
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-      summary: Get profile image
-      tags:
-      - profile
     put:
       consumes:
       - image/*
@@ -1351,4 +1323,42 @@ paths:
       summary: Search for users by username
       tags:
       - search
+  /users/:id/image:
+    get:
+      description: Retrieve the profile image of a user by their ID.
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: User ID to retrieve profile image for
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Profile image
+          schema:
+            type: file
+        "400":
+          description: Invalid friend ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Profile image not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to save file
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get profile image of a user
+      tags:
+      - users
 swagger: "2.0"

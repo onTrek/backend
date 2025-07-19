@@ -86,14 +86,20 @@ func main() {
 		friends.DELETE("/requests/:id", api.DeleteDeclineFriendRequest)   // rifiuta una richiesta di amicizia
 	}
 
-	// USER API
-	user := router.Group("/profile")
-	user.Use(functions.AuthMiddleware())
+	// PROFILE API
+	profile := router.Group("/profile")
+	profile.Use(functions.AuthMiddleware())
 	{
-		user.GET("", api.GetProfile)            // dati personali
-		user.PUT("/image", api.PutProfileImage) // carica la foto profilo
-		user.GET("/image", api.GetProfileImage) // scarica la foto profilo
-		user.DELETE("", api.DeleteProfile)      // cancella l'account
+		profile.GET("", api.GetProfile)            // dati personali
+		profile.PUT("/image", api.PutProfileImage) // carica la foto profilo
+		profile.DELETE("", api.DeleteProfile)      // cancella l'account
+	}
+
+	// USERS API
+	users := router.Group("/users")
+	users.Use(functions.AuthMiddleware())
+	{
+		users.GET("/:id/image", api.GetProfileImage) // scarica la foto profilo
 	}
 
 	router.Static("/docs", "./docs")
