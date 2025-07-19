@@ -11,6 +11,14 @@ if [ -f "$DB_FILE" ]; then
   BACKUP_FILE="$BACKUP_DIR/ontrek-$TIMESTAMP.db.bak"
   cp "$DB_FILE" "$BACKUP_FILE"
   echo ">> Backup creato: $BACKUP_FILE"
+
+# Mantieni solo gli ultimi 5 backup
+BACKUP_PATTERN="$BACKUP_DIR/ontrek-*.db.bak"
+BACKUPS_TO_DELETE=$(ls -1t $BACKUP_PATTERN | tail -n +6)
+if [ -n "$BACKUPS_TO_DELETE" ]; then
+  echo ">> Rimozione backup vecchi:"
+  echo "$BACKUPS_TO_DELETE" | xargs rm -f
+fi
 else
   echo ">> Nessun file DB trovato. Nessun backup effettuato."
 fi
