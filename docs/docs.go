@@ -981,7 +981,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Group information",
+                        "description": "Group information. Includes group description, created_by, created_at, list of members, and file information(-1 if no files are associated with the group).",
                         "schema": {
                             "$ref": "#/definitions/utils.GroupInfoResponseDoc"
                         }
@@ -1803,9 +1803,6 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Morning hike with friends"
                 },
-                "file": {
-                    "$ref": "#/definitions/utils.GpxInfoEssential"
-                },
                 "group_id": {
                     "type": "integer",
                     "example": 1
@@ -1813,6 +1810,9 @@ const docTemplate = `{
                 "members_number": {
                     "type": "integer",
                     "example": 5
+                },
+                "track": {
+                    "$ref": "#/definitions/utils.GpxInfoEssential"
                 }
             }
         },
@@ -1857,6 +1857,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/utils.GroupMember"
                     }
+                },
+                "track": {
+                    "$ref": "#/definitions/utils.GpxInfoEssential"
                 }
             }
         },

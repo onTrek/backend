@@ -78,7 +78,7 @@ type Group struct {
 	CreatedBy     string           `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Description   string           `json:"description" example:"Morning hike with friends"`
 	CreatedAt     string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	File          GpxInfoEssential `json:"file"`
+	File          GpxInfoEssential `json:"track"`
 	MembersNumber int              `json:"members_number" example:"5"`
 }
 
@@ -87,7 +87,7 @@ type GroupDoc struct {
 	CreatedBy    string           `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Description  string           `json:"description" example:"Morning hike with friends"`
 	CreatedAt    string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	File         GpxInfoEssential `json:"file"`
+	File         GpxInfoEssential `json:"track"`
 	MemberNumber int              `json:"members_number" example:"5"`
 }
 
@@ -145,10 +145,11 @@ type FileBody struct {
 }
 
 type GroupInfoResponse struct {
-	CreatedBy   UserEssentials `json:"created_by"`
-	Description string         `json:"description" example:"Morning hike with friends"`
-	CreatedAt   string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	Members     []GroupMember  `json:"members"`
+	CreatedBy   UserEssentials   `json:"created_by"`
+	Description string           `json:"description" example:"Morning hike with friends"`
+	CreatedAt   string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	Members     []GroupMember    `json:"members"`
+	File        GpxInfoEssential `json:"track"`
 }
 
 type GroupMember struct {
@@ -158,10 +159,11 @@ type GroupMember struct {
 }
 
 type GroupInfoResponseDoc struct {
-	CreatedBy   UserEssentials `json:"created_by"`
-	Description string         `json:"description" example:"Morning hike with friends"`
-	CreatedAt   string         `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	Members     []GroupMember  `json:"members"`
+	CreatedBy   UserEssentials   `json:"created_by"`
+	Description string           `json:"description" example:"Morning hike with friends"`
+	CreatedAt   string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	Members     []GroupMember    `json:"members"`
+	File        GpxInfoEssential `json:"track"`
 }
 
 type FriendRequest struct {

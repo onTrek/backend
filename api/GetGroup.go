@@ -17,7 +17,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "Group ID"
-// @Success 200 {object} utils.GroupInfoResponseDoc "Group information"
+// @Success 200 {object} utils.GroupInfoResponseDoc "Group information. Includes group description, created_by, created_at, list of members, and file information(-1 if no files are associated with the group)."
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 400 {object} utils.ErrorResponse "Bad request"
 // @Failure 404 {object} utils.ErrorResponse "Group not found"

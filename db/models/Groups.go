@@ -162,12 +162,15 @@ func GetGroupInfo(db *gorm.DB, groupId int) (utils.GroupInfoResponse, error) {
 		Username    string
 		Description string
 		CreatedAt   time.Time
+		FileID      *int
+		FileName    *string
 	}
 
 	var result groupRow
 	err := db.Table("users AS u").
-		Select("u.id as user_id, u.username, g.description, g.created_at").
+		Select("u.id as user_id, u.username, g.description, g.created_at, gf.id AS file_id, gf.filename AS file_name").
 		Joins("JOIN groups g ON u.id = g.created_by").
+		Joins("LEFT JOIN gpx_files gf ON g.file_id = gf.id").
 		Where("g.id = ?", groupId).
 		Scan(&result).Error
 
@@ -179,6 +182,14 @@ func GetGroupInfo(db *gorm.DB, groupId int) (utils.GroupInfoResponse, error) {
 	groupInfo.CreatedBy.Username = result.Username
 	groupInfo.Description = result.Description
 	groupInfo.CreatedAt = result.CreatedAt.Format(time.RFC3339)
+
+	if result.FileID != nil {
+		groupInfo.File.ID = *result.FileID
+		groupInfo.File.Filename = *result.FileName
+	} else {
+		groupInfo.File.ID = -1
+		groupInfo.File.Filename = ""
+	}
 
 	type memberRow struct {
 		ID       string

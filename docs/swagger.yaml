@@ -92,14 +92,14 @@ definitions:
       description:
         example: Morning hike with friends
         type: string
-      file:
-        $ref: '#/definitions/utils.GpxInfoEssential'
       group_id:
         example: 1
         type: integer
       members_number:
         example: 5
         type: integer
+      track:
+        $ref: '#/definitions/utils.GpxInfoEssential'
     type: object
   utils.GroupId:
     properties:
@@ -130,6 +130,8 @@ definitions:
         items:
           $ref: '#/definitions/utils.GroupMember'
         type: array
+      track:
+        $ref: '#/definitions/utils.GpxInfoEssential'
     type: object
   utils.GroupInfoUpdate:
     properties:
@@ -951,7 +953,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: Group information
+          description: Group information. Includes group description, created_by,
+            created_at, list of members, and file information(-1 if no files are associated
+            with the group).
           schema:
             $ref: '#/definitions/utils.GroupInfoResponseDoc'
         "400":
