@@ -25,6 +25,12 @@ type UserEssentials struct {
 	Username string `json:"username" example:"John Doe"`
 }
 
+type UserSearchResponse struct {
+	ID       string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Username string `json:"username" example:"John Doe"`
+	State    int    `json:"state" example:"0"`
+}
+
 type RegisterInput struct {
 	Email    string `json:"email" example:"user@example.com"`
 	Password string `json:"password" example:"strongPassword123"`
@@ -68,19 +74,21 @@ type GPXStats struct {
 }
 
 type Group struct {
-	ID          int              `json:"group_id" example:"1"`
-	CreatedBy   string           `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Description string           `json:"description" example:"Morning hike with friends"`
-	CreatedAt   string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	File        GpxInfoEssential `json:"file"`
+	ID            int              `json:"group_id" example:"1"`
+	CreatedBy     string           `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Description   string           `json:"description" example:"Morning hike with friends"`
+	CreatedAt     string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	File          GpxInfoEssential `json:"file"`
+	MembersNumber int              `json:"members_number" example:"5"`
 }
 
 type GroupDoc struct {
-	ID          int              `json:"group_id" example:"1"`
-	CreatedBy   string           `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Description string           `json:"description" example:"Morning hike with friends"`
-	CreatedAt   string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
-	File        GpxInfoEssential `json:"file"`
+	ID           int              `json:"group_id" example:"1"`
+	CreatedBy    string           `json:"created_by" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Description  string           `json:"description" example:"Morning hike with friends"`
+	CreatedAt    string           `json:"created_at" example:"2025-05-11T08:00:00Z"`
+	File         GpxInfoEssential `json:"file"`
+	MemberNumber int              `json:"members_number" example:"5"`
 }
 
 type GroupInfo struct {

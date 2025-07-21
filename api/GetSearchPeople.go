@@ -19,7 +19,7 @@ import (
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param query query string true "Search query for username"
 // @Param friendsOnly query bool false "Search for friends only (optional, true/false, default is false)"
-// @Success 200 {array} utils.UserEssentials "Returns a list of users matching the search query ordered by username"
+// @Success 200 {array} utils.UserSearchResponse "Returns a list of users matching the search query ordered by username. State is set to -1 if the user is not a friend, 0 if there is a request sent, and 1 if the user is a friend."
 // @Failure 400 {object} utils.ErrorResponse "Bad request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "No users found"

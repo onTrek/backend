@@ -70,7 +70,7 @@ func main() {
 	search := router.Group("/search")
 	search.Use(functions.AuthMiddleware())
 	{
-		search.GET("/", api.GetSearchPeople) // ricerca persone da aggiungere agli amici
+		search.GET("/", api.GetSearchPeople)
 	}
 
 	// FRIENDS API

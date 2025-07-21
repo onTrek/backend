@@ -1579,11 +1579,11 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns a list of users matching the search query ordered by username",
+                        "description": "Returns a list of users matching the search query ordered by username. State is set to -1 if the user is not a friend, 0 if there is a request sent, and 1 if the user is a friend.",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/utils.UserEssentials"
+                                "$ref": "#/definitions/utils.UserSearchResponse"
                             }
                         }
                     },
@@ -1809,6 +1809,10 @@ const docTemplate = `{
                 "group_id": {
                     "type": "integer",
                     "example": 1
+                },
+                "members_number": {
+                    "type": "integer",
+                    "example": 5
                 }
             }
         },
@@ -1991,6 +1995,23 @@ const docTemplate = `{
                 "id": {
                     "type": "string",
                     "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
+            }
+        },
+        "utils.UserSearchResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "state": {
+                    "type": "integer",
+                    "example": 0
                 },
                 "username": {
                     "type": "string",

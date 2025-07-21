@@ -20,13 +20,14 @@ type Group struct {
 }
 
 type GroupWithFile struct {
-	ID          int       `json:"group_id"`
-	CreatedBy   string    `json:"created_by"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	LastUpdate  time.Time `json:"last_update"`
-	FileID      *int      `json:"file_id"`
-	FileName    *string   `json:"file_name"`
+	ID            int       `json:"group_id"`
+	CreatedBy     string    `json:"created_by"`
+	Description   string    `json:"description"`
+	CreatedAt     time.Time `json:"created_at"`
+	LastUpdate    time.Time `json:"last_update"`
+	FileID        *int      `json:"file_id"`
+	FileName      *string   `json:"file_name"`
+	MembersNumber int       `json:"members_number"`
 }
 
 func CreateGroup(db *gorm.DB, group Group) (int, error) {
@@ -80,7 +81,15 @@ func GetGroupsByUserId(db *gorm.DB, userId string) ([]utils.Group, error) {
 
 	err := db.
 		Table("groups AS g").
-		Select(`g.id, g.created_by, g.description, g.created_at, gf.id AS file_id, gf.filename AS file_name`).
+		Select(`
+		g.id,
+		g.created_by,
+		g.description,
+		g.created_at,
+		gf.id AS file_id,
+		gf.filename AS file_name,
+		(SELECT COUNT(*) FROM group_members WHERE group_members.group_id = g.id) AS members_number
+	`).
 		Joins("JOIN group_members gm ON g.id = gm.group_id").
 		Joins("LEFT JOIN gpx_files gf ON g.file_id = gf.id").
 		Where("gm.user_id = ?", userId).
@@ -93,10 +102,11 @@ func GetGroupsByUserId(db *gorm.DB, userId string) ([]utils.Group, error) {
 	var groups []utils.Group
 	for _, r := range results {
 		g := utils.Group{
-			ID:          r.ID,
-			CreatedBy:   r.CreatedBy,
-			Description: r.Description,
-			CreatedAt:   r.CreatedAt.UTC().Format(time.RFC3339),
+			ID:            r.ID,
+			CreatedBy:     r.CreatedBy,
+			Description:   r.Description,
+			CreatedAt:     r.CreatedAt.UTC().Format(time.RFC3339),
+			MembersNumber: r.MembersNumber,
 		}
 
 		if r.FileID != nil {

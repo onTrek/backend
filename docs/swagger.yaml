@@ -97,6 +97,9 @@ definitions:
       group_id:
         example: 1
         type: integer
+      members_number:
+        example: 5
+        type: integer
     type: object
   utils.GroupId:
     properties:
@@ -225,6 +228,18 @@ definitions:
       id:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
+      username:
+        example: John Doe
+        type: string
+    type: object
+  utils.UserSearchResponse:
+    properties:
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      state:
+        example: 0
+        type: integer
       username:
         example: John Doe
         type: string
@@ -1299,10 +1314,11 @@ paths:
       responses:
         "200":
           description: Returns a list of users matching the search query ordered by
-            username
+            username. State is set to -1 if the user is not a friend, 0 if there is
+            a request sent, and 1 if the user is a friend.
           schema:
             items:
-              $ref: '#/definitions/utils.UserEssentials'
+              $ref: '#/definitions/utils.UserSearchResponse'
             type: array
         "400":
           description: Bad request
