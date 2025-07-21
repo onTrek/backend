@@ -65,7 +65,7 @@ func PostAddFriendRequest(c *gin.Context) {
 	// Add the friend to the database
 	err = models.AddFriend(c.MustGet("db").(*gorm.DB), user.ID, user2.ID)
 	if err != nil {
-		if err.Error() == "users are already friends" {
+		if strings.Contains(err.Error(), "UNIQUE constraint failed: friends.user_id1, friends.user_id2") {
 			fmt.Println("Users are already friends")
 			c.JSON(http.StatusConflict, gin.H{"error": "Users are already friends"})
 			return
