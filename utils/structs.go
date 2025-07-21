@@ -60,8 +60,8 @@ type GpxID struct {
 }
 
 type GpxInfoEssential struct {
-	ID       int    `json:"id" example:"1"`
-	Filename string `json:"filename" example:"MonteBianco.gpx"`
+	ID    int    `json:"id" example:"1"`
+	Title string `json:"title" example:"MonteBianco"`
 }
 
 type GPXStats struct {

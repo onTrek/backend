@@ -26,7 +26,7 @@ type GroupWithFile struct {
 	CreatedAt     time.Time `json:"created_at"`
 	LastUpdate    time.Time `json:"last_update"`
 	FileID        *int      `json:"file_id"`
-	FileName      *string   `json:"file_name"`
+	FileTitle     *string   `json:"file_title"`
 	MembersNumber int       `json:"members_number"`
 }
 
@@ -87,7 +87,7 @@ func GetGroupsByUserId(db *gorm.DB, userId string) ([]utils.Group, error) {
 		g.description,
 		g.created_at,
 		gf.id AS file_id,
-		gf.filename AS file_name,
+		gf.title AS file_title,
 		(SELECT COUNT(*) FROM group_members WHERE group_members.group_id = g.id) AS members_number
 	`).
 		Joins("JOIN group_members gm ON g.id = gm.group_id").
@@ -115,8 +115,8 @@ func GetGroupsByUserId(db *gorm.DB, userId string) ([]utils.Group, error) {
 			g.File.ID = -1
 		}
 
-		if r.FileName != nil {
-			g.File.Filename = *r.FileName
+		if r.FileTitle != nil {
+			g.File.Title = *r.FileTitle
 		}
 
 		groups = append(groups, g)
@@ -163,12 +163,12 @@ func GetGroupInfo(db *gorm.DB, groupId int) (utils.GroupInfoResponse, error) {
 		Description string
 		CreatedAt   time.Time
 		FileID      *int
-		FileName    *string
+		FileTitle   *string
 	}
 
 	var result groupRow
 	err := db.Table("users AS u").
-		Select("u.id as user_id, u.username, g.description, g.created_at, gf.id AS file_id, gf.filename AS file_name").
+		Select("u.id as user_id, u.username, g.description, g.created_at, gf.id AS file_id, gf.title AS file_title").
 		Joins("JOIN groups g ON u.id = g.created_by").
 		Joins("LEFT JOIN gpx_files gf ON g.file_id = gf.id").
 		Where("g.id = ?", groupId).
@@ -185,10 +185,10 @@ func GetGroupInfo(db *gorm.DB, groupId int) (utils.GroupInfoResponse, error) {
 
 	if result.FileID != nil {
 		groupInfo.File.ID = *result.FileID
-		groupInfo.File.Filename = *result.FileName
+		groupInfo.File.Title = *result.FileTitle
 	} else {
 		groupInfo.File.ID = -1
-		groupInfo.File.Filename = ""
+		groupInfo.File.Title = ""
 	}
 
 	type memberRow struct {

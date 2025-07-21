@@ -18,7 +18,7 @@ import (
 
 func main() {
 	db.SetupDatabase()
-	url := ginSwagger.URL("/swagger/doc.json") // The url pointing to API definition
+	url := ginSwagger.URL("/swagger/doc.json")
 
 	err := models.CleanUnusedFiles(db.DB)
 	if err != nil {
@@ -36,20 +36,20 @@ func main() {
 	// AUTH API
 	auth := router.Group("/auth")
 	{
-		auth.POST("/register", api.PostRegister) // crea un nuovo utente
-		auth.POST("/login", api.PostLogin)       // ritorna access token
+		auth.POST("/register", api.PostRegister)
+		auth.POST("/login", api.PostLogin)
 	}
 
 	// GPX API
 	gpx := router.Group("/gpx")
 	gpx.Use(functions.AuthMiddleware())
 	{
-		gpx.DELETE("/:id", api.DeleteFile)    // elimina un GPX
-		gpx.POST("/", api.PostUpload)         // carica un file GPX
-		gpx.GET("/", api.GetFiles)            // lista dei GPX caricati dall'utente
-		gpx.GET("/:id", api.GetFileInfo)      // ritorna i dati di un file GPX specifico
-		gpx.GET("/:id/download", api.GetFile) // scarica un file GPX specifico
-		gpx.GET("/:id/map", api.GetFileMap)   // scarica la mappa di un file GPX specifico
+		gpx.DELETE("/:id", api.DeleteFile)
+		gpx.POST("/", api.PostUpload)
+		gpx.GET("/", api.GetFiles)
+		gpx.GET("/:id", api.GetFileInfo)
+		gpx.GET("/:id/download", api.GetFile)
+		gpx.GET("/:id/map", api.GetFileMap)
 	}
 
 	// SESSION API
@@ -77,29 +77,29 @@ func main() {
 	friends := router.Group("/friends")
 	friends.Use(functions.AuthMiddleware())
 	{
-		friends.GET("/", api.GetFriends)                                  // lista degli amici
-		friends.DELETE("/:id", api.DeleteFriend)                          // elimina un amico
-		friends.POST("/requests/:id", api.PostAddFriendRequest)           // aggiungi un amico
-		friends.GET("/requests/received/", api.GetFriendRequestsReceived) // lista delle richieste di amicizia ricevute
-		friends.GET("/requests/sent/", api.GetFriendRequestsSent)         // lista delle richieste di amicizia inviate
-		friends.PUT("/requests/:id", api.PutAcceptFriendRequest)          // accetta una richiesta di amicizia
-		friends.DELETE("/requests/:id", api.DeleteDeclineFriendRequest)   // rifiuta una richiesta di amicizia
+		friends.GET("/", api.GetFriends)
+		friends.DELETE("/:id", api.DeleteFriend)
+		friends.POST("/requests/:id", api.PostAddFriendRequest)
+		friends.GET("/requests/received/", api.GetFriendRequestsReceived)
+		friends.GET("/requests/sent/", api.GetFriendRequestsSent)
+		friends.PUT("/requests/:id", api.PutAcceptFriendRequest)
+		friends.DELETE("/requests/:id", api.DeleteDeclineFriendRequest)
 	}
 
 	// PROFILE API
 	profile := router.Group("/profile")
 	profile.Use(functions.AuthMiddleware())
 	{
-		profile.GET("", api.GetProfile)            // dati personali
-		profile.PUT("/image", api.PutProfileImage) // carica la foto profilo
-		profile.DELETE("", api.DeleteProfile)      // cancella l'account
+		profile.GET("", api.GetProfile)
+		profile.PUT("/image", api.PutProfileImage)
+		profile.DELETE("", api.DeleteProfile)
 	}
 
 	// USERS API
 	users := router.Group("/users")
 	users.Use(functions.AuthMiddleware())
 	{
-		users.GET("/:id/image", api.GetProfileImage) // scarica la foto profilo
+		users.GET("/:id/image", api.GetProfileImage)
 	}
 
 	router.Static("/docs", "./docs")
