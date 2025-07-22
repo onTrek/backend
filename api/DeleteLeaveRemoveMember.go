@@ -97,6 +97,20 @@ func DeleteLeaveRemoveMember(c *gin.Context) {
 		// Return success response
 		c.JSON(http.StatusNoContent, nil)
 	} else {
+		// Check if the user is the leader of the group
+		leader, err := models.GetLeaderByGroup(c.MustGet("db").(*gorm.DB), groupId)
+		if err != nil {
+			fmt.Println("Error getting group leader:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			return
+		}
+
+		if leader == user.ID {
+			fmt.Println("Leader cannot leave the group")
+			c.JSON(http.StatusForbidden, gin.H{"error": "The leader cannot abandon a group he owns"})
+			return
+		}
+		
 		err = models.LeaveGroupById(c.MustGet("db").(*gorm.DB), user.ID, groupId)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
