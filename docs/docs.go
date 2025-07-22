@@ -41,9 +41,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "User ID token",
+                        "description": "Login successful, returns token and user ID",
                         "schema": {
-                            "$ref": "#/definitions/utils.UserToken"
+                            "$ref": "#/definitions/utils.LoginResponse"
                         }
                     },
                     "400": {
@@ -1778,13 +1778,13 @@ const docTemplate = `{
         "utils.GpxInfoEssential": {
             "type": "object",
             "properties": {
-                "filename": {
-                    "type": "string",
-                    "example": "MonteBianco.gpx"
-                },
                 "id": {
                     "type": "integer",
                     "example": 1
+                },
+                "title": {
+                    "type": "string",
+                    "example": "MonteBianco"
                 }
             }
         },
@@ -1922,6 +1922,19 @@ const docTemplate = `{
                 }
             }
         },
+        "utils.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "token": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                }
+            }
+        },
         "utils.MemberInfo": {
             "type": "object",
             "properties": {
@@ -2019,15 +2032,6 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "John Doe"
-                }
-            }
-        },
-        "utils.UserToken": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string",
-                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 }
             }
         }

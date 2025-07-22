@@ -70,24 +70,24 @@ func DeleteUser(db *gorm.DB, userID string) error {
 	})
 }
 
-func Login(db *gorm.DB, email string, password string) (utils.UserToken, error) {
+func Login(db *gorm.DB, email string, password string) (Token, error) {
 	var user User
 	var token Token
 
 	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return utils.UserToken{}, fmt.Errorf("user not found")
+			return Token{}, fmt.Errorf("user not found")
 		}
-		return utils.UserToken{}, fmt.Errorf("failed to find user: %w", err)
+		return Token{}, fmt.Errorf("failed to find user: %w", err)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
-		return utils.UserToken{}, fmt.Errorf("invalid password")
+		return Token{}, fmt.Errorf("invalid password")
 	}
 
 	tx := db.Begin()
 	if tx.Error != nil {
-		return utils.UserToken{}, tx.Error
+		return Token{}, tx.Error
 	}
 	defer func() {
 		if r := recover(); r != nil {
@@ -98,7 +98,7 @@ func Login(db *gorm.DB, email string, password string) (utils.UserToken, error) 
 	err := tx.Where("user_id = ?", user.ID).First(&token).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		tx.Rollback()
-		return utils.UserToken{}, fmt.Errorf("failed to get token: %w", err)
+		return Token{}, fmt.Errorf("failed to get token: %w", err)
 	}
 
 	if errors.Is(err, gorm.ErrRecordNotFound) || time.Since(token.CreatedAt) > tokenExpiry {
@@ -107,23 +107,21 @@ func Login(db *gorm.DB, email string, password string) (utils.UserToken, error) 
 		err = UpdateToken(tx, user.ID)
 		if err != nil {
 			tx.Rollback()
-			return utils.UserToken{}, fmt.Errorf("failed to update token: %w", err)
+			return Token{}, fmt.Errorf("failed to update token: %w", err)
 		}
 
 		err = tx.Table("tokens").Where("user_id = ?", user.ID).First(&token).Error
 		if err != nil {
 			tx.Rollback()
-			return utils.UserToken{}, fmt.Errorf("failed to retrieve new token: %w", err)
+			return Token{}, fmt.Errorf("failed to retrieve new token: %w", err)
 		}
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		return utils.UserToken{}, err
+		return Token{}, err
 	}
 
-	return utils.UserToken{
-		Token: token.Token,
-	}, nil
+	return token, nil
 }
 
 func SearchUsers(db *gorm.DB, query string, friends bool, userId string) ([]utils.UserSearchResponse, error) {

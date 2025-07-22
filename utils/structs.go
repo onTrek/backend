@@ -10,8 +10,9 @@ type User struct {
 	CreatedAt string `json:"created_at" example:"2025-05-11T08:00:00Z"`
 }
 
-type UserToken struct {
-	Token string `json:"token" example:"550e8400-e29b-41d4-a716-446655440000"`
+type LoginResponse struct {
+	Token  string `json:"token" example:"550e8400-e29b-41d4-a716-446655440000"`
+	UserId string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
 }
 
 type UserInfo struct {
