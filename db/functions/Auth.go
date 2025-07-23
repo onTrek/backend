@@ -11,21 +11,26 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//fmt.Println(strings.Split(c.Request.Header.Get("Authorization"), " ")[1])
-		token := c.GetHeader("Bearer")
-		if token == "" {
+		token := strings.Split(c.Request.Header.Get("Authorization"), " ")
+		if token[0] != "Bearer" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token(Bearer token is required)"})
+			c.Abort()
+			return
+		}
+		
+		if token[1] == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Missing token"})
 			c.Abort()
 			return
 		}
 
-		if strings.Contains(token, " ") {
+		if strings.Contains(token[1], " ") {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token format"})
 			c.Abort()
 			return
 		}
 
-		user, err := models.GetUserByToken(c.MustGet("db").(*gorm.DB), token)
+		user, err := models.GetUserByToken(c.MustGet("db").(*gorm.DB), token[1])
 		if err != nil {
 			if err.Error() == "token expired" {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})
