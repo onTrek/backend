@@ -101,12 +101,6 @@ definitions:
       track:
         $ref: '#/definitions/utils.GpxInfoEssential'
     type: object
-  utils.GroupId:
-    properties:
-      group_id:
-        example: "1"
-        type: string
-    type: object
   utils.GroupInfoCreation:
     properties:
       description:
@@ -159,6 +153,21 @@ definitions:
       color:
         example: '#e6194b'
         type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      username:
+        example: John Doe
+        type: string
+    type: object
+  utils.GroupMemberCreation:
+    properties:
+      color:
+        example: '#e6194b'
+        type: string
+      group_id:
+        example: 1
+        type: integer
       id:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
@@ -876,9 +885,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: group_id
+          description: Group created successfully
           schema:
-            $ref: '#/definitions/utils.GroupId'
+            $ref: '#/definitions/utils.GroupMemberCreation'
         "400":
           description: Invalid request
           schema:
@@ -1118,6 +1127,7 @@ paths:
       summary: Get members information of a group
       tags:
       - groups
+  /groups/{id}/members/{user}:
     put:
       consumes:
       - application/json
@@ -1133,17 +1143,28 @@ paths:
         name: id
         required: true
         type: string
+      - description: User ID
+        in: path
+        name: user
+        required: true
+        type: string
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "201":
+          description: User successfully added to the group
+          schema:
+            $ref: '#/definitions/utils.GroupMember'
         "400":
           description: Group ID is required
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "403":
+          description: Only group leader can add members
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
         "404":

@@ -19,7 +19,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param group body utils.GroupInfoCreation true "Group information. Fields: description (required, max 64 characters), file_id (optional, must be a valid file ID)"
-// @Success 201 {object} utils.GroupId "group_id"
+// @Success 201 {object} utils.GroupMemberCreation "Group created successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Internal Server Error"
@@ -81,14 +81,16 @@ func PostGroup(c *gin.Context) {
 		}
 	}
 
-	groupId, err := models.CreateGroup(c.MustGet("db").(*gorm.DB), groupInfo)
+	member, err := models.CreateGroup(c.MustGet("db").(*gorm.DB), groupInfo)
 	if err != nil {
 		fmt.Println("Error creating group:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	member.Username = user.Username
+
 	// Return the session ID
-	c.JSON(http.StatusCreated, gin.H{"group_id": groupId})
+	c.JSON(http.StatusCreated, member)
 
 }

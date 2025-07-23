@@ -30,7 +30,8 @@ type GroupWithFile struct {
 	MembersNumber int       `json:"members_number"`
 }
 
-func CreateGroup(db *gorm.DB, group Group) (int, error) {
+func CreateGroup(db *gorm.DB, group Group) (utils.GroupMemberCreation, error) {
+	var member utils.GroupMember
 	err := db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
 			return fmt.Errorf("error enabling foreign key enforcement: %v", err)
@@ -40,18 +41,26 @@ func CreateGroup(db *gorm.DB, group Group) (int, error) {
 			return err
 		}
 
-		if err := JoinGroup(tx, group.CreatedBy, group.ID); err != nil {
+		temp, err := JoinGroup(tx, group.CreatedBy, group.ID)
+		if err != nil {
 			return fmt.Errorf("error joining group: %v", err)
 		}
+		member = temp
 
 		return nil
 	})
 
 	if err != nil {
-		return -1, err
+		return utils.GroupMemberCreation{}, err
 	}
 
-	return group.ID, nil
+	creation := utils.GroupMemberCreation{
+		GroupId:  group.ID,
+		ID:       member.ID,
+		Username: member.Username,
+		Color:    member.Color,
+	}
+	return creation, nil
 }
 
 func CheckGroupExistsByIdAndUserId(db *gorm.DB, groupId int, userId string) (bool, error) {

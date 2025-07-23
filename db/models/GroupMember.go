@@ -24,7 +24,7 @@ type GroupMember struct {
 	GoingToUser User  `json:"going_to_user" gorm:"foreignKey:GoingTo;references:id;constraint:OnDelete:SET NULL"`
 }
 
-func JoinGroup(tx *gorm.DB, userID string, groupID int) error {
+func JoinGroup(tx *gorm.DB, userID string, groupID int) (utils.GroupMember, error) {
 	colors := []string{
 		"#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0",
 		"#f032e6", "#bcf60c", "#fabebe", "#008080", "#e6beff", "#9a6324", "#fffac8",
@@ -35,7 +35,7 @@ func JoinGroup(tx *gorm.DB, userID string, groupID int) error {
 	if err := tx.Model(&utils.GroupMember{}).
 		Where("group_id = ?", groupID).
 		Pluck("color", &usedColors).Error; err != nil {
-		return err
+		return utils.GroupMember{}, err
 	}
 
 	used := make(map[string]bool)
@@ -52,7 +52,7 @@ func JoinGroup(tx *gorm.DB, userID string, groupID int) error {
 	}
 
 	if selectedColor == "" {
-		return fmt.Errorf("no available colors left for group %d", groupID)
+		return utils.GroupMember{}, fmt.Errorf("no available colors left for group %d", groupID)
 	}
 
 	member := GroupMember{
@@ -62,10 +62,15 @@ func JoinGroup(tx *gorm.DB, userID string, groupID int) error {
 	}
 
 	if err := tx.Create(&member).Error; err != nil {
-		return err
+		return utils.GroupMember{}, err
 	}
 
-	return nil
+	res := utils.GroupMember{
+		ID:    userID,
+		Color: selectedColor,
+	}
+
+	return res, nil
 }
 
 func UpdateGroupMember(db *gorm.DB, userId string, group GroupMember) error {
@@ -131,6 +136,19 @@ func GetMembersInfoByGroupId(db *gorm.DB, groupId int) ([]utils.MemberInfo, erro
 	}
 
 	return members, nil
+}
+
+func GetMemberByUserIdAndGroupId(tx *gorm.DB, userId string, groupId int) (utils.GroupMember, error) {
+	var member utils.GroupMember
+	err := tx.
+		Select("gm.user_id, u.username, gm.group_id, gm.color").
+		Where("user_id = ? AND group_id = ?", userId, groupId).
+		Joins("JOIN users u ON gm.user_id = u.id").
+		First(&member).Error
+	if err != nil {
+		return utils.GroupMember{}, err
+	}
+	return member, nil
 }
 
 func LeaveGroupById(db *gorm.DB, userId string, groupId int) error {

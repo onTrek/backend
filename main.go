@@ -62,7 +62,7 @@ func main() {
 		groups.GET("/:id", api.GetGroup)
 		groups.PATCH("/:id/gpx", api.PatchSessionGpx)
 		groups.PUT("/:id/members/location", api.PutGroupLocation)
-		groups.PUT("/:id/members/", api.PutGroupId)
+		groups.PUT("/:id/members/:user", api.PutGroupId)
 		groups.GET("/:id/members/", api.GetMembersInfo)
 		groups.DELETE(":id/members/", api.DeleteLeaveRemoveMember)
 	}

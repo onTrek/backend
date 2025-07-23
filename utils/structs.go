@@ -159,6 +159,13 @@ type GroupMember struct {
 	Color    string `json:"color" example:"#e6194b"`
 }
 
+type GroupMemberCreation struct {
+	GroupId  int    `json:"group_id" example:"1"`
+	ID       string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Username string `json:"username" example:"John Doe"`
+	Color    string `json:"color" example:"#e6194b"`
+}
+
 type GroupInfoResponseDoc struct {
 	CreatedBy   UserEssentials   `json:"created_by"`
 	Description string           `json:"description" example:"Morning hike with friends"`

@@ -927,9 +927,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "group_id",
+                        "description": "Group created successfully",
                         "schema": {
-                            "$ref": "#/definitions/utils.GroupId"
+                            "$ref": "#/definitions/utils.GroupMemberCreation"
                         }
                     },
                     "400": {
@@ -1279,70 +1279,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "put": {
-                "description": "Allows a user to join a group by providing their group ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "groups"
-                ],
-                "summary": "Join a group using group ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token for user authentication",
-                        "name": "Bearer",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Group ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Group ID is required",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Group not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "409": {
-                        "description": "User already joined the group",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
-                        }
-                    }
-                }
             }
         },
         "/groups/{id}/members/location": {
@@ -1401,6 +1337,88 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Group not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/groups/{id}/members/{user}": {
+            "put": {
+                "description": "Allows a user to join a group by providing their group ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Join a group using group ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User successfully added to the group",
+                        "schema": {
+                            "$ref": "#/definitions/utils.GroupMember"
+                        }
+                    },
+                    "400": {
+                        "description": "Group ID is required",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Only group leader can add members",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Group not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "User already joined the group",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorResponse"
                         }
@@ -1816,15 +1834,6 @@ const docTemplate = `{
                 }
             }
         },
-        "utils.GroupId": {
-            "type": "object",
-            "properties": {
-                "group_id": {
-                    "type": "string",
-                    "example": "1"
-                }
-            }
-        },
         "utils.GroupInfoCreation": {
             "type": "object",
             "properties": {
@@ -1898,6 +1907,27 @@ const docTemplate = `{
                 "color": {
                     "type": "string",
                     "example": "#e6194b"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
+            }
+        },
+        "utils.GroupMemberCreation": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "example": "#e6194b"
+                },
+                "group_id": {
+                    "type": "integer",
+                    "example": 1
                 },
                 "id": {
                     "type": "string",
