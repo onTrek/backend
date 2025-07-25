@@ -42,6 +42,10 @@ func RegisterUser(db *gorm.DB, user User) error {
 
 func DeleteUser(db *gorm.DB, userID string) error {
 	return db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
+			return fmt.Errorf("error enabling foreign key enforcement: %v", err)
+		}
+		
 		if err := tx.Where("id = ?", userID).Delete(&User{}).Error; err != nil {
 			return fmt.Errorf("failed to delete user token: %w", err)
 		}
