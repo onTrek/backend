@@ -60,7 +60,6 @@ definitions:
         example: 1
         type: integer
       size:
-        description: in KB
         example: 110744
         type: integer
       stats:
@@ -79,6 +78,29 @@ definitions:
         type: integer
       title:
         example: MonteBianco
+        type: string
+    type: object
+  utils.GpxInfoWithOwner:
+    properties:
+      filename:
+        example: MonteBianco.gpx
+        type: string
+      id:
+        example: 1
+        type: integer
+      owner:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      size:
+        example: 110744
+        type: integer
+      stats:
+        $ref: '#/definitions/utils.GPXStats'
+      title:
+        example: Monte Faggeto
+        type: string
+      upload_date:
+        example: "2025-05-11T08:00:00Z"
         type: string
     type: object
   utils.GroupDoc:
@@ -730,7 +752,7 @@ paths:
         "200":
           description: Gpx file information
           schema:
-            $ref: '#/definitions/utils.GpxInfo'
+            $ref: '#/definitions/utils.GpxInfoWithOwner'
         "400":
           description: Invalid file ID
           schema:

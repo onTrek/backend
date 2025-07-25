@@ -53,7 +53,17 @@ type GpxInfo struct {
 	UploadDate string   `json:"upload_date" example:"2025-05-11T08:00:00Z"`
 	Title      string   `json:"title" example:"Monte Faggeto"`
 	Stats      GPXStats `json:"stats"`
-	FileSize   int64    `json:"size" example:"110744"` // in KB
+	FileSize   int64    `json:"size" example:"110744"`
+}
+
+type GpxInfoWithOwner struct {
+	ID         int      `json:"id" example:"1"`
+	Owner      string   `json:"owner" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Filename   string   `json:"filename" example:"MonteBianco.gpx"`
+	UploadDate string   `json:"upload_date" example:"2025-05-11T08:00:00Z"`
+	Title      string   `json:"title" example:"Monte Faggeto"`
+	Stats      GPXStats `json:"stats"`
+	FileSize   int64    `json:"size" example:"110744"`
 }
 
 type GpxID struct {

@@ -18,7 +18,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "File ID"
-// @Success 200 {object} utils.GpxInfo "Gpx file information"
+// @Success 200 {object} utils.GpxInfoWithOwner "Gpx file information"
 // @Failure 400 {object} utils.ErrorResponse "Invalid file ID"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "File not found"

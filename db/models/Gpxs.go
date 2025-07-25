@@ -98,7 +98,7 @@ func GetFileByPath(db *gorm.DB, storagePath string) (utils.Gpx, error) {
 	return file, nil
 }
 
-func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfo, error) {
+func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfoWithOwner, error) {
 	var file Gpx
 
 	err := db.Table("gpx_files").
@@ -106,11 +106,12 @@ func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfo, error) {
 		First(&file).Error
 
 	if err != nil {
-		return utils.GpxInfo{}, err
+		return utils.GpxInfoWithOwner{}, err
 	}
 
-	info := utils.GpxInfo{
+	info := utils.GpxInfoWithOwner{
 		ID:         file.ID,
+		Owner:      file.UserID,
 		Filename:   file.Filename,
 		UploadDate: file.UploadDate.Format(time.RFC3339),
 		Title:      file.Title,

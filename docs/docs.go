@@ -641,7 +641,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Gpx file information",
                         "schema": {
-                            "$ref": "#/definitions/utils.GpxInfo"
+                            "$ref": "#/definitions/utils.GpxInfoWithOwner"
                         }
                     },
                     "400": {
@@ -1776,7 +1776,6 @@ const docTemplate = `{
                     "example": 1
                 },
                 "size": {
-                    "description": "in KB",
                     "type": "integer",
                     "example": 110744
                 },
@@ -1803,6 +1802,38 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "MonteBianco"
+                }
+            }
+        },
+        "utils.GpxInfoWithOwner": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string",
+                    "example": "MonteBianco.gpx"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "owner": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "size": {
+                    "type": "integer",
+                    "example": 110744
+                },
+                "stats": {
+                    "$ref": "#/definitions/utils.GPXStats"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Monte Faggeto"
+                },
+                "upload_date": {
+                    "type": "string",
+                    "example": "2025-05-11T08:00:00Z"
                 }
             }
         },
