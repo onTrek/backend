@@ -2,6 +2,7 @@ package api
 
 import (
 	"OnTrek/db/models"
+	"OnTrek/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -21,10 +22,13 @@ import (
 // @Success 200 {file} file "Returns the requested file as .gpx"
 // @Failure 400 {object} utils.ErrorResponse "Invalid file ID"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 403 {object} utils.ErrorResponse "Unauthorized access to file"
 // @Failure 404 {object} utils.ErrorResponse "File not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /gpx/{id}/download [get]
 func GetFile(c *gin.Context) {
+
+	user := c.MustGet("user").(utils.UserInfo)
 
 	// Get the file ID from the URL parameter
 	file := c.Param("id")
@@ -33,6 +37,18 @@ func GetFile(c *gin.Context) {
 	if err != nil {
 		fmt.Println("Error converting file ID:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file ID"})
+		return
+	}
+
+	permission, err := models.CheckFilePermissions(c.MustGet("db").(*gorm.DB), fileID, user.ID)
+	if err != nil {
+		fmt.Println("Error checking file permissions:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error checking file permissions"})
+		return
+	}
+	if !permission {
+		fmt.Println("Unauthorized access to file:", fileID)
+		c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorized"})
 		return
 	}
 

@@ -215,3 +215,19 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 
 	return createdID, err
 }
+
+func CheckFilePermissions(db *gorm.DB, fileID int, userID string) (bool, error) {
+	var count int64
+
+	err := db.Table("gpx_files gf").
+		Joins("LEFT JOIN groups g ON g.file_id = gf.id").
+		Joins("LEFT JOIN group_members gm ON gm.group_id = g.id").
+		Where("gf.id = ? AND (gf.user_id = ? OR gm.user_id = ?)", fileID, userID, userID).
+		Count(&count).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
