@@ -141,14 +141,14 @@ type GroupInfoUpdate struct {
 }
 
 type MemberInfo struct {
-	User          UserEssentials `json:"user"`
-	Latitude      float64        `json:"latitude" example:"40.7128"`
-	Longitude     float64        `json:"longitude" example:"-74.0060"`
-	Altitude      float64        `json:"altitude" example:"10.5"`
-	Accuracy      float64        `json:"accuracy" example:"5.0"`
-	HelpRequested bool           `json:"help_request" example:"false"`
-	GoingTo       string         `json:"going_to" example:"550e8400-e29b-41d4-a716-446655440000"`
-	TimeStamp     string         `json:"time_stamp" example:"2025-05-11T08:00:00Z"`
+	User          GroupMember `json:"user"`
+	Latitude      float64     `json:"latitude" example:"40.7128"`
+	Longitude     float64     `json:"longitude" example:"-74.0060"`
+	Altitude      float64     `json:"altitude" example:"10.5"`
+	Accuracy      float64     `json:"accuracy" example:"5.0"`
+	HelpRequested bool        `json:"help_request" example:"false"`
+	GoingTo       string      `json:"going_to" example:"550e8400-e29b-41d4-a716-446655440000"`
+	TimeStamp     string      `json:"time_stamp" example:"2025-05-11T08:00:00Z"`
 }
 
 type FileBody struct {

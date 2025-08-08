@@ -76,7 +76,7 @@ func JoinGroup(tx *gorm.DB, userID string, groupID int) (utils.GroupMember, erro
 func UpdateGroupMember(db *gorm.DB, userId string, group GroupMember) error {
 	var updateData map[string]interface{}
 
-	if group.GoingTo != nil && *group.GoingTo != ""  {
+	if group.GoingTo != nil && *group.GoingTo != "" {
 		updateData = map[string]interface{}{
 			"latitude":     group.Latitude,
 			"longitude":    group.Longitude,
@@ -114,9 +114,10 @@ func GetMembersInfoByGroupId(db *gorm.DB, groupId int) ([]utils.MemberInfo, erro
 	var members []utils.MemberInfo
 	for _, gm := range groupMembers {
 		member := utils.MemberInfo{
-			User: utils.UserEssentials{
+			User: utils.GroupMember{
 				ID:       gm.User.ID,
 				Username: gm.User.Username,
+				Color:    gm.Color,
 			},
 			Latitude:      gm.Latitude,
 			Longitude:     gm.Longitude,
