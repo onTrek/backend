@@ -93,6 +93,7 @@ func UpdateGroupMember(db *gorm.DB, userId string, group GroupMember) error {
 			"altitude":     group.Altitude,
 			"accuracy":     group.Accuracy,
 			"help_request": group.HelpRequest,
+			"going_to":     nil,
 			"timestamp":    time.Now().UTC().Format(time.RFC3339),
 		}
 	}
