@@ -49,12 +49,12 @@ func PutGroupLocation(c *gin.Context) {
 
 	// Get data from the request body
 	var input struct {
-		Latitude    float64 `json:"latitude" binding:"required"`
-		Longitude   float64 `json:"longitude" binding:"required"`
-		Altitude    float64 `json:"altitude" binding:"required"`
-		Accuracy    float64 `json:"accuracy" binding:"required"`
-		HelpRequest *bool   `json:"help_request" binding:"required"`
-		GoingTo     *string `json:"going_to" binding:"omitempty"`
+		Latitude    float64  `json:"latitude" binding:"required"`
+		Longitude   float64  `json:"longitude" binding:"required"`
+		Altitude    *float64 `json:"altitude" binding:"required"`
+		Accuracy    float64  `json:"accuracy" binding:"required"`
+		HelpRequest *bool    `json:"help_request" binding:"required"`
+		GoingTo     *string  `json:"going_to" binding:"omitempty"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -67,7 +67,7 @@ func PutGroupLocation(c *gin.Context) {
 	groupInfo.GroupId = groupId
 	groupInfo.Latitude = input.Latitude
 	groupInfo.Longitude = input.Longitude
-	groupInfo.Altitude = input.Altitude
+	groupInfo.Altitude = *input.Altitude
 	groupInfo.HelpRequest = *input.HelpRequest
 	groupInfo.Accuracy = input.Accuracy
 
