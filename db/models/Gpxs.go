@@ -2,12 +2,13 @@ package models
 
 import (
 	"OnTrek/utils"
-	"cloud.google.com/go/storage"
 	"fmt"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"mime/multipart"
 	"time"
+
+	"cloud.google.com/go/storage"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Gpx struct {
@@ -175,11 +176,11 @@ func SaveFile(db *gorm.DB, client *storage.Client, gpx Gpx, file *multipart.File
 
 		createdID = gpx.ID
 
-		if err := utils.SaveFile(file, "gpxs", gpx.StoragePath, ".gpx"); err != nil {
+		if _, err := utils.SaveFile(client, file, "gpxs", gpx.StoragePath, ".gpx"); err != nil {
 			return err
 		}
 
-		if err := utils.CreateMap(file, gpx.StoragePath); err != nil {
+		if _, err := utils.CreateMap(file, client, gpx.StoragePath); err != nil {
 			return err
 		}
 

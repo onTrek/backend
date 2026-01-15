@@ -1,11 +1,8 @@
 package utils
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
-	"github.com/tkrajina/gpxgo/gpx"
-	"github.com/twpayne/go-polyline"
 	"io"
 	"log"
 	"math"
@@ -14,6 +11,10 @@ import (
 	"net/url"
 	"os"
 	"time"
+
+	"cloud.google.com/go/storage"
+	"github.com/tkrajina/gpxgo/gpx"
+	"github.com/twpayne/go-polyline"
 )
 
 const bucketName = "NOME-TUO-BUCKET.appspot.com"
@@ -50,43 +51,48 @@ func DeleteFiles(client *storage.Client, gpxData Gpx) error {
 	return nil
 }
 
-func SaveFile(file *multipart.FileHeader, directory string, storagePath string, extension string) error {
+func SaveFile(client *storage.Client, file *multipart.FileHeader, pathPrefix string, id string, extension string) (string, error) {
 	src, err := file.Open()
 	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return err
+		return "", fmt.Errorf("error opening file: %w", err)
 	}
 	defer src.Close()
 
-	// Create the directory if it doesn't exist
-	if err := os.MkdirAll(directory, os.ModePerm); err != nil {
-		return fmt.Errorf("error creating directory: %w", err)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*50)
+	defer cancel()
+
+	bucket := client.Bucket(bucketName)
+
+	objectPath := fmt.Sprintf("%s/%s%s", pathPrefix, id, extension)
+
+	if pathPrefix != "gpxs" && pathPrefix != "avatars" {
+		return "", fmt.Errorf("invalid storage path: %s", pathPrefix)
 	}
 
-	// Create the destination file
-	if directory == "gpxs" {
-		storagePath = fmt.Sprintf("%s/%s%s", directory, storagePath, extension)
-	} else if directory == "avatars" {
-		storagePath = fmt.Sprintf("%s/%s%s", directory, storagePath, extension)
+	obj := bucket.Object(objectPath)
+	wc := obj.NewWriter(ctx)
+
+	if pathPrefix == "gpxs" {
+		wc.ContentType = "application/gpx+xml"
 	} else {
-		return fmt.Errorf("invalid storage path: %s", storagePath)
+		wc.ContentType = file.Header.Get("Content-Type")
 	}
 
-	dst, err := os.Create(storagePath)
-	if err != nil {
-		fmt.Println("Error creating destination file:", err)
-		return err
-	}
-	defer dst.Close()
-
-	// Copy the file
-	_, err = io.Copy(dst, src)
-	if err != nil {
-		fmt.Println("Error copying file:", err)
-		return err
+	wc.Metadata = map[string]string{
+		"original-name": file.Filename,
 	}
 
-	return nil
+	if _, err = io.Copy(wc, src); err != nil {
+		return "", fmt.Errorf("error uploading to cloud: %w", err)
+	}
+
+	if err := wc.Close(); err != nil {
+		return "", fmt.Errorf("error closing cloud writer: %w", err)
+	}
+
+	publicURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucketName, objectPath)
+
+	return publicURL, nil
 }
 
 func CalculateStats(file *multipart.FileHeader) (GPXStats, error) {
@@ -179,16 +185,16 @@ func CalculateStats(file *multipart.FileHeader) (GPXStats, error) {
 	return stats, nil
 }
 
-func CreateMap(file *multipart.FileHeader, storagePath string) error {
+func CreateMap(file *multipart.FileHeader, client *storage.Client, storagePath string) (string, error) {
 	src, err := file.Open()
 	if err != nil {
-		return fmt.Errorf("errore apertura file: %w", err)
+		return "", fmt.Errorf("errore apertura file: %w", err)
 	}
 	defer src.Close()
 
 	gpxData, err := gpx.Parse(src)
 	if err != nil {
-		return fmt.Errorf("errore parsing GPX: %w", err)
+		return "", fmt.Errorf("errore parsing GPX: %w", err)
 	}
 
 	var coords [][]float64
@@ -221,7 +227,7 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 	}
 
 	if len(coords) == 0 {
-		return fmt.Errorf("invalid GPX file: no coordinates found")
+		return "", fmt.Errorf("invalid GPX file: no coordinates found")
 	}
 
 	centerLat := (minLat + maxLat) / 2
@@ -244,7 +250,6 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 	path = url.QueryEscape(path)
 
 	token := os.Getenv("MAPBOX_TOKEN")
-	filePath := "./maps/" + storagePath + ".png"
 
 	start := coords[0]
 	startMarker := fmt.Sprintf("%f,%f", start[1], start[0])
@@ -283,30 +288,38 @@ func CreateMap(file *multipart.FileHeader, storagePath string) error {
 
 	resp, err := http.Get(urlPath)
 	if err != nil {
-		return fmt.Errorf("mapbox error request: %w", err)
+		return "", fmt.Errorf("mapbox error request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("mapbox error response: %s", resp.Status)
+
+		return "", fmt.Errorf("mapbox error response: %s", resp.Status)
 	}
 
-	if err := os.MkdirAll("./maps", os.ModePerm); err != nil {
-		return fmt.Errorf("error creating maps directory: %w", err)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*50)
+	defer cancel()
+
+	bucket := client.Bucket(bucketName)
+
+	objectPath := fmt.Sprintf("maps/%s.png", storagePath)
+
+	wc := bucket.Object(objectPath).NewWriter(ctx)
+	wc.ContentType = "image/png"
+	wc.Metadata = map[string]string{
+		"source": "mapbox-static",
 	}
 
-	outFile, err := os.Create(filePath)
-	if err != nil {
-		return fmt.Errorf("error creating map file: %w", err)
-	}
-	defer outFile.Close()
-
-	_, err = io.Copy(outFile, resp.Body)
-	if err != nil {
-		return fmt.Errorf("error copying map data: %w", err)
+	if _, err = io.Copy(wc, resp.Body); err != nil {
+		return "", fmt.Errorf("errore upload map su firebase: %w", err)
 	}
 
-	return nil
+	if err := wc.Close(); err != nil {
+		return "", fmt.Errorf("errore chiusura writer firebase: %w", err)
+	}
+
+	publicURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucketName, objectPath)
+	return publicURL, nil
 }
 
 func HaversineDistance(lat1, lon1, lat2, lon2 float64) float64 {
