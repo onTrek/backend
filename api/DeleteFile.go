@@ -3,6 +3,7 @@ package api
 import (
 	"OnTrek/db/models"
 	"OnTrek/utils"
+	"cloud.google.com/go/storage"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -45,7 +46,7 @@ func DeleteFile(c *gin.Context) {
 	}
 
 	// Delete file from the database
-	err = models.DeleteFileByID(c.MustGet("db").(*gorm.DB), fileID, user.ID, gpx)
+	err = models.DeleteFileByID(c.MustGet("db").(*gorm.DB), c.MustGet("firebaseStorage").(*storage.Client), fileID, user.ID, gpx)
 	if err != nil {
 		fmt.Println("Error deleting file from database:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete file from database"})

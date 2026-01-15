@@ -1,10 +1,13 @@
 package utils
 
 import (
+	"cloud.google.com/go/storage"
+	"context"
 	"fmt"
 	"github.com/tkrajina/gpxgo/gpx"
 	"github.com/twpayne/go-polyline"
 	"io"
+	"log"
 	"math"
 	"mime/multipart"
 	"net/http"
@@ -13,30 +16,35 @@ import (
 	"time"
 )
 
-func DeleteFiles(path Gpx) error {
-	gpxPath := "gpxs/" + path.StoragePath + ".gpx"
-	mapsPath := "maps/" + path.StoragePath + ".png"
+const bucketName = "NOME-TUO-BUCKET.appspot.com"
 
-	if _, err := os.Stat(gpxPath); err == nil {
-		err := os.Remove(gpxPath)
-		if err != nil {
-			return fmt.Errorf("failed to delete file: %w", err)
+func DeleteFiles(client *storage.Client, gpxData Gpx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	bucket := client.Bucket(bucketName)
+
+	gpxCloudPath := fmt.Sprintf("gpxs/%s.gpx", gpxData.StoragePath)
+	mapCloudPath := fmt.Sprintf("maps/%s.png", gpxData.StoragePath)
+
+	gpxObj := bucket.Object(gpxCloudPath)
+	if err := gpxObj.Delete(ctx); err != nil {
+		if err != storage.ErrObjectNotExist {
+			return fmt.Errorf("impossibile eliminare GPX (%s): %w", gpxCloudPath, err)
 		}
-	} else if os.IsNotExist(err) {
-		return nil
+		log.Printf("File GPX %s non trovato, salto cancellazione.", gpxCloudPath)
 	} else {
-		return err
+		log.Printf("File GPX %s eliminato correttamente.", gpxCloudPath)
 	}
 
-	if _, err := os.Stat(mapsPath); err == nil {
-		err := os.Remove(mapsPath)
-		if err != nil {
-			return fmt.Errorf("failed to delete file: %w", err)
+	mapObj := bucket.Object(mapCloudPath)
+	if err := mapObj.Delete(ctx); err != nil {
+		if err != storage.ErrObjectNotExist {
+			return fmt.Errorf("impossibile eliminare Mappa (%s): %w", mapCloudPath, err)
 		}
-	} else if os.IsNotExist(err) {
-		return nil
+		log.Printf("File Mappa %s non trovato, salto cancellazione.", mapCloudPath)
 	} else {
-		return err
+		log.Printf("File Mappa %s eliminato correttamente.", mapCloudPath)
 	}
 
 	return nil

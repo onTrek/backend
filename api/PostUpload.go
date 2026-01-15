@@ -4,10 +4,12 @@ import (
 	"OnTrek/db/models"
 	"OnTrek/utils"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	"strings"
+
+	"cloud.google.com/go/storage"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // PostUpload godoc
@@ -64,7 +66,7 @@ func PostUpload(c *gin.Context) {
 	gpx.UserID = user.ID
 	gpx.Filename = file.Filename
 	gpx.Title = title
-	gpx.ID, err = models.SaveFile(c.MustGet("db").(*gorm.DB), gpx, file)
+	gpx.ID, err = models.SaveFile(c.MustGet("db").(*gorm.DB), c.MustGet("firebaseStorage").(*storage.Client), gpx, file)
 	if err != nil {
 		if strings.Contains(err.Error(), "invalid GPX file: no coordinates found") {
 			fmt.Println("Invalid GPX file: no coordinates found")

@@ -2,6 +2,7 @@ package models
 
 import (
 	"OnTrek/utils"
+	"cloud.google.com/go/storage"
 	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -83,21 +84,6 @@ func GetFileByID(db *gorm.DB, fileID int) (utils.Gpx, error) {
 	return file, nil
 }
 
-func GetFileByPath(db *gorm.DB, storagePath string) (utils.Gpx, error) {
-	var file utils.Gpx
-
-	err := db.Table("gpx_files").
-		Select(`id, user_id, filename, storage_path, upload_date, title`).
-		Where("storage_path = ?", storagePath).
-		First(&file).Error
-
-	if err != nil {
-		return utils.Gpx{}, err
-	}
-
-	return file, nil
-}
-
 func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfoWithOwner, error) {
 	var file Gpx
 
@@ -143,7 +129,7 @@ func GetFileByIDAndUserID(db *gorm.DB, fileID int, userID string) (utils.Gpx, er
 	return file, nil
 }
 
-func DeleteFileByID(db *gorm.DB, fileID int, userID string, gpx utils.Gpx) error {
+func DeleteFileByID(db *gorm.DB, client *storage.Client, fileID int, userID string, gpx utils.Gpx) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
 			return fmt.Errorf("error enabling foreign key enforcement: %v", err)
@@ -153,7 +139,7 @@ func DeleteFileByID(db *gorm.DB, fileID int, userID string, gpx utils.Gpx) error
 			return err
 		}
 
-		if err := utils.DeleteFiles(gpx); err != nil {
+		if err := utils.DeleteFiles(client, gpx); err != nil {
 			return err
 		}
 
@@ -161,7 +147,7 @@ func DeleteFileByID(db *gorm.DB, fileID int, userID string, gpx utils.Gpx) error
 	})
 }
 
-func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
+func SaveFile(db *gorm.DB, client *storage.Client, gpx Gpx, file *multipart.FileHeader) (int, error) {
 	var createdID int
 
 	err := db.Transaction(func(tx *gorm.DB) error {
@@ -203,7 +189,7 @@ func SaveFile(db *gorm.DB, gpx Gpx, file *multipart.FileHeader) (int, error) {
 	if err != nil {
 		fmt.Println("Error during transaction:", err)
 		fmt.Println("Attempting to delete files due to error...")
-		err = utils.DeleteFiles(utils.Gpx{StoragePath: gpx.StoragePath})
+		err = utils.DeleteFiles(client, utils.Gpx{StoragePath: gpx.StoragePath})
 		if err != nil {
 			fmt.Println("Error deleting files after transaction failure:", err)
 			return -1, err

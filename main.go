@@ -7,9 +7,9 @@ package main
 
 import (
 	"OnTrek/api"
+	"OnTrek/cloud"
 	"OnTrek/db"
 	"OnTrek/db/functions"
-	"OnTrek/db/models"
 	_ "OnTrek/docs"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -18,18 +18,20 @@ import (
 
 func main() {
 	db.SetupDatabase()
-	url := ginSwagger.URL("/swagger/doc.json")
 
-	err := models.CleanUnusedFiles(db.DB)
+	storageClient, err := cloud.InitFirebase()
 	if err != nil {
 		panic(err)
 	}
+
+	url := ginSwagger.URL("/swagger/doc.json")
 
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
 
 	router.Use(db.DatabaseMiddleware())
+	router.Use(cloud.Middleware(storageClient))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
