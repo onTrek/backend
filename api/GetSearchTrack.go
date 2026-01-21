@@ -23,7 +23,7 @@ import (
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "No tracks found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /search/tracks [get]
+// @Router /search/tracks/ [get]
 func GetSearchTrack(c *gin.Context) {
 	// Get the user from the context
 	user := c.MustGet("user").(utils.UserInfo)

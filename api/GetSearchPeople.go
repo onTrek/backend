@@ -25,7 +25,7 @@ import (
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "No users found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /search/users [get]
+// @Router /search/users/ [get]
 func GetSearchUsers(c *gin.Context) {
 
 	// Get the user from the context

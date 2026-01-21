@@ -18,7 +18,7 @@ import (
 // @Success 200 {object} []utils.GpxInfo "gpx_files"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Error fetching files"
-// @Router /gpx/ [get]
+// @Router /gpx/saved/ [get]
 func GetSavedTracks(c *gin.Context) {
 	// Get the user from the context
 	user := c.MustGet("user").(utils.UserInfo)
