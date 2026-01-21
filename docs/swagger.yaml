@@ -640,7 +640,8 @@ paths:
       - friends
   /gpx/:
     get:
-      description: Returns a list of GPX files that the authenticated user has saved
+      description: Returns a list of GPX files associated with the authenticated user(File
+        size is represented in Bytes)
       parameters:
       - description: Bearer token for user authentication
         in: header
@@ -664,7 +665,7 @@ paths:
           description: Error fetching files
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
-      summary: Retrieve user's saved GPX files
+      summary: Retrieve user's GPX files
       tags:
       - gpx
     post:
@@ -1008,6 +1009,35 @@ paths:
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: Delete a saved track
+      tags:
+      - gpx
+  /gpx/saved/:
+    get:
+      description: Returns a list of GPX files that the authenticated user has saved
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: gpx_files
+          schema:
+            items:
+              $ref: '#/definitions/utils.GpxInfo'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Error fetching files
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Retrieve user's saved GPX files
       tags:
       - gpx
   /groups/:
@@ -1492,7 +1522,7 @@ paths:
       summary: Upload a profile image
       tags:
       - profile
-  /search/tracks:
+  /search/tracks/:
     get:
       consumes:
       - application/json
@@ -1537,7 +1567,7 @@ paths:
       summary: Search for GPX tracks by title
       tags:
       - search
-  /search/users:
+  /search/users/:
     get:
       consumes:
       - application/json

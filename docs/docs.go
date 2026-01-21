@@ -504,14 +504,14 @@ const docTemplate = `{
         },
         "/gpx/": {
             "get": {
-                "description": "Returns a list of GPX files that the authenticated user has saved",
+                "description": "Returns a list of GPX files associated with the authenticated user(File size is represented in Bytes)",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "gpx"
                 ],
-                "summary": "Retrieve user's saved GPX files",
+                "summary": "Retrieve user's GPX files",
                 "parameters": [
                     {
                         "type": "string",
@@ -601,6 +601,50 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to save file",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/gpx/saved/": {
+            "get": {
+                "description": "Returns a list of GPX files that the authenticated user has saved",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gpx"
+                ],
+                "summary": "Retrieve user's saved GPX files",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "gpx_files",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.GpxInfo"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error fetching files",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorResponse"
                         }
@@ -1764,7 +1808,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/search/tracks": {
+        "/search/tracks/": {
             "get": {
                 "description": "Searches for GPX tracks by title",
                 "consumes": [
@@ -1830,7 +1874,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/search/users": {
+        "/search/users/": {
             "get": {
                 "description": "Searches for users by username",
                 "consumes": [
