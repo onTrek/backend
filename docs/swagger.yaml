@@ -241,6 +241,12 @@ definitions:
       user:
         $ref: '#/definitions/utils.GroupMember'
     type: object
+  utils.PrivacyUpdateInput:
+    properties:
+      is_public:
+        example: true
+        type: boolean
+    type: object
   utils.RegisterInput:
     properties:
       email:
@@ -251,6 +257,12 @@ definitions:
         type: string
       username:
         example: John Doe
+        type: string
+    type: object
+  utils.SuccessResponse:
+    properties:
+      message:
+        example: Success
         type: string
     type: object
   utils.Url:
@@ -628,8 +640,7 @@ paths:
       - friends
   /gpx/:
     get:
-      description: Returns a list of GPX files associated with the authenticated user(File
-        size is represented in Bytes)
+      description: Returns a list of GPX files that the authenticated user has saved
       parameters:
       - description: Bearer token for user authentication
         in: header
@@ -653,7 +664,7 @@ paths:
           description: Error fetching files
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
-      summary: Retrieve user's GPX files
+      summary: Retrieve user's saved GPX files
       tags:
       - gpx
     post:
@@ -873,6 +884,130 @@ paths:
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: Get a map file by ID
+      tags:
+      - gpx
+  /gpx/{id}/privacy:
+    patch:
+      consumes:
+      - application/json
+      description: Set is_public to true or false
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: Gpx ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Privacy update input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/utils.PrivacyUpdateInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: File privacy updated successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Group not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Change GPX visibility
+      tags:
+      - gpx
+  /gpx/{id}/save:
+    put:
+      description: Save a GPX track to the user's saved tracks
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Track saved successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid file ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Error saving track
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Save Track
+      tags:
+      - gpx
+  /gpx/{id}/unsave:
+    delete:
+      description: Remove a track from the user's saved tracks
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Track saved successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Invalid file ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Error saving track
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Delete a saved track
       tags:
       - gpx
   /groups/:
@@ -1357,7 +1492,52 @@ paths:
       summary: Upload a profile image
       tags:
       - profile
-  /search:
+  /search/tracks:
+    get:
+      consumes:
+      - application/json
+      description: Searches for GPX tracks by title
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: Search for track title
+        in: query
+        name: track
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns a list of GPX tracks matching the search query ordered
+            by upload date.
+          schema:
+            items:
+              $ref: '#/definitions/utils.GpxInfoEssential'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: No tracks found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Search for GPX tracks by title
+      tags:
+      - search
+  /search/users:
     get:
       consumes:
       - application/json
@@ -1368,9 +1548,9 @@ paths:
         name: Bearer
         required: true
         type: string
-      - description: Search query for username
+      - description: Search for username
         in: query
-        name: query
+        name: Username
         required: true
         type: string
       - description: Search for friends only (optional, true/false, default is false)

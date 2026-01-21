@@ -25,6 +25,7 @@ type Gpx struct {
 	MaxAltitude int       `json:"max_altitude" example:"2500" gorm:"not null;default:0"`
 	MinAltitude int       `json:"min_altitude" example:"1500" gorm:"not null;default:0"`
 	Size        int64     `json:"size" example:"2048000" gorm:"not null;default:0"`
+	Public      bool      `json:"public" example:"false" gorm:"not null;default:0"`
 
 	User User `json:"user" gorm:"foreignKey:UserID;references:id;constraint:OnDelete:CASCADE"`
 }
@@ -217,4 +218,42 @@ func CheckFilePermissions(db *gorm.DB, fileID int, userID string) (bool, error) 
 	}
 
 	return count > 0, nil
+}
+
+func UpdateFilePrivacy(db *gorm.DB, fileID int, isPublic bool) error {
+	publicValue := 0
+	if isPublic {
+		publicValue = 1
+	}
+
+	result := db.Model(&Gpx{}).Where("id = ?", fileID).Update("public", publicValue)
+	if result.Error != nil {
+		fmt.Println("Error updating file privacy:", result.Error)
+		return result.Error
+	}
+
+	return nil
+}
+
+func SearchGpxs(db *gorm.DB, query string, userID string) ([]utils.GpxInfoEssential, error) {
+	var gpxs []Gpx
+
+	err := db.Table("gpx_files").
+		Where("(title LIKE ?) AND (public = 1) AND (user_id != ?)", "%"+query+"%", userID).
+		Find(&gpxs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var result []utils.GpxInfoEssential
+	for _, row := range gpxs {
+		info := utils.GpxInfoEssential{
+			ID:    row.ID,
+			Title: row.Title,
+		}
+
+		result = append(result, info)
+	}
+
+	return result, nil
 }

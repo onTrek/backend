@@ -50,9 +50,13 @@ func main() {
 		gpx.DELETE("/:id", api.DeleteFile)
 		gpx.POST("/", api.PostUpload)
 		gpx.GET("/", api.GetFiles)
+		gpx.GET("/saved/", api.GetSavedTracks)
+		gpx.PUT("/:id/save", api.PutSaveTrack)
+		gpx.DELETE("/:id/unsave", api.DeleteSavedTrack)
 		gpx.GET("/:id", api.GetFileInfo)
 		gpx.GET("/:id/download", api.GetFile)
 		gpx.GET("/:id/map", api.GetFileMap)
+		gpx.PATCH("/:id/privacy", api.PatchFilePrivacy)
 	}
 
 	// SESSION API
@@ -73,7 +77,8 @@ func main() {
 	search := router.Group("/search")
 	search.Use(functions.AuthMiddleware())
 	{
-		search.GET("/", api.GetSearchPeople)
+		search.GET("/users/", api.GetSearchUsers)
+		search.GET("/tracks/", api.GetSearchTrack)
 	}
 
 	// FRIENDS API

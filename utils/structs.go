@@ -85,6 +85,10 @@ type GpxID struct {
 	ID int `json:"file_id" example:"1"`
 }
 
+type PrivacyUpdateInput struct {
+	IsPublic *bool `json:"is_public" example:"true"`
+}
+
 type GpxInfoEssential struct {
 	ID    int    `json:"id" example:"1"`
 	Title string `json:"title" example:"MonteBianco"`
