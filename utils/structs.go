@@ -2,6 +2,16 @@ package utils
 
 import "time"
 
+type StorageConfig struct {
+	BucketName  string
+	ClientEmail string
+	PrivateKey  []byte
+}
+
+type Url struct {
+	URL string `json:"url" example:"https://storage.googleapis.com/..."`
+}
+
 type User struct {
 	ID        string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Email     string `json:"email" example:"user@example.com"`
@@ -24,6 +34,11 @@ type UserInfo struct {
 type UserEssentials struct {
 	ID       string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Username string `json:"username" example:"John Doe"`
+}
+
+type UserExtension struct {
+	ID        string  `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Extension *string `json:"extension" example:".png"`
 }
 
 type UserSearchResponse struct {

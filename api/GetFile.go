@@ -4,11 +4,11 @@ import (
 	"OnTrek/db/models"
 	"OnTrek/utils"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"net/http"
-	"os"
-	"strconv"
 )
 
 // GetFile godoc
@@ -19,7 +19,7 @@ import (
 // @Produce octet-stream
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "File ID"
-// @Success 200 {file} file "Returns the requested file as .gpx"
+// @Success 200 {file} utils.Url "Returns the signed URL for the GPX file"
 // @Failure 400 {object} utils.ErrorResponse "Invalid file ID"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 403 {object} utils.ErrorResponse "Unauthorized access to file"
@@ -59,19 +59,15 @@ func GetFile(c *gin.Context) {
 		return
 	}
 
-	path := "gpxs/" + gpx.StoragePath + ".gpx"
-	gpxFile, err := os.OpenFile(path, os.O_RDONLY, 0644)
+	downloadURL, err := utils.GenerateSignedURL(c.MustGet("storageConfig").(*utils.StorageConfig), gpx.StoragePath, utils.FileTypeGPX, "")
 	if err != nil {
-		fmt.Println("Error opening file:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error opening file"})
+		c.JSON(500, gin.H{"error": "Error during file retrieval"})
 		return
 	}
-	defer gpxFile.Close()
 
-	// Set the content type and attachment header
-	c.Header("Content-Type", "application/gpx+xml")
-	c.Header("Content-Disposition", "attachment; filename="+gpx.Filename)
+	c.JSON(200, gin.H{
+		"filename": gpx.Filename,
+		"url":      downloadURL,
+	})
 
-	// Send the file content as a response
-	c.File(path)
 }

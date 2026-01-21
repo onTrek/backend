@@ -4,11 +4,11 @@ import (
 	"OnTrek/db/models"
 	"OnTrek/utils"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"net/http"
-	"os"
-	"strconv"
 )
 
 // GetFileMap godoc
@@ -19,7 +19,7 @@ import (
 // @Produce      image/png
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param        id   path      int  true  "File ID"
-// @Success      200 {file} string "Returns the map file as a PNG image"
+// @Success      200 {file} utils.Url "Returns the signed URL for the map file"
 // @Failure      400 {object} utils.ErrorResponse "Invalid file ID"
 // @Failure      401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure      403 {object} utils.ErrorResponse "Unauthorized access to file"
@@ -60,19 +60,13 @@ func GetFileMap(c *gin.Context) {
 		return
 	}
 
-	path := "maps/" + gpx.StoragePath + ".png"
-	gpxFile, err := os.OpenFile(path, os.O_RDONLY, 0644)
+	downloadURL, err := utils.GenerateSignedURL(c.MustGet("storageConfig").(*utils.StorageConfig), gpx.StoragePath, utils.FileTypeMap, "")
 	if err != nil {
-		fmt.Println("Error opening file:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error opening file"})
+		c.JSON(500, gin.H{"error": "Error during file retrieval"})
 		return
 	}
-	defer gpxFile.Close()
 
-	// Set the content type and attachment header
-	c.Header("Content-Type", "image/png")
-	c.Header("Content-Disposition", "attachment; filename="+gpx.Title+".png")
-
-	// Send the file content as a response
-	c.File(path)
+	c.JSON(200, gin.H{
+		"url": downloadURL,
+	})
 }

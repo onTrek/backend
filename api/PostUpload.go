@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"cloud.google.com/go/storage"
+	firebaseStorage "firebase.google.com/go/v4/storage"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -66,7 +66,7 @@ func PostUpload(c *gin.Context) {
 	gpx.UserID = user.ID
 	gpx.Filename = file.Filename
 	gpx.Title = title
-	gpx.ID, err = models.SaveFile(c.MustGet("db").(*gorm.DB), c.MustGet("firebaseStorage").(*storage.Client), gpx, file)
+	gpx.ID, err = models.SaveFile(c.MustGet("db").(*gorm.DB), c.MustGet("firebaseStorage").(*firebaseStorage.Client), c.MustGet("storageConfig").(*utils.StorageConfig), gpx, file)
 	if err != nil {
 		if strings.Contains(err.Error(), "invalid GPX file: no coordinates found") {
 			fmt.Println("Invalid GPX file: no coordinates found")

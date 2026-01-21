@@ -4,12 +4,13 @@ import (
 	"OnTrek/utils"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type User struct {
@@ -18,6 +19,7 @@ type User struct {
 	Username     string    `json:"username" example:"John Doe" gorm:"not null"`
 	PasswordHash string    `json:"password_hash" example:"strongPassword123" gorm:"not null"`
 	CreatedAt    time.Time `json:"created_at" example:"2025-05-11T08:00:00Z" gorm:"not null;default:CURRENT_TIMESTAMP"`
+	Extension    *string   `json:"extension" example:".png" gorm:"default:null"`
 }
 
 var tokenExpiry = 365 * 24 * time.Hour
@@ -45,7 +47,7 @@ func DeleteUser(db *gorm.DB, userID string) error {
 		if err := tx.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
 			return fmt.Errorf("error enabling foreign key enforcement: %v", err)
 		}
-		
+
 		if err := tx.Where("id = ?", userID).Delete(&User{}).Error; err != nil {
 			return fmt.Errorf("failed to delete user token: %w", err)
 		}
@@ -168,4 +170,20 @@ func GetUserById(db *gorm.DB, userId string) (utils.UserEssentials, error) {
 		return utils.UserEssentials{}, fmt.Errorf("failed to query user: %w", err)
 	}
 	return user, nil
+}
+
+func GetUserExtension(db *gorm.DB, userId string) (utils.UserExtension, error) {
+	var extension utils.UserExtension
+	err := db.Table("users").Select("id, extension").First(&extension, "id = ?", userId).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return utils.UserExtension{}, fmt.Errorf("user not found")
+		}
+		return utils.UserExtension{}, fmt.Errorf("failed to query user: %w", err)
+	}
+	return extension, nil
+}
+
+func UpdateExtension(db *gorm.DB, userId string, extension string) error {
+	return db.Model(&User{}).Where("id = ?", userId).Update("extension", extension).Error
 }

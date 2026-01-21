@@ -4,11 +4,10 @@ import (
 	"OnTrek/db/models"
 	"OnTrek/utils"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"net/http"
-	"os"
-	"strings"
 )
 
 // GetProfileImage godoc
@@ -18,7 +17,7 @@ import (
 // @Produces image/*
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "User ID to retrieve profile image for"
-// @Success 200 {file} file "Profile image"
+// @Success 200 {file} utils.Url "Returns the signed URL for the profile image"
 // @Failure 400 {object} utils.ErrorResponse "Invalid friend ID"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Profile image not found"
@@ -36,41 +35,27 @@ func GetProfileImage(c *gin.Context) {
 		return
 	}
 
-	_, err := models.GetUserById(c.MustGet("db").(*gorm.DB), friendID)
+	friend, err := models.GetUserExtension(c.MustGet("db").(*gorm.DB), friendID)
 	if err != nil {
 		fmt.Println("Error getting user by ID:", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
-	// Construct the file path
-	filePath, err := utils.FindFileByID(friendID)
+	if friend.Extension == nil || *friend.Extension == "" {
+		fmt.Println("Profile image not found for user:", friendID)
+		c.JSON(http.StatusNotFound, gin.H{"error": "Profile image not found"})
+		return
+	}
+
+	downloadURL, err := utils.GenerateSignedURL(c.MustGet("storageConfig").(*utils.StorageConfig), friend.ID, utils.FileTypeAvatar, *friend.Extension)
 	if err != nil {
-		fmt.Println("Error retrieving profile image:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve profile image"})
+		c.JSON(500, gin.H{"error": "Error during file retrieval"})
 		return
 	}
 
-	// If the file path is empty, return a default image or an error
-	if filePath == "" {
-		fmt.Println("Profile image not found for user ID:", friendID)
-		c.JSON(http.StatusNotFound, gin.H{"error": "Profile image not found"})
-		return
-	}
+	c.JSON(200, gin.H{
+		"url": downloadURL,
+	})
 
-	// Check if the file exists
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		fmt.Println("Profile image file does not exist:", filePath)
-		c.JSON(http.StatusNotFound, gin.H{"error": "Profile image not found"})
-		return
-	}
-
-	// Get file extension
-	fileExt := filePath[strings.LastIndex(filePath, "."):]
-
-	// Set the content type and attachment header
-	c.Header("Content-Type", "image/"+fileExt[1:])
-	c.Header("Content-Disposition", "attachment; filename="+filePath[strings.LastIndex(filePath, "/")+1:])
-	// Serve the profile image
-	c.File(filePath)
 }

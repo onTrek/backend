@@ -1,12 +1,15 @@
 package api
 
 import (
+	"OnTrek/db/models"
 	"OnTrek/utils"
-	"cloud.google.com/go/storage"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+
+	firebaseStorage "firebase.google.com/go/v4/storage"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // PutProfileImage godoc
@@ -51,8 +54,15 @@ func PutProfileImage(c *gin.Context) {
 		return
 	}
 
+	err = models.UpdateExtension(c.MustGet("db").(*gorm.DB), user.ID, extension)
+	if err != nil {
+		fmt.Println("Error updating user extension:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user profile"})
+		return
+	}
+
 	// Save the profile image
-	_, err = utils.SaveFile(c.MustGet("firebaseStorage").(*storage.Client), file, "avatars", user.ID, extension)
+	_, err = utils.SaveFile(c.MustGet("firebaseStorage").(*firebaseStorage.Client), c.MustGet("storageConfig").(*utils.StorageConfig), file, "avatars", user.ID, extension)
 	if err != nil {
 		fmt.Println("Error saving profile image:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save profile image"})

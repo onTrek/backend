@@ -13,23 +13,33 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	firebaseStorage "firebase.google.com/go/v4/storage"
 	"github.com/tkrajina/gpxgo/gpx"
 	"github.com/twpayne/go-polyline"
 )
 
-const bucketName = "NOME-TUO-BUCKET.appspot.com"
+const (
+	FileTypeAvatar = "avatar"
+	FileTypeGPX    = "gpx"
+	FileTypeMap    = "map"
+)
 
-func DeleteFiles(client *storage.Client, gpxData Gpx) error {
+const bucketName = "ontrek-99865.firebasestorage.app"
+
+func DeleteFiles(client *firebaseStorage.Client, config *StorageConfig, gpxData Gpx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	bucket := client.Bucket(bucketName)
+	bucket, err := client.Bucket(config.BucketName)
+	if err != nil {
+		return fmt.Errorf("impossibile accedere al bucket: %w", err)
+	}
 
 	gpxCloudPath := fmt.Sprintf("gpxs/%s.gpx", gpxData.StoragePath)
 	mapCloudPath := fmt.Sprintf("maps/%s.png", gpxData.StoragePath)
 
 	gpxObj := bucket.Object(gpxCloudPath)
-	if err := gpxObj.Delete(ctx); err != nil {
+	if err = gpxObj.Delete(ctx); err != nil {
 		if err != storage.ErrObjectNotExist {
 			return fmt.Errorf("impossibile eliminare GPX (%s): %w", gpxCloudPath, err)
 		}
@@ -51,7 +61,7 @@ func DeleteFiles(client *storage.Client, gpxData Gpx) error {
 	return nil
 }
 
-func SaveFile(client *storage.Client, file *multipart.FileHeader, pathPrefix string, id string, extension string) (string, error) {
+func SaveFile(client *firebaseStorage.Client, config *StorageConfig, file *multipart.FileHeader, pathPrefix string, id string, extension string) (string, error) {
 	src, err := file.Open()
 	if err != nil {
 		return "", fmt.Errorf("error opening file: %w", err)
@@ -61,7 +71,10 @@ func SaveFile(client *storage.Client, file *multipart.FileHeader, pathPrefix str
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*50)
 	defer cancel()
 
-	bucket := client.Bucket(bucketName)
+	bucket, err := client.Bucket(config.BucketName)
+	if err != nil {
+		return "", fmt.Errorf("error accessing bucket: %w", err)
+	}
 
 	objectPath := fmt.Sprintf("%s/%s%s", pathPrefix, id, extension)
 
@@ -185,7 +198,7 @@ func CalculateStats(file *multipart.FileHeader) (GPXStats, error) {
 	return stats, nil
 }
 
-func CreateMap(file *multipart.FileHeader, client *storage.Client, storagePath string) (string, error) {
+func CreateMap(file *multipart.FileHeader, client *firebaseStorage.Client, config *StorageConfig, storagePath string) (string, error) {
 	src, err := file.Open()
 	if err != nil {
 		return "", fmt.Errorf("errore apertura file: %w", err)
@@ -300,7 +313,10 @@ func CreateMap(file *multipart.FileHeader, client *storage.Client, storagePath s
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*50)
 	defer cancel()
 
-	bucket := client.Bucket(bucketName)
+	bucket, err := client.Bucket(config.BucketName)
+	if err != nil {
+		return "", fmt.Errorf("errore accesso bucket firebase: %w", err)
+	}
 
 	objectPath := fmt.Sprintf("maps/%s.png", storagePath)
 
@@ -351,4 +367,41 @@ func FindFileByID(id string) (string, error) {
 	}
 	return "", nil
 
+}
+
+func GenerateSignedURL(config *StorageConfig, storageUUID string, fileType string, extension string) (string, error) {
+
+	var folder string
+	var ext string
+
+	switch fileType {
+	case FileTypeAvatar:
+		folder = "avatars"
+		ext = extension
+	case FileTypeGPX:
+		folder = "gpxs"
+		ext = ".gpx"
+	case FileTypeMap:
+		folder = "maps"
+		ext = ".png"
+	default:
+		return "", fmt.Errorf("tipo file sconosciuto: %s", fileType)
+	}
+
+	objectName := fmt.Sprintf("%s/%s%s", folder, storageUUID, ext)
+
+	opts := &storage.SignedURLOptions{
+		Scheme:         storage.SigningSchemeV4,
+		Method:         "GET",
+		GoogleAccessID: config.ClientEmail,
+		PrivateKey:     config.PrivateKey,
+		Expires:        time.Now().Add(5 * time.Minute),
+	}
+
+	url, err := storage.SignedURL(config.BucketName, objectName, opts)
+	if err != nil {
+		return "", fmt.Errorf("errore durante la firma dell'URL: %w", err)
+	}
+
+	return url, nil
 }

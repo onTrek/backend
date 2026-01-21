@@ -11,6 +11,7 @@ import (
 	"OnTrek/db"
 	"OnTrek/db/functions"
 	_ "OnTrek/docs"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -19,7 +20,7 @@ import (
 func main() {
 	db.SetupDatabase()
 
-	storageClient, err := cloud.InitFirebase()
+	storageClient, storageConfig, err := cloud.InitFirebase()
 	if err != nil {
 		panic(err)
 	}
@@ -31,7 +32,7 @@ func main() {
 	router := gin.Default()
 
 	router.Use(db.DatabaseMiddleware())
-	router.Use(cloud.Middleware(storageClient))
+	router.Use(cloud.Middleware(storageClient, storageConfig))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
