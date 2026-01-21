@@ -17,7 +17,7 @@ import (
 // @Produces image/*
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "User ID to retrieve profile image for"
-// @Success 200 {file} utils.Url "Returns the signed URL for the profile image"
+// @Success 200 {object} utils.Url "Returns the signed URL for the profile image"
 // @Failure 400 {object} utils.ErrorResponse "Invalid friend ID"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "Profile image not found"

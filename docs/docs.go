@@ -763,9 +763,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns the requested file as .gpx",
+                        "description": "Returns the signed URL for the GPX file",
                         "schema": {
-                            "type": "file"
+                            "$ref": "#/definitions/utils.Url"
                         }
                     },
                     "400": {
@@ -832,9 +832,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns the map file as a PNG image",
+                        "description": "Returns the signed URL for the map file",
                         "schema": {
-                            "type": "file"
+                            "$ref": "#/definitions/utils.Url"
                         }
                     },
                     "400": {
@@ -1675,9 +1675,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Profile image",
+                        "description": "Returns the signed URL for the profile image",
                         "schema": {
-                            "type": "file"
+                            "$ref": "#/definitions/utils.Url"
                         }
                     },
                     "400": {
@@ -2046,7 +2046,7 @@ const docTemplate = `{
                     "example": "2025-05-11T08:00:00Z"
                 },
                 "user": {
-                    "$ref": "#/definitions/utils.UserEssentials"
+                    "$ref": "#/definitions/utils.GroupMember"
                 }
             }
         },
@@ -2064,6 +2064,15 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "John Doe"
+                }
+            }
+        },
+        "utils.Url": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "example": "https://storage.googleapis.com/..."
                 }
             }
         },

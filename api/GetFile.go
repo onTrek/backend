@@ -19,7 +19,7 @@ import (
 // @Produce octet-stream
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "File ID"
-// @Success 200 {file} utils.Url "Returns the signed URL for the GPX file"
+// @Success 200 {object} utils.Url "Returns the signed URL for the GPX file"
 // @Failure 400 {object} utils.ErrorResponse "Invalid file ID"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 403 {object} utils.ErrorResponse "Unauthorized access to file"
