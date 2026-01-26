@@ -14,7 +14,7 @@ import (
 
 // GetFileInfo godoc
 // @Summary Get File Info
-// @Description Retrieve information about a specific GPX file by its ID
+// @Description Retrieve information about a specific GPX file by its ID. You can see track only if it's public, you are the owner or you are a member of the group that include it.
 // @Tags gpx
 // @Accept json
 // @Produce json

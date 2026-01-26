@@ -18,11 +18,11 @@ import (
 // @Produce      json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param        id   path      string  true  "User ID"
-// @Success 200 {object} utils.Url "Returns the list of tracks for the user"
+// @Success 200 {object} utils.GpxInfoEssential "Returns the list of tracks for the user"
 // @Failure 400 {object} utils.ErrorResponse "Invalid friend ID"
 // @Failure 404 {object} utils.ErrorResponse "User not found"
 // @Failure 500 {object} utils.ErrorResponse "Failed to retrieve tracks"
-// @Router       /users/{id}/gpxs/ [get]
+// @Router       /users/:id/tracks/ [get]
 func GetUserTracks(c *gin.Context) {
 	friendID := c.Param("id")
 

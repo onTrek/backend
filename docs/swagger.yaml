@@ -91,6 +91,9 @@ definitions:
       owner:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
+      public:
+        example: false
+        type: boolean
       size:
         example: 110744
         type: integer
@@ -752,7 +755,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: Retrieve information about a specific GPX file by its ID
+      description: Retrieve information about a specific GPX file by its ID. You can
+        see track only if it's public, you are the owner or you are a member of the
+        group that include it.
       parameters:
       - description: Bearer token for user authentication
         in: header
@@ -1655,7 +1660,7 @@ paths:
       summary: Get profile image of a user
       tags:
       - users
-  /users/{id}/gpxs/:
+  /users/:id/tracks/:
     get:
       consumes:
       - application/json
@@ -1677,7 +1682,7 @@ paths:
         "200":
           description: Returns the list of tracks for the user
           schema:
-            $ref: '#/definitions/utils.Url'
+            $ref: '#/definitions/utils.GpxInfoEssential'
         "400":
           description: Invalid friend ID
           schema:

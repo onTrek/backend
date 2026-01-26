@@ -654,7 +654,7 @@ const docTemplate = `{
         },
         "/gpx/{id}": {
             "get": {
-                "description": "Retrieve information about a specific GPX file by its ID",
+                "description": "Retrieve information about a specific GPX file by its ID. You can see track only if it's public, you are the owner or you are a member of the group that include it.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2003,7 +2003,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}/gpxs/": {
+        "/users/:id/tracks/": {
             "get": {
                 "description": "Retrieves all tracks associated with a given user ID.",
                 "consumes": [
@@ -2036,7 +2036,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Returns the list of tracks for the user",
                         "schema": {
-                            "$ref": "#/definitions/utils.Url"
+                            "$ref": "#/definitions/utils.GpxInfoEssential"
                         }
                     },
                     "400": {
@@ -2190,6 +2190,10 @@ const docTemplate = `{
                 "owner": {
                     "type": "string",
                     "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "public": {
+                    "type": "boolean",
+                    "example": false
                 },
                 "size": {
                     "type": "integer",

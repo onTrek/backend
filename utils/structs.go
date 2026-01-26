@@ -79,6 +79,7 @@ type GpxInfoWithOwner struct {
 	Title      string   `json:"title" example:"Monte Faggeto"`
 	Stats      GPXStats `json:"stats"`
 	FileSize   int64    `json:"size" example:"110744"`
+	Public     bool     `json:"public" example:"false"`
 }
 
 type GpxID struct {

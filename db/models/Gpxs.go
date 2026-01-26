@@ -135,6 +135,7 @@ func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfoWithOwner, error) {
 			MinAltitude: file.MinAltitude,
 		},
 		FileSize: file.Size,
+		Public:   file.Public,
 	}
 
 	return info, nil
