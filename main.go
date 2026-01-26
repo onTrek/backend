@@ -108,7 +108,7 @@ func main() {
 	users.Use(functions.AuthMiddleware())
 	{
 		users.GET("/:id/image", api.GetProfileImage)
-		users.GET("/:id/gpxs/", api.GetUserTracks)
+		users.GET("/:id/tracks/", api.GetUserTracks)
 	}
 
 	router.Static("/docs", "./docs")

@@ -2,6 +2,7 @@ package api
 
 import (
 	"OnTrek/db/models"
+	"OnTrek/utils"
 	"fmt"
 	"net/http"
 
@@ -42,6 +43,11 @@ func GetUserTracks(c *gin.Context) {
 	if err != nil {
 		fmt.Println("Error getting tracks for user:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error retrieving tracks"})
+		return
+	}
+
+	if len(tracks) == 0 {
+		c.JSON(http.StatusOK, []utils.GpxInfoEssential{})
 		return
 	}
 

@@ -90,7 +90,7 @@ func GetFileByUserID(db *gorm.DB, userID string) ([]utils.GpxInfoEssential, erro
 	var gpxs []Gpx
 
 	err := db.Table("gpx_files").
-		Where("user_id == ?", userID).
+		Where("user_id = ? AND public = 1", userID).
 		Find(&gpxs).Error
 	if err != nil {
 		return nil, err
@@ -233,7 +233,7 @@ func CheckFilePermissions(db *gorm.DB, fileID int, userID string) (bool, error) 
 	err := db.Table("gpx_files gf").
 		Joins("LEFT JOIN groups g ON g.file_id = gf.id").
 		Joins("LEFT JOIN group_members gm ON gm.group_id = g.id").
-		Where("gf.id = ? AND (gf.user_id = ? OR gm.user_id = ?)", fileID, userID, userID).
+		Where("gf.id = ? AND (gf.public = 1 OR gf.user_id = ? OR gm.user_id = ?)", fileID, userID, userID).
 		Count(&count).Error
 
 	if err != nil {

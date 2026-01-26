@@ -5,10 +5,11 @@ import (
 	"OnTrek/utils"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // GetFileInfo godoc
@@ -48,7 +49,7 @@ func GetFileInfo(c *gin.Context) {
 	}
 	if !permission {
 		fmt.Println("Unauthorized access to file:", fileID)
-		c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorized"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
 		return
 	}
 
