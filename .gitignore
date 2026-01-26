@@ -28,5 +28,6 @@ ontrek.db
 
 # API_KEY
 ontrek-serviceAccountKey.json
+token.txt
 
 backup

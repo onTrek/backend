@@ -86,6 +86,29 @@ func GetFileByID(db *gorm.DB, fileID int) (utils.Gpx, error) {
 	return file, nil
 }
 
+func GetFileByUserID(db *gorm.DB, userID string) ([]utils.GpxInfoEssential, error) {
+	var gpxs []Gpx
+
+	err := db.Table("gpx_files").
+		Where("user_id == ?", userID).
+		Find(&gpxs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var result []utils.GpxInfoEssential
+	for _, row := range gpxs {
+		info := utils.GpxInfoEssential{
+			ID:    row.ID,
+			Title: row.Title,
+		}
+
+		result = append(result, info)
+	}
+
+	return result, nil
+}
+
 func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfoWithOwner, error) {
 	var file Gpx
 

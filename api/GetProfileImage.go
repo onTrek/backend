@@ -14,7 +14,7 @@ import (
 // @Summary Get profile image of a user
 // @Description Retrieve the profile image of a user by their ID.
 // @Tags users
-// @Produces image/*
+// @Produces json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path string true "User ID to retrieve profile image for"
 // @Success 200 {object} utils.Url "Returns the signed URL for the profile image"
@@ -50,11 +50,11 @@ func GetProfileImage(c *gin.Context) {
 
 	downloadURL, err := utils.GenerateSignedURL(c.MustGet("storageConfig").(*utils.StorageConfig), friend.ID, utils.FileTypeAvatar, *friend.Extension)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Error during file retrieval"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error during file retrieval"})
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"url": downloadURL,
 	})
 

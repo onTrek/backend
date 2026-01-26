@@ -783,7 +783,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "produces": [
-                    "application/octet-stream"
+                    "application/json"
                 ],
                 "tags": [
                     "gpx"
@@ -852,7 +852,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "produces": [
-                    "image/png"
+                    "application/json"
                 ],
                 "tags": [
                     "gpx"
@@ -1898,7 +1898,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Search for username",
-                        "name": "Username",
+                        "name": "username",
                         "in": "query",
                         "required": true
                     },
@@ -1996,6 +1996,63 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to save file",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/gpxs/": {
+            "get": {
+                "description": "Retrieves all tracks associated with a given user ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get tracks of a specific user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token for user authentication",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the list of tracks for the user",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Url"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid friend ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve tracks",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorResponse"
                         }

@@ -16,7 +16,7 @@ import (
 // @Description Retrieves a file based on the provided file ID and authorization token
 // @Tags gpx
 // @Accept json
-// @Produce octet-stream
+// @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param id path int true "File ID"
 // @Success 200 {object} utils.Url "Returns the signed URL for the GPX file"

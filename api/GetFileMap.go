@@ -16,7 +16,7 @@ import (
 // @Description  Get a map file by its ID
 // @Tags         gpx
 // @Accept       json
-// @Produce      image/png
+// @Produce      json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param        id   path      int  true  "File ID"
 // @Success      200 {object} utils.Url "Returns the signed URL for the map file"

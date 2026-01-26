@@ -812,7 +812,7 @@ paths:
         required: true
         type: integer
       produces:
-      - application/octet-stream
+      - application/json
       responses:
         "200":
           description: Returns the signed URL for the GPX file
@@ -858,7 +858,7 @@ paths:
         required: true
         type: integer
       produces:
-      - image/png
+      - application/json
       responses:
         "200":
           description: Returns the signed URL for the map file
@@ -1580,7 +1580,7 @@ paths:
         type: string
       - description: Search for username
         in: query
-        name: Username
+        name: username
         required: true
         type: string
       - description: Search for friends only (optional, true/false, default is false)
@@ -1653,6 +1653,44 @@ paths:
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: Get profile image of a user
+      tags:
+      - users
+  /users/{id}/gpxs/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all tracks associated with a given user ID.
+      parameters:
+      - description: Bearer token for user authentication
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns the list of tracks for the user
+          schema:
+            $ref: '#/definitions/utils.Url'
+        "400":
+          description: Invalid friend ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Failed to retrieve tracks
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get tracks of a specific user
       tags:
       - users
 swagger: "2.0"
