@@ -80,6 +80,7 @@ type GpxInfoWithOwner struct {
 	Stats      GPXStats `json:"stats"`
 	FileSize   int64    `json:"size" example:"110744"`
 	Public     bool     `json:"public" example:"false"`
+	Saved      bool     `json:"saved" example:"true"`
 }
 
 type GpxID struct {

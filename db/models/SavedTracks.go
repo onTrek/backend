@@ -58,6 +58,7 @@ func GetSavedTracks(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
 		Select("gpx_files.*").
 		Joins("join saved_tracks on saved_tracks.track_id = gpx_files.id").
 		Where("saved_tracks.user_id = ?", userID).
+		Order("saved_tracks.saved_at DESC").
 		Find(&savedTracks).Error
 	if err != nil {
 		return nil, err

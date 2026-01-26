@@ -53,7 +53,7 @@ func GetFileInfo(c *gin.Context) {
 		return
 	}
 
-	gpx, err := models.GetFileInfoByID(c.MustGet("db").(*gorm.DB), fileID)
+	gpx, err := models.GetFileInfoByID(c.MustGet("db").(*gorm.DB), fileID, user.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			fmt.Println("File not found:", err)

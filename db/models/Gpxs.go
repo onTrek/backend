@@ -2,6 +2,7 @@ package models
 
 import (
 	"OnTrek/utils"
+	"errors"
 	"fmt"
 	"mime/multipart"
 	"time"
@@ -109,7 +110,7 @@ func GetFileByUserID(db *gorm.DB, userID string) ([]utils.GpxInfoEssential, erro
 	return result, nil
 }
 
-func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfoWithOwner, error) {
+func GetFileInfoByID(db *gorm.DB, fileID int, userId string) (utils.GpxInfoWithOwner, error) {
 	var file Gpx
 
 	err := db.Table("gpx_files").
@@ -118,6 +119,22 @@ func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfoWithOwner, error) {
 
 	if err != nil {
 		return utils.GpxInfoWithOwner{}, err
+	}
+
+	var savedCount int64
+
+	if userId != "" && file.UserID != userId {
+		err = db.Table("saved_tracks").
+			Where("user_id = ? AND track_id = ?", userId, file.ID).
+			Count(&savedCount).Error
+
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				savedCount = 0
+			} else {
+				return utils.GpxInfoWithOwner{}, err
+			}
+		}
 	}
 
 	info := utils.GpxInfoWithOwner{
@@ -136,6 +153,7 @@ func GetFileInfoByID(db *gorm.DB, fileID int) (utils.GpxInfoWithOwner, error) {
 		},
 		FileSize: file.Size,
 		Public:   file.Public,
+		Saved:    savedCount > 0,
 	}
 
 	return info, nil

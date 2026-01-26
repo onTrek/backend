@@ -94,6 +94,9 @@ definitions:
       public:
         example: false
         type: boolean
+      saved:
+        example: true
+        type: boolean
       size:
         example: 110744
         type: integer

@@ -2195,6 +2195,10 @@ const docTemplate = `{
                     "type": "boolean",
                     "example": false
                 },
+                "saved": {
+                    "type": "boolean",
+                    "example": true
+                },
                 "size": {
                     "type": "integer",
                     "example": 110744
