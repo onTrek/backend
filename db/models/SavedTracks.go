@@ -52,7 +52,7 @@ func UnsaveTrack(db *gorm.DB, userID string, fileID int) error {
 	return db.Delete(&SavedTrack{}, "user_id = ? AND track_id = ?", userID, fileID).Error
 }
 
-func GetSavedTracks(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
+func GetSavedTracks(db *gorm.DB, userID string) ([]utils.GpxInfoWithOwner, error) {
 	var savedTracks []Gpx
 	err := db.Table("gpx_files").
 		Select("gpx_files.*").
@@ -64,12 +64,13 @@ func GetSavedTracks(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
 		return nil, err
 	}
 
-	var result []utils.GpxInfo
+	var result []utils.GpxInfoWithOwner
 	for _, row := range savedTracks {
-		info := utils.GpxInfo{
+		info := utils.GpxInfoWithOwner{
 			ID:         row.ID,
 			Filename:   row.Filename,
 			UploadDate: row.UploadDate.Format(time.RFC3339),
+			Owner:      row.UserID,
 			Title:      row.Title,
 			Stats: utils.GPXStats{
 				Km:          row.KM,

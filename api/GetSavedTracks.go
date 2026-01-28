@@ -15,7 +15,7 @@ import (
 // @Tags gpx
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Success 200 {object} []utils.GpxInfo "gpx_files"
+// @Success 200 {object} []utils.GpxInfoWithOwner "gpx_files"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Error fetching files"
 // @Router /gpx/saved/ [get]
@@ -25,12 +25,12 @@ func GetSavedTracks(c *gin.Context) {
 
 	files, err := models.GetSavedTracks(c.MustGet("db").(*gorm.DB), user.ID)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Error fetching saved tracks"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching saved tracks"})
 		return
 	}
 
 	if len(files) == 0 {
-		c.JSON(200, []utils.GpxInfo{})
+		c.JSON(http.StatusOK, []utils.GpxInfoWithOwner{})
 		return
 	}
 

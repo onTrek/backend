@@ -35,24 +35,25 @@ func (Gpx) TableName() string {
 	return "gpx_files"
 }
 
-func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
+func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfoWithOwner, error) {
 	var files []Gpx
 
 	err := db.
 		Table("gpx_files").
-		Select(`id, filename, storage_path, upload_date, 
-                title, km, duration, ascent, descent, max_altitude, min_altitude, size`).
+		Select(`id, user_id, filename, storage_path, upload_date, 
+                title, km, duration, ascent, descent, max_altitude, min_altitude, size, public`).
 		Where("user_id = ?", userID).Order("upload_date DESC").
 		Scan(&files).Error
 	if err != nil {
 		return nil, err
 	}
 
-	var result []utils.GpxInfo
+	var result []utils.GpxInfoWithOwner
 	for _, row := range files {
-		info := utils.GpxInfo{
+		info := utils.GpxInfoWithOwner{
 			ID:         row.ID,
 			Filename:   row.Filename,
+			Owner:      row.UserID,
 			UploadDate: row.UploadDate.Format(time.RFC3339),
 			Title:      row.Title,
 			Stats: utils.GPXStats{
@@ -64,6 +65,7 @@ func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfo, error) {
 				MinAltitude: row.MinAltitude,
 			},
 			FileSize: row.Size, // Convert to KB
+			Public:   row.Public,
 		}
 
 		result = append(result, info)
@@ -277,7 +279,7 @@ func UpdateFilePrivacy(db *gorm.DB, fileID int, isPublic bool) error {
 	return nil
 }
 
-func SearchGpxs(db *gorm.DB, query string, userID string) ([]utils.GpxInfoEssential, error) {
+func SearchGpxs(db *gorm.DB, query string, userID string) ([]utils.GpxInfoWithOwner, error) {
 	var gpxs []Gpx
 
 	err := db.Table("gpx_files").
@@ -287,11 +289,23 @@ func SearchGpxs(db *gorm.DB, query string, userID string) ([]utils.GpxInfoEssent
 		return nil, err
 	}
 
-	var result []utils.GpxInfoEssential
+	var result []utils.GpxInfoWithOwner
 	for _, row := range gpxs {
-		info := utils.GpxInfoEssential{
-			ID:    row.ID,
-			Title: row.Title,
+		info := utils.GpxInfoWithOwner{
+			ID:         row.ID,
+			Filename:   row.Filename,
+			UploadDate: row.UploadDate.Format(time.RFC3339),
+			Owner:      row.UserID,
+			Title:      row.Title,
+			Stats: utils.GPXStats{
+				Km:          row.KM,
+				Duration:    row.Duration,
+				Ascent:      row.Ascent,
+				Descent:     row.Descent,
+				MaxAltitude: row.MaxAltitude,
+				MinAltitude: row.MinAltitude,
+			},
+			FileSize: row.Size, // Convert to KB
 		}
 
 		result = append(result, info)

@@ -527,7 +527,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/utils.GpxInfo"
+                                "$ref": "#/definitions/utils.GpxInfoWithOwner"
                             }
                         }
                     },
@@ -633,7 +633,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/utils.GpxInfo"
+                                "$ref": "#/definitions/utils.GpxInfoWithOwner"
                             }
                         }
                     },
@@ -1843,7 +1843,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/utils.GpxInfoEssential"
+                                "$ref": "#/definitions/utils.GpxInfoWithOwner"
                             }
                         }
                     },
@@ -2132,34 +2132,6 @@ const docTemplate = `{
                 "file_id": {
                     "type": "integer",
                     "example": 1
-                }
-            }
-        },
-        "utils.GpxInfo": {
-            "type": "object",
-            "properties": {
-                "filename": {
-                    "type": "string",
-                    "example": "MonteBianco.gpx"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "size": {
-                    "type": "integer",
-                    "example": 110744
-                },
-                "stats": {
-                    "$ref": "#/definitions/utils.GPXStats"
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Monte Faggeto"
-                },
-                "upload_date": {
-                    "type": "string",
-                    "example": "2025-05-11T08:00:00Z"
                 }
             }
         },

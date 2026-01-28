@@ -4,9 +4,10 @@ import (
 	"OnTrek/db/models"
 	"OnTrek/utils"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 // GetFiles godoc
@@ -15,7 +16,7 @@ import (
 // @Tags gpx
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
-// @Success 200 {object} []utils.GpxInfo "gpx_files"
+// @Success 200 {object} []utils.GpxInfoWithOwner "gpx_files"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 500 {object} utils.ErrorResponse "Error fetching files"
 // @Router /gpx/ [get]
@@ -32,7 +33,7 @@ func GetFiles(c *gin.Context) {
 	}
 
 	if len(files) == 0 {
-		c.JSON(http.StatusOK, []utils.GpxInfo{})
+		c.JSON(http.StatusOK, []utils.GpxInfoWithOwner{})
 		return
 	}
 

@@ -18,7 +18,7 @@ import (
 // @Produce json
 // @Param Bearer header string true "Bearer token for user authentication"
 // @Param track query string true "Search for track title"
-// @Success 200 {array} utils.GpxInfoEssential "Returns a list of GPX tracks matching the search query ordered by upload date."
+// @Success 200 {array} utils.GpxInfoWithOwner "Returns a list of GPX tracks matching the search query ordered by upload date."
 // @Failure 400 {object} utils.ErrorResponse "Bad request"
 // @Failure 401 {object} utils.ErrorResponse "Unauthorized"
 // @Failure 404 {object} utils.ErrorResponse "No tracks found"
@@ -43,7 +43,7 @@ func GetSearchTrack(c *gin.Context) {
 	}
 
 	if len(tracks) == 0 {
-		c.JSON(200, []utils.GpxInfoEssential{})
+		c.JSON(200, []utils.GpxInfoWithOwner{})
 		return
 	}
 
