@@ -26,7 +26,7 @@ type Gpx struct {
 	MaxAltitude int       `json:"max_altitude" example:"2500" gorm:"not null;default:0"`
 	MinAltitude int       `json:"min_altitude" example:"1500" gorm:"not null;default:0"`
 	Size        int64     `json:"size" example:"2048000" gorm:"not null;default:0"`
-	Public      bool      `json:"public" example:"false" gorm:"not null;default:0"`
+	Public      bool      `json:"is_public" example:"false" gorm:"not null;default:0"`
 
 	User User `json:"user" gorm:"foreignKey:UserID;references:id;constraint:OnDelete:CASCADE"`
 }
