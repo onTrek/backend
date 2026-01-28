@@ -2159,13 +2159,13 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
+                "is_public": {
+                    "type": "boolean",
+                    "example": false
+                },
                 "owner": {
                     "type": "string",
                     "example": "550e8400-e29b-41d4-a716-446655440000"
-                },
-                "public": {
-                    "type": "boolean",
-                    "example": false
                 },
                 "saved": {
                     "type": "boolean",
