@@ -2036,7 +2036,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Returns the list of tracks for the user",
                         "schema": {
-                            "$ref": "#/definitions/utils.GpxInfoEssential"
+                            "$ref": "#/definitions/utils.GpxInfoWithOwner"
                         }
                     },
                     "400": {
