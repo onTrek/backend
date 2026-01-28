@@ -105,7 +105,7 @@ func GetFileByUserID(db *gorm.DB, userID string) ([]utils.GpxInfoWithOwner, erro
 	var savedFileIDs []int
 
 	err = db.Table("saved_tracks").
-		Select("file_id").
+		Select("track_id").
 		Where("user_id = ?", userID).
 		Scan(&savedFileIDs).Error
 	if err != nil {
@@ -327,7 +327,7 @@ func SearchGpxs(db *gorm.DB, query string, userID string) ([]utils.GpxInfoWithOw
 	var savedFileIDs []int
 
 	err = db.Table("saved_tracks").
-		Select("file_id").
+		Select("track_id").
 		Where("user_id = ?", userID).
 		Scan(&savedFileIDs).Error
 	if err != nil {
