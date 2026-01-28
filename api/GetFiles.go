@@ -33,7 +33,7 @@ func GetFiles(c *gin.Context) {
 	}
 
 	if len(files) == 0 {
-		c.JSON(http.StatusOK, []utils.GpxInfoWithOwner{})
+		c.JSON(http.StatusOK, []utils.GpxInfo{})
 		return
 	}
 

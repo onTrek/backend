@@ -66,6 +66,7 @@ func GetFiles(db *gorm.DB, userID string) ([]utils.GpxInfoWithOwner, error) {
 			},
 			FileSize: row.Size, // Convert to KB
 			Public:   row.Public,
+			Saved:    false,
 		}
 
 		result = append(result, info)
@@ -89,7 +90,7 @@ func GetFileByID(db *gorm.DB, fileID int) (utils.Gpx, error) {
 	return file, nil
 }
 
-func GetFileByUserID(db *gorm.DB, userID string) ([]utils.GpxInfoEssential, error) {
+func GetFileByUserID(db *gorm.DB, userID string) ([]utils.GpxInfoWithOwner, error) {
 	var gpxs []Gpx
 
 	err := db.Table("gpx_files").
@@ -99,11 +100,43 @@ func GetFileByUserID(db *gorm.DB, userID string) ([]utils.GpxInfoEssential, erro
 		return nil, err
 	}
 
-	var result []utils.GpxInfoEssential
+	savedMap := make(map[int]bool)
+
+	var savedFileIDs []int
+
+	err = db.Table("saved_tracks").
+		Select("file_id").
+		Where("user_id = ?", userID).
+		Scan(&savedFileIDs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	for _, id := range savedFileIDs {
+		savedMap[id] = true
+	}
+
+	var result []utils.GpxInfoWithOwner
 	for _, row := range gpxs {
-		info := utils.GpxInfoEssential{
-			ID:    row.ID,
-			Title: row.Title,
+		isSaved := savedMap[row.ID]
+
+		info := utils.GpxInfoWithOwner{
+			ID:         row.ID,
+			Filename:   row.Filename,
+			Owner:      row.UserID,
+			UploadDate: row.UploadDate.Format(time.RFC3339),
+			Title:      row.Title,
+			Stats: utils.GPXStats{
+				Km:          row.KM,
+				Duration:    row.Duration,
+				Ascent:      row.Ascent,
+				Descent:     row.Descent,
+				MaxAltitude: row.MaxAltitude,
+				MinAltitude: row.MinAltitude,
+			},
+			FileSize: row.Size, // Convert to KB
+			Public:   row.Public,
+			Saved:    isSaved,
 		}
 
 		result = append(result, info)
@@ -289,8 +322,26 @@ func SearchGpxs(db *gorm.DB, query string, userID string) ([]utils.GpxInfoWithOw
 		return nil, err
 	}
 
+	savedMap := make(map[int]bool)
+
+	var savedFileIDs []int
+
+	err = db.Table("saved_tracks").
+		Select("file_id").
+		Where("user_id = ?", userID).
+		Scan(&savedFileIDs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	for _, id := range savedFileIDs {
+		savedMap[id] = true
+	}
+
 	var result []utils.GpxInfoWithOwner
 	for _, row := range gpxs {
+		isSaved := savedMap[row.ID]
+
 		info := utils.GpxInfoWithOwner{
 			ID:         row.ID,
 			Filename:   row.Filename,
@@ -306,6 +357,8 @@ func SearchGpxs(db *gorm.DB, query string, userID string) ([]utils.GpxInfoWithOw
 				MinAltitude: row.MinAltitude,
 			},
 			FileSize: row.Size, // Convert to KB
+			Public:   row.Public,
+			Saved:    isSaved,
 		}
 
 		result = append(result, info)

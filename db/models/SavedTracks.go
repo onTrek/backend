@@ -81,6 +81,8 @@ func GetSavedTracks(db *gorm.DB, userID string) ([]utils.GpxInfoWithOwner, error
 				MinAltitude: row.MinAltitude,
 			},
 			FileSize: row.Size, // Convert to KB
+			Public:   true,
+			Saved:    true,
 		}
 
 		result = append(result, info)
